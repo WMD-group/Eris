@@ -35,10 +35,6 @@ int main(int argc, char *argv[])
 
     int tic,toc;
 
-    char name[100];
-    char const *LOGFILE = NULL; //for output filenames
-    // Yes, I know, 50 chars are enough for any segfault ^_^
-
     fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
     fprintf(stderr,"Loading config...\n");
@@ -53,7 +49,6 @@ int main(int argc, char *argv[])
 
     // If we're going to do some actual science, we better have a logfile...
     FILE *log;
-    LOGFILE=name;
     log=fopen(LOGFILE,"w");
     fprintf(stderr,"Log file '%s' opened. ",LOGFILE);
 
@@ -65,7 +60,7 @@ int main(int argc, char *argv[])
     initialise_lattice_random(); //populate wiht random dipoles
 
 
-    fprintf(stderr,"Lattice initialised.");
+    fprintf(stderr,"Lattice initialised.\n");
 
     outputlattice_dumb_terminal(); //Party like it's 1980
 
@@ -89,12 +84,12 @@ int main(int argc, char *argv[])
             // Then we bit reverse it as binary
             // Pretty confusing, but means it will fill in the temperature
             // range with maximum coverage, rather than linear ramping
-            unsigned char r=i;
+          /*  unsigned char r=i;
             r=(r&0xF0)>>4 | (r&0x0F)<<4;
             r=(r&0xCC)>>2 | (r&0x33)<<2;
             r=(r&0xAA)>>1 | (r&0x55)<<1;
-
-            T=r*4;
+*/
+            T=i*50;
             beta=1/((float)T/300.0);
 
             // Do some MC moves!
@@ -106,26 +101,6 @@ int main(int argc, char *argv[])
                 MC_move();
             toc=time(NULL);
  
-            // Log some data... Nb: Slow as does a NxN summation of lattice energy
-            // contributions!
-            //        lattice_potential_log(log);
-            //fprintf(log,"%lu %f %f %f\n",ACCEPT+REJECT,lattice_energy(),Efield,Eangle); //FIXME: lattice_energy all broken, data worthless presently.
-            // TODO: some kind of dipole distribution? Would I have to bin it
-            // myself? (boring.)
-            // TODO: Split Energy into different contributions... would be nice to
-            // see polarisation delta.E spike when the field flips
-
-            // Log some pretty pictures...
-            //        sprintf(name,"MC-PNG_step_%.4d.png",i);
-            //        outputlattice_ppm_hsv(name);
-
-            //        sprintf(name,"MC-SVG_step_%.4d.svg",i);
-            //        outputlattice_svg(name);
-
-
-            // Update the (interactive) user what we're up to
-            //fprintf(stderr,".");
-            //fprintf(stderr,"\n");
             outputlattice_dumb_terminal(); //Party like it's 1980
 
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
@@ -138,50 +113,7 @@ int main(int argc, char *argv[])
             //        if (i==300) {Efield.z=0.0; Efield.x=1.0;}
 
        }
-        /*
-        // now data collection on equilibriated structure...
 
-        P=0.0;
-
-        for (i=0;i<10;i++)
-        {
-        P+=polarisation();
-        for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
-        MC_move();
-        fprintf(stderr,","); 
-        }
-        // hard coded for loops for Hysterisis exploration
-        P/=10;
-
-        double maxfield=Efield.x;
-        //    for (maxfield=10.0;maxfield<10.001;maxfield=maxfield+1.0)
-        for (i=0;i<0;i++) // hysterisis loop counter
-        { 
-        for (Efield.x=maxfield;Efield.x>-maxfield;Efield.x-=0.0005)
-        {
-        fprintf(stderr,"-");
-        for (k=0;k<MCMinorSteps;k++)
-        MC_move();
-        printf("T: %d Efield.x: %f Polar: %f\n",T,Efield.x,polarisation());
-        }
-        for (Efield.x=-maxfield;Efield.x<maxfield;Efield.x+=0.0005)
-        {
-        fprintf(stderr,"+");
-        for (k=0;k<MCMinorSteps;k++)
-        MC_move();
-        printf("T: %d Efield.x: %f Polar: %f\n",T,Efield.x,polarisation());
-        }
-        }
-
-        // P/=(float)MCMegaSteps; //average over our points
-        P/=(float)X*Y;          // per lattice site
-        // P/=-(float)Efield.x;     // by Electric Field
-        // P*=Dipole;
-        // See 6.5 (p 167) in Zangwill Modern Electrodynamics
-
-        fprintf(stderr,"NORK! T: %d E: %f P: %f polarisation(per_site): %f\n",T,Efield.x,P,polarisation()/((float)X*Y));
-        printf("T: %d Dipole: %f E: %f P: %f polarisation(per_site): %f\n",T,Dipole,Efield.x,P,polarisation()/((float)X*Y));
-        */
     } 
     // OK; we're finished...
 

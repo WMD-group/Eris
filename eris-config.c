@@ -7,9 +7,9 @@
  * File begun 16th January 2014
  */
 
-#define X 20 // Malloc is for losers.
-#define Y 20 
-#define Z 1 
+#define X 30 // Malloc is for losers.
+#define Y 30 
+#define Z 10 
 
 #define SPECIES 4
 
@@ -119,8 +119,17 @@ void load_config()
     double tmp;
     int T;
 
-    char name[100];
-    // Yes, I know, 50 chars are enough for any segfault ^_^
+// TODO: move this to init file
+E_int[1][1]=-1.0;
+E_int[1][2]=1.0;
+E_int[1][3]=1.0;
+E_int[2][1]=E_int[1][2];
+E_int[2][2]=-1.0;
+E_int[2][3]=1.0;
+E_int[3][1]=E_int[1][3];
+E_int[3][2]=E_int[2][3];
+E_int[3][3]=-1.0;
+
 
     //Load and parse config file
     cf = &cfg;

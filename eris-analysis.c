@@ -283,4 +283,5 @@ void outputlattice_dumb_terminal()
     fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
     DMAX=(new_DMAX+DMAX)/2.0; // mean of old and new (sampled, noisy) value
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
+    if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
