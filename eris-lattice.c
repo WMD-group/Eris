@@ -8,11 +8,12 @@
  */
 
 // Prototypes...
-void initialise_lattice();
+void initialise_lattice_random();
 
-void initialise_lattice()
+void initialise_lattice_random()
 {
     int x,y,z;
+    int species;
     float angle;
 
     //Random initial lattice
@@ -20,10 +21,10 @@ void initialise_lattice()
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                if (genrand_real1()<dipole_fraction) //occupy fraction of sites...
-                    random_sphere_point(& lattice[x][y][z]);
-                else
-                {lattice[x][y][z].x=0.0; lattice[x][y][z].y=0.0; lattice[x][y][z].z=0.0; }
+                species=rand_int(4)+1;
+                if (species==4) species--;
+
+                lattice[x][y][z]=species; 
             }
     //Print lattice
     /*

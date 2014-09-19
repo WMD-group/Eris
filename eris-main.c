@@ -16,15 +16,16 @@
 
 #include "mt19937ar-cok.c" //Code _included_ to allow more global optimisation
 
+// Prototypes...
+
+static double site_energy(int x, int y, int z, int species);
+static void MC_move();
+
+static int rand_int(int SPAN);
+
 #include "eris-config.c" //Global variables & config file reader function  
 #include "eris-lattice.c" //Lattice initialisation / zeroing / sphere picker fn; dot product
 #include "eris-analysis.c" //Analysis functions, and output routines
-
-// Prototypes...
-static int rand_int(int SPAN);
-
-static double site_energy(int x, int y, int z, struct dipole *newdipole, struct dipole *olddipole);
-static void MC_move();
 
 int main(int argc, char *argv[])
 {
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
     char const *LOGFILE = NULL; //for output filenames
     // Yes, I know, 50 chars are enough for any segfault ^_^
 
-    fprintf(stderr,"Starry Night - Monte Carlo brushstrokes.\n");
+    fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
     fprintf(stderr,"Loading config...\n");
     load_config();
@@ -49,12 +50,6 @@ int main(int argc, char *argv[])
         sscanf(argv[1],"%d",&T);
         fprintf(stderr,"Command line temperature: T = %d\n",T);
     }
-    if (argc>2)
-    {
-        sscanf(argv[2],"%lf",&Dipole);
-        fprintf(stderr,"Command Line Dipole: Dipole = %lf\n",Dipole);
-    }
-    sprintf(name,"T_%d_Dipole_%f.log",T,Dipole);
 
     // If we're going to do some actual science, we better have a logfile...
     FILE *log;
@@ -67,25 +62,13 @@ int main(int argc, char *argv[])
     //init_genrand(time(NULL)); // seeded with current time
     fprintf(stderr,"Twister initialised. ");
 
-    initialise_lattice(); //populate wiht random dipoles
-    //initialise_lattice_spectrum(); //dipoles to test output routines
-    //initialise_lattice_wall(); //already-paired to test simulator
-    //initialise_lattice_slip();
+    initialise_lattice_random(); //populate wiht random dipoles
 
-    //initialise_lattice_slab_delete(); 
 
     fprintf(stderr,"Lattice initialised.");
 
-    // output initialised lattice - mainly for debugging
-    outputlattice_ppm_hsv("initial.png");
-    outputlattice_svg("initial-SVG.svg");
-    outputpotential_png("initial_pot.png"); //"final_pot.png");
-    outputlattice_xyz("initial_dipoles.xyz");
-    outputlattice_xyz_overprint("initial_overprint.xyz");
-
     outputlattice_dumb_terminal(); //Party like it's 1980
 
-    //lattice_potential_XY("initial_pot_xy.dat"); // potential distro
 
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
 
@@ -116,7 +99,7 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-            initialise_lattice();
+            initialise_lattice_random();
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
             for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
@@ -146,8 +129,6 @@ int main(int argc, char *argv[])
             outputlattice_dumb_terminal(); //Party like it's 1980
 
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
-            fprintf(stderr,"T: %d Landau: %f\n",T,landau_order());
-            fprintf(stdout,"T: %d Landau: %f\n",T,landau_order());
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
             
@@ -206,31 +187,6 @@ int main(int argc, char *argv[])
 
     fprintf(stderr,"\n");
 
-    // Final data output / summaries.
-    outputlattice_ppm_hsv("MC-PNG_final.png");
-    outputlattice_svg("MC-SVG_final.svg");
-
-    //    lattice_potential_log(log);
-    lattice_angle_log(log);
-
-    sprintf(name,"Dipole_pot_xy_T_%04d_DipoleFraction_%f.log",T,dipole_fraction);
-    lattice_potential_XYZ(name); 
-
-    sprintf(name,"Dipole_pot_xy_T_%04d_DipoleFraction_%f_MC-PNG_final.png",T,dipole_fraction);
-    outputlattice_ppm_hsv(name);
-
-    sprintf(name,"Dipole_pot_xy_T_%04d_DipoleFraction_%f_MC-SVG_final.svg",T,dipole_fraction);
-    outputlattice_svg(name);
-
-    //    lattice_potential_XY("final_pot_xy.dat");
-
-    sprintf(name,"Dipole_pot_xy_T_%04d_DipoleFraction_%f.png",T,dipole_fraction);
-    outputpotential_png(name); //"final_pot.png");
-
-    outputlattice_xyz("dipoles.xyz");
-    outputlattice_xyz_overprint("overprint.xyz");
-    outputlattice_pymol_cgo("dipoles.py");
-
     fprintf(stderr,"Monte Carlo moves - ACCEPT: %lu REJECT: %lu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
     fprintf(stderr," For us, there is only the trying. The rest is not our business. ~T.S.Eliot\n\n");
 
@@ -242,12 +198,13 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
     return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
 }
 
-static double site_energy(int x, int y, int z, struct dipole *newdipole, struct dipole *olddipole)
+static double site_energy(int x, int y, int z, int species)
 {
     int dx,dy,dz=0;
     float d;
     double dE=0.0;
-    struct dipole *testdipole, n;
+
+    int species2;
 
     // Sum over near neighbours for dipole-dipole interaction
     for (dx=-DipoleCutOff;dx<=DipoleCutOff;dx++)
@@ -260,84 +217,67 @@ static double site_energy(int x, int y, int z, struct dipole *newdipole, struct 
                     continue; //no infinities / self interactions please!
 
                 d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
-
                 if (d>(float)DipoleCutOff) continue; // Cutoff in d
 
-                testdipole=& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
+                species2= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
 
-                n.x=(float)dx/d; n.y=(float)dy/d; n.z=(float)dz/d; //normalised diff. vector
-
-                //True dipole like
-                dE+=  Dipole * ( dot(newdipole,testdipole) - 3*dot(&n,newdipole)*dot(&n,testdipole) ) / (d*d*d)
-                    - Dipole * ( dot(olddipole,testdipole) - 3*dot(&n,olddipole)*dot(&n,testdipole) ) / (d*d*d); 
-
-                // Ferroelectric / Potts model - vector form
-                //            dE+= - Dipole * dot(newdipole,testdipole) / (d*d*d)
-                //                + Dipole * dot(olddipole,testdipole) / (d*d*d);
-
-                // Now reborn as our cage-strain term!
-                if ((dx*dx+dy*dy+dz*dz)==1) //only nearest neighbour
-                    dE+= - CageStrain* dot(newdipole,testdipole)
-                        + CageStrain * dot(olddipole,testdipole); // signs to energetic drive alignment of vectors (dot product = more +ve, dE = -ve)
-
+                dE+=E_int[species][species2]/d;
             }
 
     // Interaction of dipole with (unshielded) E-field
-    dE+= + dot(newdipole, & Efield)
-        - dot(olddipole, & Efield);
-    //fprintf(stderr,"%f\n",dot(newdipole, & Efield));
-
-    // interaction with strain of cage modelled as cos^2 function (low energy
-    // is diagonal with MA ion along hypotenuse)
-    //    dE += + K*cos(2*newangle)*cos(2*newangle)
-    //          - K*cos(2*oldangle)*cos(2*oldangle);
-
-    // This is to replicate nice cos^2 (angle) effect in dot products.
-    // There must be a more sensible way - if only I could remember my AS
-    // double-angle formulae!
-
-    // along .x projection, squared
-    n.x=1.0; n.y=0.0; n.z=0.0;
-    dE +=   - K*fabs(dot(newdipole,&n))
-        + K*fabs(dot(olddipole,&n));
-    // along .y projection, squared
-    n.x=0.0; n.y=1.0; n.z=0.0;
-    dE +=   - K*fabs(dot(newdipole,&n))
-        + K*fabs(dot(olddipole,&n));
+ /*   dE+= + dot(newdipole, & Efield)
+        - dot(olddipole, & Efield);*/
 
     return(dE); 
 }
 
 static void MC_move()
 {
-    int x, y, z;
+    int x_a, y_a, z_a;
+    int x_b, y_b, z_b;
+
+    int dx, dy, dz;
     float d;
     float dE=0.0;
-    struct dipole newdipole, *olddipole;
 
+    int species_a, species_b;
+    
     // Choose random dipole / lattice location
 
-    x=rand_int(X);
-    y=rand_int(Y);
-    z=rand_int(Z);
+    x_a=rand_int(X);
+    y_a=rand_int(Y);
+    z_a=rand_int(Z);
 
-    if (lattice[x][y][z].x==0.0 && lattice[x][y][z].y==0.0 && lattice[x][y][z].z==0.0) return; //dipole zero length .'. not present
+    dx=(rand_int(2)*2)-1; // on interval [-1,1]
+    dy=(rand_int(2)*2)-1;
+    dz=(rand_int(2)*2)-1;
+
+    x_b=(x_a+dx+X)%X;
+    y_b=(y_a+dy+Y)%Y;
+    z_b=(z_a+dz+Z)%Z;
+
+    //if (lattice[x][y][z].x==0.0 && lattice[x][y][z].y==0.0 && lattice[x][y][z].z==0.0) return; //dipole zero length .'. not present
 
     // random new orientation. 
     // Nb: this is the definition of a MC move - might want to consider
     // alternative / global / less disruptive moves as well
-    random_sphere_point(& newdipole);    
 
-    olddipole=& lattice[x][y][z];
+    species_a=lattice[x_a][y_a][z_a];
+    species_b=lattice[x_b][y_b][z_b];
 
     //calc site energy
-    dE=site_energy(x,y,z, & newdipole,olddipole);
+    // TODO: Check this! Self interaction? Species A vs. B? Want two
+    // configuration states and diff in energy between them.
+    dE+=site_energy(x_a,y_a,z_a, species_a);
+    dE-=site_energy(x_a,y_a,z_a, species_b);
+
+    dE+=site_energy(x_b,y_b,z_b, species_b);
+    dE-=site_energy(x_b,y_b,z_b, species_a);
 
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )
     {
-        lattice[x][y][z].x=newdipole.x;
-        lattice[x][y][z].y=newdipole.y;
-        lattice[x][y][z].z=newdipole.z;
+        lattice[x_a][y_a][z_a]=species_b; //swap two atoms / species
+        lattice[x_b][y_b][z_b]=species_a; 
 
         ACCEPT++;
     }

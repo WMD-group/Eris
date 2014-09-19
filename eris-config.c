@@ -7,9 +7,11 @@
  * File begun 16th January 2014
  */
 
-#define X 50 // Malloc is for losers.
-#define Y 50 
+#define X 20 // Malloc is for losers.
+#define Y 20 
 #define Z 1 
+
+#define SPECIES 4
 
 int DIM=2; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
 int T; //global variable so accessible to analysis routines
@@ -18,7 +20,12 @@ struct dipole
 {
     float x,y,z;
     float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
-} lattice[X][Y][Z];
+}; 
+
+
+int lattice[X][Y][Z];
+
+double E_int[SPECIES][SPECIES]; // interaction energy between species
 
 struct mixture
 {
@@ -140,12 +147,6 @@ void load_config()
     fprintf(stderr,"Efield: x %f y %f z %f\n",Efield.x,Efield.y,Efield.z);
 
     //    config_lookup_float(cf,"Eangle",&Eangle);
-
-    config_lookup_float(cf,"K",&K);
-    config_lookup_float(cf,"Dipole",&Dipole);
-    config_lookup_float(cf,"CageStrain",&CageStrain);
-
-    config_lookup_float(cf,"DipoleFraction",&dipole_fraction);
 
     config_lookup_int(cf,"DipoleCutOff",&DipoleCutOff);
 
