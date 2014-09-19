@@ -60,12 +60,6 @@ unsigned long REJECT=0;
 // Prototypes...
 static float dot(struct dipole *a, struct dipole *b);
 static void random_sphere_point(struct dipole *p);
-void initialise_lattice();
-void initialise_lattice_wall();
-void initialise_lattice_slip();
-void initialise_lattice_spectrum();
-void initialise_lattice_buckled();
-void initialise_lattice_slab_delete();
 
 // 3-Vector dot-product... hand coded, should probably validate against
 // a proper linear albegra library
@@ -150,24 +144,6 @@ void load_config()
     config_lookup_float(cf,"K",&K);
     config_lookup_float(cf,"Dipole",&Dipole);
     config_lookup_float(cf,"CageStrain",&CageStrain);
-
-    /*
-    // read in list of dipoles + prevalence for solid mixture
-    setting = config_lookup(cf, "Dipoles");
-    dipolecount   = config_setting_length(setting);
-    for (i=0;i<dipolecount;i++)
-    dipoles[i].length=config_setting_get_float_elem(setting,i);
-    setting = config_lookup(cf, "Prevalence");
-    dipolecount   = config_setting_length(setting);
-    for (i=0;i<dipolecount;i++)
-    dipoles[i].prevalence=config_setting_get_float_elem(setting,i);
-
-    // stderr printf to check we read correctly
-    for (i=0;i<dipolecount;i++)
-    fprintf(stderr,"Dipole: %d Length: %f Prevalence: %f\n",i,dipoles[i].length, dipoles[i].prevalence);
-    */
-    // above doesn't do anything currently - not sure whether I lost the code
-    // at some point?
 
     config_lookup_float(cf,"DipoleFraction",&dipole_fraction);
 
