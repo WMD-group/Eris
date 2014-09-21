@@ -210,7 +210,7 @@ float DMAX=55.0; //sensible starting value...
 
 void outputlattice_dumb_terminal()
 {
-    const char * species=".ZTC"; // "Dancing at angles"
+    const char * species=".CZT"; // Copper (I), Zinc (II), Tin (III)
     int x,y;
     float a;
     int z=0;

@@ -13,7 +13,7 @@
 
 #define SPECIES 4
 
-int DIM=2; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
+int DIM=3; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
 int T; //global variable so accessible to analysis routines
 
 struct dipole
@@ -21,7 +21,6 @@ struct dipole
     float x,y,z;
     float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
 }; 
-
 
 int lattice[X][Y][Z];
 
@@ -50,7 +49,7 @@ double CageStrain=1.0; // as above
 
 double dipole_fraction=0.9; //fraction of sites to be occupied by dipoles
 
-int DipoleCutOff=3;
+int DipoleCutOff=1;
 
 // These variables from the old main
 int MCMegaSteps=400;
@@ -120,6 +119,10 @@ void load_config()
     int T;
 
 // TODO: move this to init file
+
+// Copper I
+// Zinc II
+// Tin (Sn) III
 E_int[1][1]=-1.0;
 E_int[1][2]=1.0;
 E_int[1][3]=1.0;

@@ -22,7 +22,11 @@ void initialise_lattice_random()
             for (z=0;z<Z;z++)
             {
                 species=rand_int(4)+1;
-                if (species==4) species--;
+                // 0: Nothing
+                // 1: Copper (I)
+                // 2: Zinc  (II)
+                // 3: Tin   (III)
+                if (species==4) species=1; //Twice as much copper
 
                 lattice[x][y][z]=species; 
             }

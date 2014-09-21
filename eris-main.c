@@ -206,6 +206,7 @@ static void MC_move()
     dE+=site_energy(x_b,y_b,z_b, species_b);
     dE-=site_energy(x_b,y_b,z_b, species_a);
 
+    // OK; now we have dE - proceed with Metropolis Accept/Reject Criteria
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )
     {
         lattice[x_a][y_a][z_a]=species_b; //swap two atoms / species
