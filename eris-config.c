@@ -123,15 +123,17 @@ void load_config()
 // Copper I
 // Zinc II
 // Tin (Sn) III
-E_int[1][1]=-1.0;
+double electrostatic=100.0; //completely made up; electrostatic repulsion I-I defect
+    
+E_int[1][1]=-1.0 * electrostatic;
 E_int[1][2]=1.0;
 E_int[1][3]=1.0;
 E_int[2][1]=E_int[1][2];
-E_int[2][2]=-1.0;
+E_int[2][2]=-4.0 * electrostatic; // Zn-Zn (II)-(II)
 E_int[2][3]=1.0;
 E_int[3][1]=E_int[1][3];
 E_int[3][2]=E_int[2][3];
-E_int[3][3]=-1.0;
+E_int[3][3]=-9.0 * electrostatic; // Sn-Sn (III)-(III)
 
 
     //Load and parse config file
