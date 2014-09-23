@@ -227,8 +227,8 @@ void outputlattice_dumb_terminal()
             a=lattice[x][y][0];
 
             fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
-            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
-                fprintf(stderr,";7");
+//            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
+                fprintf(stderr,";7"); // inverted colours
             char arrow=species[(int)a];
      //       if (lattice[x][y][z].z> sqrt(2)/2.0) arrow='o';
      //       if (lattice[x][y][z].z<-sqrt(2)/2.0) arrow='x';

@@ -9,12 +9,12 @@
 
 // Prototypes...
 void initialise_lattice_random();
+void initialise_lattice_stripe();
 
 void initialise_lattice_random()
 {
     int x,y,z;
     int species;
-    float angle;
 
     //Random initial lattice
     for (x=0;x<X;x++)
@@ -39,5 +39,24 @@ void initialise_lattice_random()
        */  
 }
 
+void initialise_lattice_stripe()
+{
+    int x,y,z;
+    int species;
 
+    //Random initial lattice
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                species=1+ ((y*4)/Y);
+                // 0: Nothing
+                // 1: Copper (I)
+                // 2: Zinc  (II)
+                // 3: Tin   (III)
+                if (species==4) species=1; //Twice as much copper
 
+                lattice[x][y][z]=species; 
+            }
+ 
+}

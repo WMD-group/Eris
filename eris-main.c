@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     {
         beta=1/((float)T/300.0);
 
-        for (i=0;i<MCMegaSteps;i++)
+        for (i=0;i<TempSteps;i++)
         {
             // Alright, this is the plan
             // First we take our variable
@@ -94,11 +94,16 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-            initialise_lattice_random();
+//            initialise_lattice_random();
+            initialise_lattice_stripe();
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
-            for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
-                MC_move();
+            for (j=0;j<MCMegaSteps;j++)
+            {
+                for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
+                    MC_move();
+                outputlattice_dumb_terminal();
+            }
             toc=time(NULL);
  
             outputlattice_dumb_terminal(); //Party like it's 1980

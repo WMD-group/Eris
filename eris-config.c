@@ -9,7 +9,7 @@
 
 #define X 40 // Malloc is for losers.
 #define Y 40 
-#define Z 10 
+#define Z 1 
 
 #define SPECIES 4
 
@@ -53,6 +53,7 @@ int DipoleCutOff=1;
 
 // These variables from the old main
 int MCMegaSteps=400;
+int TempSteps=256;
 double MCMegaMultiplier=1.0;
 int MCMinorSteps=0;
 char const *LOGFILE = NULL; //for output filenames
@@ -157,6 +158,7 @@ void load_config()
 
     config_lookup_int(cf,"DipoleCutOff",&DipoleCutOff);
 
+    config_lookup_int(cf,"TempSteps",&TempSteps);
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
     config_lookup_float(cf,"MCMegaMultiplier",&MCMegaMultiplier);
 
