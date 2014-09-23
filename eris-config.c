@@ -7,8 +7,8 @@
  * File begun 16th January 2014
  */
 
-#define X 30 // Malloc is for losers.
-#define Y 30 
+#define X 40 // Malloc is for losers.
+#define Y 40 
 #define Z 10 
 
 #define SPECIES 4
@@ -115,26 +115,10 @@ void load_config()
 
     config_t cfg, *cf; //libconfig config structure
     const config_setting_t *setting;
+    int E_ints;
+    double electrostatic;
     double tmp;
     int T;
-
-// TODO: move this to init file
-
-// Copper I
-// Zinc II
-// Tin (Sn) III
-double electrostatic=100.0; //completely made up; electrostatic repulsion I-I defect
-    
-E_int[1][1]=-1.0 * electrostatic;
-E_int[1][2]=1.0;
-E_int[1][3]=1.0;
-E_int[2][1]=E_int[1][2];
-E_int[2][2]=-4.0 * electrostatic; // Zn-Zn (II)-(II)
-E_int[2][3]=1.0;
-E_int[3][1]=E_int[1][3];
-E_int[3][2]=E_int[2][3];
-E_int[3][3]=-9.0 * electrostatic; // Sn-Sn (III)-(III)
-
 
     //Load and parse config file
     cf = &cfg;
@@ -160,7 +144,16 @@ E_int[3][3]=-9.0 * electrostatic; // Sn-Sn (III)-(III)
 
     fprintf(stderr,"Efield: x %f y %f z %f\n",Efield.x,Efield.y,Efield.z);
 
+    config_lookup_float(cf,"electrostatic",&electrostatic); //Multiplier for E_ints
+    setting = config_lookup(cf, "E_int");
+    E_ints   = config_setting_length(setting);
+//    printf("I've found: %d values in the E_int list...\n",E_ints);
+    for (i=0;i<E_ints;i++)
+        E_int[i/3][i%3]=config_setting_get_float_elem(setting,i)*electrostatic; //I know, I know - I'm sorry.
     //    config_lookup_float(cf,"Eangle",&Eangle);
+    fprintf(stderr,"My interactions look like:\n");
+    for (i=0;i<3;i++)
+        fprintf(stderr,"%f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2]);
 
     config_lookup_int(cf,"DipoleCutOff",&DipoleCutOff);
 
