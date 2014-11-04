@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-//            initialise_lattice_random();
-            initialise_lattice_stripe();
+            initialise_lattice_random();
+//            initialise_lattice_stripe();
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
             for (j=0;j<MCMegaSteps;j++)
@@ -143,7 +143,7 @@ static double site_energy(int x, int y, int z, int species)
 
     int species2;
 
-    // Sum over near neighbours for dipole-dipole interaction
+    // Sum over near neighbours for formalcharge-formalcharge interaction
     for (dx=-DipoleCutOff;dx<=DipoleCutOff;dx++)
         for (dy=-DipoleCutOff;dy<=DipoleCutOff;dy++)
 #if(Z>1) //i.e. 3D in Z

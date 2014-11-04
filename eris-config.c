@@ -9,7 +9,7 @@
 
 #define X 40 // Malloc is for losers.
 #define Y 40 
-#define Z 1 
+#define Z 20 
 
 #define SPECIES 4
 

@@ -44,7 +44,7 @@ void initialise_lattice_stripe()
     int x,y,z;
     int species;
 
-    //Random initial lattice
+    //Striped lattice...
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
