@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-            initialise_lattice_random();
-//            initialise_lattice_stripe();
+//            initialise_lattice_random();
+            initialise_lattice_stripe();
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
             for (j=0;j<MCMegaSteps;j++)
