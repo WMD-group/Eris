@@ -94,15 +94,17 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-//            initialise_lattice_random();
-            initialise_lattice_stripe();
+            initialise_lattice_random();
+//            initialise_lattice_CZTS();
+//	outputlattice_dumb_terminal();
+//break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
             for (j=0;j<MCMegaSteps;j++)
             {
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
                     MC_move();
-            //    outputlattice_dumb_terminal();
+               // outputlattice_dumb_terminal();
             }
             toc=time(NULL);
  

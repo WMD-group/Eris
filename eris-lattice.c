@@ -10,6 +10,7 @@
 // Prototypes...
 void initialise_lattice_random();
 void initialise_lattice_stripe();
+void initialise_lattice_CZTS();
 
 void initialise_lattice_random()
 {
@@ -54,7 +55,32 @@ void initialise_lattice_stripe()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-                // 3: Tin   (III)
+		// 3: Copper (Equiv to 1)
+                // 3: Tin   (IIII)
+                if (species==3) species=1; //Twice as much copper
+
+                lattice[x][y][z]=species; 
+            }
+ 
+}
+
+void initialise_lattice_CZTS()
+{
+    int x,y,z;
+    int species;
+
+    //Striped lattice...
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                species=1+ (x+2*y+2*z)%4;
+
+                // 0: Nothing
+                // 1: Copper (I)
+                // 2: Zinc  (II)
+		// 3: Copper (equiv to 1)
+                // 4: Tin   (IIII)
                 if (species==3) species=1; //Twice as much copper
 
                 lattice[x][y][z]=species; 
