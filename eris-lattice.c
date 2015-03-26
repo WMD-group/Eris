@@ -25,8 +25,9 @@ void initialise_lattice_random()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-                // 3: Tin   (III)
-                if (species==4) species=1; //Twice as much copper
+		// 3: Also Copper... (II)
+                // 4: Tin   (IIII)
+                if (species==3) species=1; //Twice as much copper
 
                 lattice[x][y][z]=species; 
             }
@@ -54,7 +55,7 @@ void initialise_lattice_stripe()
                 // 1: Copper (I)
                 // 2: Zinc  (II)
                 // 3: Tin   (III)
-                if (species==4) species=1; //Twice as much copper
+                if (species==3) species=1; //Twice as much copper
 
                 lattice[x][y][z]=species; 
             }

@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
             {
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
                     MC_move();
-                outputlattice_dumb_terminal();
+            //    outputlattice_dumb_terminal();
             }
             toc=time(NULL);
  
@@ -111,7 +111,9 @@ int main(int argc, char *argv[])
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
-            
+           
+		lattice_potential_XYZ("potential.dat");
+ 
             // Manipulate the run conditions depending on simulation time
             //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing

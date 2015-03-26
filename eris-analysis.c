@@ -51,10 +51,13 @@ static double dipole_potential(int x, int y, int z)
 
                 if (d>(float)MAX) continue; // Cutoff in d
 
-                // pot(r) = 1/4PiEpsilon * p.r / r^3
+                 // pot(r) = 1/4PiEpsilon * p.r / r^3
+               // pot(r) = 1.0d0/4PiEpsilon * p.r / r^3
                 // Electric dipole potential
 // FIXME
-                //                pot+=dot(& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z] ,& r)/(d*d*d);
+                 //dipole                pot+=dot(& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z] ,& r)/(d*d*d);
+               //for CZTS
+                pot+= (float)lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z]/d;
             }
     return(pot);
 }
@@ -102,7 +105,8 @@ void lattice_potential_XYZ(char * filename)
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
-                fprintf(fo,"%d %d %f\n",x,y,dipole_potential(x,y,z));
+                fprintf(fo,"%d %d %d %f\n",x,y,z,dipole_potential(x,y,z));
+    fclose(fo);
 }
 
 
@@ -210,7 +214,7 @@ float DMAX=55.0; //sensible starting value...
 
 void outputlattice_dumb_terminal()
 {
-    const char * species=".CZT"; // Copper (I), Zinc (II), Tin (III)
+    const char * species=".CZCT"; // Copper (I), Zinc (II), Tin (III)
     int x,y;
     float a;
     int z=0;
