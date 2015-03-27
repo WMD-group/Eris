@@ -113,8 +113,11 @@ int main(int argc, char *argv[])
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
-           
-		lattice_potential_XYZ("potential.dat");
+
+            char name[100];
+            sprintf(name,"potential_T_%04d.dat",T);
+
+		    lattice_potential_XYZ(name);
  
             // Manipulate the run conditions depending on simulation time
             //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND

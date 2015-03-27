@@ -98,14 +98,33 @@ void lattice_potential_XY(char * filename)
 void lattice_potential_XYZ(char * filename)
 {
     int x,y,z;
-    double pot;
+    double pot,mean,variance;
     FILE *fo;
     fo=fopen(filename,"w");
 
+    mean=0.0;
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
-                fprintf(fo,"%d %d %d %f\n",x,y,z,dipole_potential(x,y,z));
+            {
+                pot=dipole_potential(x,y,z);
+                mean+=pot;
+                fprintf(fo,"%d %d %d %f\n",x,y,z,pot);
+            }
+    mean/=X*Y*Z;
+
+    variance=0.0;
+     for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                pot=dipole_potential(x,y,z);
+                variance+=(pot-mean)*(pot-mean);
+            }
+    variance/=X*Y*Z;
+
+    fprintf(stderr,"Mean: %f Variance(rigorous): %f\n",mean,variance);
+    fprintf(fo,"# Mean: %f Variance(rigorous): %f\n",mean,variance);
     fclose(fo);
 }
 
@@ -254,6 +273,7 @@ void outputlattice_dumb_terminal()
         for (x=0;x<X;x++)
         {
             potential=dipole_potential(x,y,z);
+            
             variance+=potential*potential;
             mean+=potential;
 
@@ -283,8 +303,8 @@ void outputlattice_dumb_terminal()
     }
     mean=mean/(X*Y);
     variance=variance/(X*Y); 
-    fprintf(stderr,"T: %d DMAX: %f new_DMAX: %f variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
-    fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
+    fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
+
     DMAX=(new_DMAX+DMAX)/2.0; // mean of old and new (sampled, noisy) value
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
