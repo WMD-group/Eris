@@ -94,8 +94,9 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
-            initialise_lattice_random();
-//            initialise_lattice_CZTS();
+//            initialise_lattice_random();
+            initialise_lattice_CZTS();
+            outputlattice_xyz("czts_lattice_initial.xyz");
 //	outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
@@ -115,10 +116,12 @@ int main(int argc, char *argv[])
             fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
 
             char name[100];
-            sprintf(name,"potential_T_%04d.dat",T);
 
+            sprintf(name,"potential_T_%04d.dat",T);
 		    lattice_potential_XYZ(name);
- 
+
+            sprintf(name,"czts_lattice_T_%04d.xyz",T);
+            outputlattice_xyz(name);
             // Manipulate the run conditions depending on simulation time
             //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing

@@ -18,6 +18,8 @@ static double lattice_energy_log(FILE *log);
 double landau_order();
 
 void outputpotential_png(char * filename);
+
+void outputlattice_xyz(char * filename);
 void outputlattice_pnm(char * filename);
 void outputlattice_ppm_hsv(char * filename);
 void outputlattice_svg(char * filename);
@@ -153,6 +155,28 @@ void outputpotential_png(char * filename)
         fprintf(fo,"\n");
     }
 
+}
+
+void outputlattice_xyz(char * filename)
+{
+    int i,j,k;
+    FILE *fo;
+    const char * atom[] = {
+            "Nu",
+            "Cu",
+            "Zn",
+            "Nu",
+            "Sn"
+    };
+    const float d=3.8; // Angstrom spacing of lattice to map to real space coords
+
+    fo=fopen(filename,"w");
+    
+    for (i=0;i<X;i++)
+        for (j=0;j<Y;j++)
+            for (k=0;k<Z;k++)
+                fprintf(fo,"%s %f %f %f\n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k);
+    fclose(fo);
 }
 
 void outputlattice_png(char * filename) // TODO: Fix me for new code
