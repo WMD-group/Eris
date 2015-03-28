@@ -100,33 +100,38 @@ void lattice_potential_XY(char * filename)
 void lattice_potential_XYZ(char * filename)
 {
     int x,y,z;
+    int atoms;
     double pot,mean,variance;
     FILE *fo;
     fo=fopen(filename,"w");
 
-    mean=0.0;
+    mean=0.0; atoms=0;
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
+                if (lattice[x][y][z]!=4) continue;
                 pot=dipole_potential(x,y,z);
                 mean+=pot;
                 fprintf(fo,"%d %d %d %f\n",x,y,z,pot);
+                atoms++;
             }
-    mean/=X*Y*Z;
+    mean/=atoms;
 
-    variance=0.0;
+    variance=0.0; atoms=0;
      for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
+                if (lattice[x][y][z]!=4) continue;
                 pot=dipole_potential(x,y,z);
                 variance+=(pot-mean)*(pot-mean);
+                atoms++;
             }
-    variance/=X*Y*Z;
+    variance/=atoms;
 
-    fprintf(stderr,"Mean: %f Variance(rigorous): %f\n",mean,variance);
-    fprintf(fo,"# Mean: %f Variance(rigorous): %f\n",mean,variance);
+    fprintf(stderr,"Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",mean,variance,atoms,X*Y*Z);
+    fprintf(fo,"# Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",mean,variance,atoms,X*Y*Z);
     fclose(fo);
 }
 

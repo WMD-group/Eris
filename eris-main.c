@@ -57,16 +57,7 @@ int main(int argc, char *argv[])
     //init_genrand(time(NULL)); // seeded with current time
     fprintf(stderr,"Twister initialised. ");
 
-    initialise_lattice_random(); //populate wiht random dipoles
-
-
-    fprintf(stderr,"Lattice initialised.\n");
-
-    outputlattice_dumb_terminal(); //Party like it's 1980
-
-
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
-
     fprintf(stderr,"'.' is %d MC moves attempted.\n",MCMinorSteps);
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
@@ -95,9 +86,12 @@ int main(int argc, char *argv[])
             // Do some MC moves!
 
 //            initialise_lattice_random();
+//            initialise_lattice_stripe();
             initialise_lattice_CZTS();
+
+            fprintf(stderr,"Lattice initialised.\n");
             outputlattice_xyz("czts_lattice_initial.xyz");
-//	outputlattice_dumb_terminal();
+	        outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             tic=time(NULL);
@@ -105,7 +99,7 @@ int main(int argc, char *argv[])
             {
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
                     MC_move();
-               // outputlattice_dumb_terminal();
+                outputlattice_dumb_terminal();
             }
             toc=time(NULL);
  
@@ -126,7 +120,9 @@ int main(int argc, char *argv[])
             //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing
             //        if (i==300) {Efield.z=0.0; Efield.x=1.0;}
-
+    
+            fprintf(stderr,"Monte Carlo moves - ACCEPT: %lu REJECT: %lu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+            REJECT=0; ACCEPT=0;
        }
 
     } 
@@ -168,7 +164,8 @@ static double site_energy(int x, int y, int z, int species)
 
                 species2= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
 
-                dE+=E_int[species][species2]/d;
+                // E_int runs from 1..4
+                dE+=E_int[species-1][species2-1]/d;
             }
 
     // Interaction of dipole with (unshielded) E-field
@@ -195,10 +192,29 @@ static void MC_move()
     y_a=rand_int(Y);
     z_a=rand_int(Z);
 
-    dx=(rand_int(2)*2)-1; // on interval [-1,1]
-    dy=(rand_int(2)*2)-1;
-    dz=(rand_int(2)*2)-1;
+    // Choice direction + size of moves...
+// Nearest neighbour over
+//    dx=(rand_int(2)*2)-1; // on interval [-1,1]
+//    dy=(rand_int(2)*2)-1;
+//    dz=(rand_int(2)*2)-1;
 
+// Global move; anywhere <> anywhere in lattice
+    dx=rand_int(X);
+    dy=rand_int(Y);
+    dz=rand_int(Z);
+
+// Local cube; Anyhere <> limit
+    int RADIAL_CUTOFF=3;
+    dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+    dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+    dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+
+//    fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz); 
+        // for debug - check weighting of moves
+
+    if (dx==dy==dz==0) return; //skip consideration if null move
+
+    // 2nd site to look at...
     x_b=(x_a+dx+X)%X;
     y_b=(y_a+dy+Y)%Y;
     z_b=(z_a+dz+Z)%Z;
@@ -221,6 +237,13 @@ static void MC_move()
     dE+=site_energy(x_b,y_b,z_b, species_b);
     dE-=site_energy(x_b,y_b,z_b, species_a);
 
+    // Report on planned move + dE -- for debugging only (makes a ridiculous
+    // number of prints...)
+/*    fprintf(stderr,"MC Move: %d on %d %d %d, %d on %d %d %d --> dE: %f\n",
+            lattice[x_a][y_a][z_a], x_a, y_a, z_a,
+            lattice[x_b][y_b][z_b], x_b, y_b, z_b,
+            dE);
+*/
     // OK; now we have dE - proceed with Metropolis Accept/Reject Criteria
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )
     {
