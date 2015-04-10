@@ -323,7 +323,7 @@ void outputlattice_dumb_terminal()
             mean+=potential;
 
             if (fabs(potential-DMEAN)>new_DMAX)
-                new_DMAX=fabs(potential); // used to calibrate scale - technically this changes
+                new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
             //printf("%f\t",potential); //debug routine to get scale
 
             //fprintf(stderr,"%c[%d",27,31+((int)(8.0*fabs(potential)/DMAX))%8); //8 colours
@@ -349,7 +349,6 @@ void outputlattice_dumb_terminal()
     variance=variance/(X*Y); 
     fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
 
-    DMAX=(new_DMAX+DMAX)/2.0; // mean of old and new (sampled, noisy) value
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
