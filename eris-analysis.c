@@ -113,11 +113,15 @@ void lattice_potential_XYZ(char * filename)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                if (lattice[x][y][z]!=4) continue;
+                // log potential at all sites (Cu,Zn,Sn)
                 pot=dipole_potential(x,y,z);
-                mean+=pot;
                 fprintf(fo,"%d %d %d %f\n",x,y,z,pot);
-                atoms++;
+                
+                if (lattice[x][y][z]==4) // only count tin towards mean / variance
+                {
+                    mean+=pot;
+                    atoms++;
+                }
             }
     mean/=atoms;
 
