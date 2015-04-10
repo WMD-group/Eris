@@ -219,14 +219,17 @@ static void MC_move()
     y_b=(y_a+dy+Y)%Y;
     z_b=(z_a+dz+Z)%Z;
 
-    //if (lattice[x][y][z].x==0.0 && lattice[x][y][z].y==0.0 && lattice[x][y][z].z==0.0) return; //dipole zero length .'. not present
-
-    // random new orientation. 
     // Nb: this is the definition of a MC move - might want to consider
     // alternative / global / less disruptive moves as well
 
     species_a=lattice[x_a][y_a][z_a];
     species_b=lattice[x_b][y_b][z_b];
+
+    // Immobilise Tin!
+    // Nb: Not very computationally efficient, better would be to never select
+    // Tin in the first place...
+    if (species_a==4 || species_b==4) // if either move selects Tin...
+        return;
 
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
