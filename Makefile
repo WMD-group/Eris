@@ -10,4 +10,4 @@ clean:
 	rm eris 
 	
 cleanupdata:
-	rm *.xyz potential*.dat
+	rm *.xyz potential*.dat variance.dat
