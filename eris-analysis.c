@@ -274,6 +274,7 @@ void outputlattice_ppm_hsv(char * filename)
 #define ZSCALE 5.0 // Scales Z-axis in Pymol xyz / CGO outputs
 
 float DMAX=55.0; //sensible starting value...
+float DMEAN=0.0;
 
 void outputlattice_dumb_terminal()
 {
@@ -321,13 +322,13 @@ void outputlattice_dumb_terminal()
             variance+=potential*potential;
             mean+=potential;
 
-            if (fabs(potential)>new_DMAX)
+            if (fabs(potential-DMEAN)>new_DMAX)
                 new_DMAX=fabs(potential); // used to calibrate scale - technically this changes
             //printf("%f\t",potential); //debug routine to get scale
 
             //fprintf(stderr,"%c[%d",27,31+((int)(8.0*fabs(potential)/DMAX))%8); //8 colours
             //fprintf(stderr,"%c[48;5;%d",27,17+(int)(214.0*fabs(potential)/DMAX)); // Xterm 256 color map - (16..231)
-            fprintf(stderr,"%c[48;5;%d",27,232+12+(int)(12.0*potential/DMAX)); // Xterm 256 color map - shades of grey (232..255)
+            fprintf(stderr,"%c[48;5;%d",27,232+12+(int)(12.0*(potential-DMEAN)/DMAX)); // Xterm 256 color map - shades of grey (232..255)
             // https://code.google.com/p/conemu-maximus5/wiki/AnsiEscapeCodes#xterm_256_color_processing_requirements
 
             //if (potential<0.0) // if negative
@@ -337,12 +338,14 @@ void outputlattice_dumb_terminal()
 
             char arrow=species[(int)a];  // selectss arrow
 
-            fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential)/DMAX)],arrow,27);
+            fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],arrow,27);
         }
 
         fprintf(stderr,"\n");
     }
     mean=mean/(X*Y);
+    DMEAN=mean; // for calibration of scale
+
     variance=variance/(X*Y); 
     fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
 
