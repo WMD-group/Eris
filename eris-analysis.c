@@ -130,10 +130,12 @@ void lattice_potential_XYZ(char * filename)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                if (lattice[x][y][z]!=4) continue;
-                pot=dipole_potential(x,y,z);
-                variance+=(pot-mean)*(pot-mean);
-                atoms++;
+                if (lattice[x][y][z]==4)
+                {
+                    pot=dipole_potential(x,y,z);
+                    variance+=(pot-mean)*(pot-mean);
+                    atoms++;
+                }
             }
     variance/=atoms;
 
@@ -334,9 +336,6 @@ void outputlattice_dumb_terminal()
             a=lattice[x][y][0];
 
             char arrow=species[(int)a];  // selectss arrow
-            //if (lattice[x][y][z].z> sqrt(2)/2.0) arrow='o'; // override for 'up' (towards you - physics arrow style 'o')
-            //if (lattice[x][y][z].z<-sqrt(2)/2.0) arrow='x'; // and 'down' (away from you, physics arrow style 'x')
-
 
             fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential)/DMAX)],arrow,27);
         }
