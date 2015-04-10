@@ -7,4 +7,7 @@ profile: eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c
 all: eris
 
 clean:
-	rm eris *.pnm *.jpg *.gif *.avi *.svg *.png
+	rm eris 
+	
+cleanupdata:
+	rm *.xyz potential*.dat
