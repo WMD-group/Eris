@@ -9,7 +9,10 @@
 
 #define X 20 // Malloc is for losers.
 #define Y 20 
-#define Z 10 
+#define Z 20 
+
+#define POTENTIAL_CUTOFF 7 // cutoff for calculation of electrostatic potential
+// ill defined if this is > than half any of the above
 
 #define SPECIES 4
 

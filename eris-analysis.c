@@ -33,15 +33,14 @@ void outputlattice_dumb_terminal();
 static double dipole_potential(int x, int y, int z) 
 {
     int dx,dy,dz=0;
-    int MAX=10;
     double pot=0.0;
     float d;
     struct dipole r;
 
-    for (dx=-MAX;dx<MAX;dx++)
-        for (dy=-MAX;dy<MAX;dy++)
+    for (dx=-POTENTIAL_CUTOFF;dx<POTENTIAL_CUTOFF;dx++)
+        for (dy=-POTENTIAL_CUTOFF;dy<POTENTIAL_CUTOFF;dy++)
 #if(Z>1) //i.e. 3D in Z
-            for (dz=-MAX;dz<MAX;dz++)
+            for (dz=-POTENTIAL_CUTOFF;dz<POTENTIAL_CUTOFF;dz++)
 #endif
             {
                 if (dx==0 && dy==0 && dz==0)
@@ -51,7 +50,7 @@ static double dipole_potential(int x, int y, int z)
 
                 d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
 
-                if (d>(float)MAX) continue; // Cutoff in d
+                if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
 
                  // pot(r) = 1/4PiEpsilon * p.r / r^3
                // pot(r) = 1.0d0/4PiEpsilon * p.r / r^3
@@ -59,7 +58,7 @@ static double dipole_potential(int x, int y, int z)
 // FIXME
                  //dipole                pot+=dot(& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z] ,& r)/(d*d*d);
                //for CZTS
-                pot+= (float)lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z]/d;
+                pot+= (float)(lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z]-2)/d;
             }
     return(pot);
 }
