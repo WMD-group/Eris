@@ -105,6 +105,9 @@ void lattice_potential_XYZ(char * filename)
     FILE *fo;
     fo=fopen(filename,"w");
 
+    FILE *fvariance;
+    fvariance=fopen("variance.dat","a"); // append to variance file
+
     mean=0.0; atoms=0;
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
@@ -130,9 +133,15 @@ void lattice_potential_XYZ(char * filename)
             }
     variance/=atoms;
 
-    fprintf(stderr,"Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",mean,variance,atoms,X*Y*Z);
-    fprintf(fo,"# Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",mean,variance,atoms,X*Y*Z);
+    fprintf(stderr,"T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+            T,mean,variance,atoms,X*Y*Z);
+    fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+            T,mean,variance,atoms,X*Y*Z);
     fclose(fo);
+    
+    fprintf(fvariance,"T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+            T,mean,variance,atoms,X*Y*Z);
+    fclose(fvariance);
 }
 
 
