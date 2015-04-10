@@ -85,6 +85,9 @@ int main(int argc, char *argv[])
 
             // Do some MC moves!
 
+            char electrostaticpotential_filename[100];
+            sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
+
 //            initialise_lattice_random();
 //            initialise_lattice_stripe();
             initialise_lattice_CZTS();
@@ -99,7 +102,9 @@ int main(int argc, char *argv[])
             {
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
                     MC_move();
+
                 outputlattice_dumb_terminal();
+                lattice_potential_XYZ(electrostaticpotential_filename);
             }
             toc=time(NULL);
  
@@ -109,11 +114,9 @@ int main(int argc, char *argv[])
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
 
+		    lattice_potential_XYZ(electrostaticpotential_filename);
+
             char name[100];
-
-            sprintf(name,"potential_T_%04d.dat",T);
-		    lattice_potential_XYZ(name);
-
             sprintf(name,"czts_lattice_T_%04d.xyz",T);
             outputlattice_xyz(name);
             // Manipulate the run conditions depending on simulation time
