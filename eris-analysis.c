@@ -18,6 +18,7 @@ static double lattice_energy_log(FILE *log);
 double landau_order();
 
 void outputpotential_png(char * filename);
+void radial_distribution_function();
 
 void outputlattice_xyz(char * filename);
 void outputlattice_pnm(char * filename);
@@ -174,6 +175,65 @@ void outputpotential_png(char * filename)
         fprintf(fo,"\n");
     }
 
+}
+
+void radial_distribution_function()
+// Calculates RDF for on-lattice material
+// Currently prints to stdout
+{
+    int x,y,z;
+    int dx,dy,dz;
+    int i;
+
+    int distance_squared;
+
+    const int CUTOFF=9;
+
+    struct dipole n;
+    float d;
+    float pair_correlation;
+
+    // define data structures to keep histogram counts in
+    float RDF[(CUTOFF*CUTOFF)+1];
+    int orientational_count[(CUTOFF*CUTOFF)+1];
+    for (i=0;i<CUTOFF*CUTOFF;i++) // Zero histogram arrays
+        { RDF[i]=0.0; orientational_count[i]=0; }
+
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+                for (dx=-CUTOFF;dx<=CUTOFF;dx++)
+                    for (dy=-CUTOFF;dy<=CUTOFF;dy++)
+                       for (dz=-CUTOFF;dz<=CUTOFF;dz++)
+                        {
+                            distance_squared=dx*dx + dy*dy + dz*dz;
+                            if (distance_squared>CUTOFF*CUTOFF) continue; // skip ones that exceed spherical limit of CUTOFF
+
+                            // Correlation function - present just simple dot
+                            // product (not dipole like)
+//                            FE_correlation=dot(& lattice[x][y][z],& lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]); //complicated modulus arithmatic deals with PBCs
+                            pair_correlation= lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
+                            // if speciesA=speciesB; add one to the pair
+                            // correlation...
+
+                            // OK; save into histogram
+                            RDF[distance_squared]+=pair_correlation;
+                            orientational_count[distance_squared]++; // count for number of species in this segment, for normalisation
+                        }
+
+    // Weight counts into a RDF
+    printf("# r^2 r RDF[r^2] Count[r^2] T\n");
+    for (i=0;i<CUTOFF*CUTOFF;i++)
+    {
+        if (orientational_count[i]>0)
+        {
+            RDF[i]/=(float)orientational_count[i];
+            printf("%d %f %f %d %d\n",i,sqrt(i),RDF[i],orientational_count[i],T);
+        }
+    }
+    printf("\n"); //starts as new dataset in GNUPLOT --> discontinuous lines
+
+    return; //Ummm
 }
 
 void outputlattice_xyz(char * filename)

@@ -91,6 +91,9 @@ int main(int argc, char *argv[])
 //            initialise_lattice_random();
 //            initialise_lattice_stripe();
             initialise_lattice_CZTS();
+            // test RDF routine...
+            radial_distribution_function();
+            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
 
             fprintf(stderr,"Lattice initialised.\n");
             outputlattice_xyz("czts_lattice_initial.xyz");
@@ -109,6 +112,8 @@ int main(int argc, char *argv[])
             toc=time(NULL);
  
             outputlattice_dumb_terminal(); //Party like it's 1980
+            radial_distribution_function();
+            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
 
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
