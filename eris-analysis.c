@@ -346,8 +346,19 @@ void outputlattice_dumb_terminal()
     float new_DMAX=0.0; //used to calibrate next colour scale, based on present maxima of data
     float variance=0.0; // sum of potential^2
     float mean=0.0;
+    float potential;
 
-    fprintf(stderr,"%*s%*s\n",X+3, "DIPOLES", (2*X)+4,"POTENTIAL"); //padded labels
+    fprintf(stderr,"%*s%*s\n",X+3, "SPECIES", (2*X)+4,"POTENTIAL"); //padded labels
+
+    
+     for (y=0;y<Y;y++)
+        for (x=0;x<X;x++)
+        {
+             potential=dipole_potential(x,y,z);
+             if (fabs(potential-DMEAN)>new_DMAX)
+                new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
+        }
+     DMAX=new_DMAX;
 
     for (y=0;y<Y;y++)
     {
@@ -372,7 +383,6 @@ void outputlattice_dumb_terminal()
         }
 
         // OK - now potential plot :^)
-        float potential;
         //        const char * density=".,:;o*O#"; //increasing potential density
         const char * density="012345689";
         fprintf(stderr,"    ");
