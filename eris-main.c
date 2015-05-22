@@ -158,6 +158,8 @@ static double site_energy(int x, int y, int z, int species)
     int species2;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
+#pragma omp parallel for reduction(+:dE)
+// OPENMP PARALLISATION
     for (dx=-DipoleCutOff;dx<=DipoleCutOff;dx++)
         for (dy=-DipoleCutOff;dy<=DipoleCutOff;dy++)
 #if(Z>1) //i.e. 3D in Z
