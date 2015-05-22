@@ -209,6 +209,8 @@ void radial_distribution_function()
                             distance_squared=dx*dx + dy*dy + dz*dz;
                             if (distance_squared>CUTOFF*CUTOFF) continue; // skip ones that exceed spherical limit of CUTOFF
 
+                            if (lattice[x][y][z]!=2) continue; // if not Copper
+
                             // Correlation function - present just simple dot
                             // product (not dipole like)
 //                            FE_correlation=dot(& lattice[x][y][z],& lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]); //complicated modulus arithmatic deals with PBCs
