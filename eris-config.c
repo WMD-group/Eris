@@ -58,14 +58,14 @@ int DipoleCutOff=1;
 int MCMegaSteps=400;
 int TempSteps=256;
 double MCMegaMultiplier=1.0;
-int MCMinorSteps=0;
+unsigned long long int MCMinorSteps=0;
 char const *LOGFILE = NULL; //for output filenames
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
 
-unsigned long ACCEPT=0; //counters for MC moves
-unsigned long REJECT=0;
+unsigned long long int ACCEPT=0; //counters for MC moves
+unsigned long long int REJECT=0;
 
 // Prototypes...
 static float dot(struct dipole *a, struct dipole *b);
@@ -166,7 +166,7 @@ void load_config()
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
     config_lookup_float(cf,"MCMegaMultiplier",&MCMegaMultiplier);
 
-    MCMinorSteps=(int)((float)X*(float)Y*MCMegaMultiplier);
+    MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMegaMultiplier);
 
     fprintf(stderr,"Config loaded. \n");
 }

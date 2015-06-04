@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     fprintf(stderr,"Twister initialised. ");
 
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
-    fprintf(stderr,"'.' is %d MC moves attempted.\n",MCMinorSteps);
+    fprintf(stderr,"'.' is %llu MC moves attempted.\n",MCMinorSteps);
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 	        outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
-            tic=time(NULL);
+            tic=clock();
             for (j=0;j<MCMegaSteps;j++)
             {
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
                 outputlattice_dumb_terminal();
                 lattice_potential_XYZ(electrostaticpotential_filename);
             }
-            toc=time(NULL);
+            toc=clock();
  
             outputlattice_dumb_terminal(); //Party like it's 1980
             radial_distribution_function();
@@ -117,7 +117,8 @@ int main(int argc, char *argv[])
 
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
             fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
-            fprintf(stderr,"MC Moves: %f MHz\n",1e-6*(double)(MCMinorSteps*X*Y*Z)/(double)(toc-tic));
+            fprintf(stderr,"MC Moves: %f MHz\n",
+                  1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
 
 		    lattice_potential_XYZ(electrostaticpotential_filename);
 
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing
             //        if (i==300) {Efield.z=0.0; Efield.x=1.0;}
     
-            fprintf(stderr,"Monte Carlo moves - ACCEPT: %lu REJECT: %lu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+            fprintf(stderr,"Monte Carlo moves - ACCEPT: %llu REJECT: %llu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
             REJECT=0; ACCEPT=0;
        }
 
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
 
     fprintf(stderr,"\n");
 
-    fprintf(stderr,"Monte Carlo moves - ACCEPT: %lu REJECT: %lu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+    fprintf(stderr,"Monte Carlo moves - ACCEPT: %llu REJECT: %llu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
     fprintf(stderr," For us, there is only the trying. The rest is not our business. ~T.S.Eliot\n\n");
 
     return 0;
@@ -158,7 +159,7 @@ static double site_energy(int x, int y, int z, int species)
     int species2;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
-#pragma omp parallel for reduction(+:dE)
+#pragma omp parallel for reduction(+:dE) 
 // OPENMP PARALLISATION
     for (dx=-DipoleCutOff;dx<=DipoleCutOff;dx++)
         for (dy=-DipoleCutOff;dy<=DipoleCutOff;dy++)
