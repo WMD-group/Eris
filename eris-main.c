@@ -20,8 +20,10 @@
 
 static double site_energy(int x, int y, int z, int species);
 static void MC_move();
-
 static int rand_int(int SPAN);
+
+static void equlibriation_statistics(float dE);
+double sum_dE=0.0;
 
 #include "eris-config.c" //Global variables & config file reader function  
 #include "eris-lattice.c" //Lattice initialisation / zeroing / sphere picker fn; dot product
@@ -265,8 +267,21 @@ static void MC_move()
         lattice[x_b][y_b][z_b]=species_a; 
 
         ACCEPT++;
+
+        equlibriation_statistics(dE);
     }
     else
         REJECT++;
+}
+ 
+static void equlibriation_statistics(float dE)
+{
+     sum_dE+=dE;
+
+     if (ACCEPT%1000==0) // every %XXX accepted moves...
+     {
+         printf("Change in energy over 1E3 moves: %f\n",sum_dE);
+         sum_dE=0.0;
+     }
 }
 
