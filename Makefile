@@ -10,6 +10,9 @@ eris-mac-openmp: eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c
 profile: eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c 
 	gcc -lm -lconfig -o eris eris-main.c -pg
 
+parallel: eris 
+	seq 0 50 1000 | parallel  ./eris {}
+
 all: eris
 
 clean:
