@@ -122,7 +122,6 @@ void load_config()
     int E_ints;
     double electrostatic;
     double tmp;
-    int T;
 
     //Load and parse config file
     cf = &cfg;
