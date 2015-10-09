@@ -69,8 +69,9 @@ int main(int argc, char *argv[])
     //    for (T=0;T<1500;T+=100) //I know, I know... shouldn't hard code this.
     {
         beta=1/((float)T/300.0);
+        printf("T: %d beta: %f\n",T,beta);
 
-        for (i=0;i<TempSteps;i++)
+//        for (i=0;i<TempSteps;i++)
         {
             // Alright, this is the plan
             // First we take our variable
@@ -82,8 +83,8 @@ int main(int argc, char *argv[])
             r=(r&0xCC)>>2 | (r&0x33)<<2;
             r=(r&0xAA)>>1 | (r&0x55)<<1;
 */
-            T=i*50;
-            beta=1/((float)T/300.0);
+//            T=i*50;
+//            beta=1/((float)T/300.0);
 
             // Do some MC moves!
 
@@ -273,7 +274,10 @@ static void MC_move()
     else
         REJECT++;
 }
- 
+
+#define BINS 100
+int endo_bins[BINS], exo_bins[BINS];
+
 static void equlibriation_statistics(float dE)
 {
      sum_dE+=dE;
@@ -282,6 +286,24 @@ static void equlibriation_statistics(float dE)
      {
          printf("Change in energy over 1E3 moves: %f\n",sum_dE);
          sum_dE=0.0;
+     }
+
+
+     if (dE>0.0)
+     {
+
+     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),logf(1.0+fabsf(dE)));
+//        endo_bins[  ((int) (10.0 + logf(fabsf(dE*beta) * 10.0)) ) ] ++;
+     }
+
+     if (ACCEPT%10000==0)
+     {
+
+         for (int i=0; i<BINS; i++)
+         {
+             printf("%d ",endo_bins[i]);
+             endo_bins[i]=0;
+         }
      }
 }
 
