@@ -282,27 +282,30 @@ static void equlibriation_statistics(float dE)
 {
      sum_dE+=dE;
 
-     if (ACCEPT%1000==0) // every %XXX accepted moves...
+     if (ACCEPT%10000==0) // every %XXX accepted moves...
      {
-         printf("Change in energy over 1E3 moves: %f\n",sum_dE);
+         printf("Change in energy over 1E4 moves: %f\n",sum_dE);
          sum_dE=0.0;
      }
 
 
      if (dE>0.0)
      {
-
-     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),logf(1.0+fabsf(dE)));
-//        endo_bins[  ((int) (10.0 + logf(fabsf(dE*beta) * 10.0)) ) ] ++;
+//     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),pow(fabsf(dE),0.5));
+        endo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++; 
      }
+     else
+         exo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++;
 
-     if (ACCEPT%10000==0)
+     if (ACCEPT%100000==0)
      {
-
+        printf("Histogram of exo/endo over 1E5 moves: \n");
          for (int i=0; i<BINS; i++)
          {
-             printf("%d ",endo_bins[i]);
+             printf("%d",endo_bins[i]);
+             printf("/%d ",exo_bins[i]);
              endo_bins[i]=0;
+             exo_bins[i]=0;
          }
      }
 }
