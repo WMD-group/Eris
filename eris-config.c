@@ -7,11 +7,11 @@
  * File begun 16th January 2014
  */
 
-#define X 20 // Malloc is for losers.
-#define Y 20 
-#define Z 20 
+#define X 10 // Malloc is for losers.
+#define Y 10 
+#define Z 10 
 
-#define POTENTIAL_CUTOFF 7 // cutoff for calculation of electrostatic potential
+#define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
 
 #define SPECIES 4

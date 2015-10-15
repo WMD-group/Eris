@@ -242,8 +242,8 @@ static void MC_move()
     // Immobilise Tin!
     // Nb: Not very computationally efficient, better would be to never select
     // Tin in the first place...
-    if (species_a==4 || species_b==4) // if either move selects Tin...
-        return;
+//    if (species_a==4 || species_b==4) // if either move selects Tin...
+//        return;
 
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
@@ -269,7 +269,8 @@ static void MC_move()
 
         ACCEPT++;
 
-        equlibriation_statistics(dE);
+//        equlibriation_statistics(dE); # Pausing dev on this while making new
+//        array structures
     }
     else
         REJECT++;
