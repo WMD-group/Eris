@@ -83,7 +83,10 @@ void initialise_lattice_CZTS()
                 // 4: Tin   (IIII)
                 if (species==3) species=1; //Twice as much copper
 
-                lattice[x][y][z]=species; 
+                if ((x+y+z)%2==0)
+                    lattice[x][y][z]=species; 
+                else
+                    lattice[x][y][z]=0; // gaps for the FCC sublattice
             }
  
 }

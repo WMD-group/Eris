@@ -245,6 +245,9 @@ static void MC_move()
 //    if (species_a==4 || species_b==4) // if either move selects Tin...
 //        return;
 
+    if (species_a==0 || species_b==0) // if interstial / empty site...
+        return; //don't do a move. Highly computational inefficient, FIXME
+
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.

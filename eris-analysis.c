@@ -350,7 +350,11 @@ void outputlattice_dumb_terminal()
 
     fprintf(stderr,"%*s%*s\n",X+3, "SPECIES", (2*X)+4,"POTENTIAL"); //padded labels
 
-    
+
+for (z=0;z<4;z++)
+{
+    fprintf(stderr,"Z=%d\n",z);
+
      for (y=0;y<Y;y++)
         for (x=0;x<X;x++)
         {
@@ -364,7 +368,7 @@ void outputlattice_dumb_terminal()
     {
         for (x=0;x<X;x++)
         {
-            a=lattice[x][y][0];
+            a=lattice[x][y][z];
 
             fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
 //            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
@@ -405,7 +409,7 @@ void outputlattice_dumb_terminal()
             //if (potential<0.0) // if negative
             //    fprintf(stderr,";7"); // bold
 
-            a=lattice[x][y][0];
+            a=lattice[x][y][z];
 
             char arrow=species[(int)a];  // selectss arrow
 
@@ -419,7 +423,7 @@ void outputlattice_dumb_terminal()
 
     variance=variance/(X*Y); 
     fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
-
+}
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
