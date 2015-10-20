@@ -103,26 +103,26 @@ int main(int argc, char *argv[])
 	        outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
-            tic=clock();
             for (j=0;j<MCMegaSteps;j++)
             {
+                tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
                 for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
                     MC_move();
+                toc=clock();
 
+// Analysis and output routines
                 outputlattice_dumb_terminal();
-                lattice_potential_XYZ(electrostaticpotential_filename);
+//                radial_distribution_function();
+                fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+                fprintf(stderr,"MC Moves: %f MHz\n",
+                    1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
+                fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+                REJECT=0; ACCEPT=0;
+
+                fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             }
-            toc=clock();
  
-            outputlattice_dumb_terminal(); //Party like it's 1980
-            radial_distribution_function();
-            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
-
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
-            fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
-            fprintf(stderr,"MC Moves: %f MHz\n",
-                  1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
-
 		    lattice_potential_XYZ(electrostaticpotential_filename);
 
             char name[100];
@@ -133,8 +133,6 @@ int main(int argc, char *argv[])
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing
             //        if (i==300) {Efield.z=0.0; Efield.x=1.0;}
     
-            fprintf(stderr,"Monte Carlo moves - ACCEPT: %llu REJECT: %llu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
-            REJECT=0; ACCEPT=0;
        }
 
     } 
@@ -200,11 +198,14 @@ static void MC_move()
 
     int species_a, species_b;
     
-    // Choose random dipole / lattice location
-
-    x_a=rand_int(X);
-    y_a=rand_int(Y);
-    z_a=rand_int(Z);
+    // Choose random _occupied_ lattice location
+    do 
+    {
+        x_a=rand_int(X);
+        y_a=rand_int(Y);
+        z_a=rand_int(Z);
+    }
+    while (lattice[x_a][y_a][z_a]==0); // keep selecting new random numbers until find occupied site...
 
     // Choice direction + size of moves...
 // Nearest neighbour over
@@ -225,13 +226,13 @@ static void MC_move()
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
     }
-    while( (dx+dy+dz)%2==1 && (dx+dy+dz)!=0 ); //check to see whether site at this offset in gappy FCC lattice.
+    while( (dx+dy+dz)%2==1 || dx==dy==dz==0); //check to see whether site at this offset in gappy FCC lattice.
     // and we're not trying to swap with ourselves...
 
 //    fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz); 
         // for debug - check weighting of moves
 
-    if (dx==dy==dz==0) return; //skip consideration if null move
+//    if (dx==dy==dz==0) return; //skip consideration if null move
 
     // 2nd site to look at...
     x_b=(x_a+dx+X)%X;
@@ -251,7 +252,7 @@ static void MC_move()
 //        return;
 
     if (species_a==0 || species_b==0) // if interstial / empty site...
-        return; //don't do a move. Highly computational inefficient, FIXME
+        return; // don't do a move. Highly computational inefficient, FIXME
 
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
