@@ -151,13 +151,13 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
     return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
 }
 
-static double site_energy(int x, int y, int z, int species)
+static double site_energy(int x, int y, int z, int species_a)
 {
     int dx,dy,dz=0;
     float d;
     double dE=0.0;
 
-    int species2;
+    int species_b;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
 #pragma omp parallel for reduction(+:dE) 
@@ -174,10 +174,11 @@ static double site_energy(int x, int y, int z, int species)
                 d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
                 if (d>(float)DipoleCutOff) continue; // Cutoff in d
 
-                species2= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
+                species_b= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
 
                 // E_int runs from 1..4
-                dE+=E_int[species-1][species2-1]/d;
+                if (species_a>0 && species_b>0) // if gaps in lattice, no interaction energy contribution
+                    dE+=E_int[species_a-1][species_b-1]/d;
             }
 
     // Interaction of dipole with (unshielded) E-field
@@ -253,6 +254,10 @@ static void MC_move()
 
     if (species_a==0 || species_b==0) // if interstial / empty site...
         return; // don't do a move. Highly computational inefficient, FIXME
+
+    if (species_a==species_b) // move achieves nothing... don't count both
+       // calculating NULL moves, or counting them towards ACCEPT/REJECT criter
+            return;
 
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
