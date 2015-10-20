@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                 fprintf(stderr,"MC Moves: %f MHz\n",
                     1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
-                fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+                fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
 
                 fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
@@ -226,7 +226,7 @@ static void MC_move()
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
     }
-    while( (dx+dy+dz)%2==1 || dx==dy==dz==0); //check to see whether site at this offset in gappy FCC lattice.
+    while( (dx+dy+dz)%2!=0 || dx==dy==dz==0); //check to see whether site at this offset in gappy FCC lattice.
     // and we're not trying to swap with ourselves...
 
 //    fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz); 
