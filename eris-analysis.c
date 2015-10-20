@@ -224,13 +224,14 @@ void radial_distribution_function()
                         }
 
     // Weight counts into a RDF
-    printf("# r^2 r RDF[r^2] Count[r^2] T\n");
+    printf("# r^2 r RDF \t RDF[notnormalised] SitesInspected[r^2] T\n");
     for (i=0;i<CUTOFF*CUTOFF;i++)
     {
         if (orientational_count[i]>0)
         {
-            RDF[i]/=(float)orientational_count[i];
-            printf("%d %f %f %d %d\n",i,sqrt(i),RDF[i],orientational_count[i],T);
+            printf("%d %f %f \t %d \t %d \t %d\n",i,sqrt(i),
+                    RDF[i]/orientational_count[i],
+                    (int)RDF[i],orientational_count[i],T);
         }
     }
     printf("\n"); //starts as new dataset in GNUPLOT --> discontinuous lines
