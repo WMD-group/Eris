@@ -209,23 +209,24 @@ static void MC_move()
     while (lattice[x_a][y_a][z_a]==0); // keep selecting new random numbers until find occupied site...
 
     // Choice direction + size of moves...
+    int RADIAL_CUTOFF=3;
+    do
+    {
+// Local cube; Anyhere <> limit
+//        dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+//        dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+//        dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+
 // Nearest neighbour over
 //    dx=(rand_int(2)*2)-1; // on interval [-1,1]
 //    dy=(rand_int(2)*2)-1;
 //    dz=(rand_int(2)*2)-1;
 
 // Global move; anywhere <> anywhere in lattice
-//    dx=rand_int(X);
-//    dy=rand_int(Y);
-//    dz=rand_int(Z);
-
-// Local cube; Anyhere <> limit
-    int RADIAL_CUTOFF=3;
-    do
-    {
-        dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-        dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-        dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+    dx=rand_int(X);
+    dy=rand_int(Y);
+    dz=rand_int(Z);
+  
     }
     while( (dx+dy+dz)%2!=0 || dx==dy==dz==0); //check to see whether site at this offset in gappy FCC lattice.
     // and we're not trying to swap with ourselves...
