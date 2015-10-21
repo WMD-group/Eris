@@ -52,7 +52,7 @@ double CageStrain=1.0; // as above
 
 double dipole_fraction=0.9; //fraction of sites to be occupied by dipoles
 
-int DipoleCutOff=1;
+int ElectrostaticCutOff=1;
 
 // These variables from the old main
 int MCMegaSteps=400;
@@ -159,7 +159,7 @@ void load_config()
     for (i=0;i<4;i++)
         fprintf(stderr,"%f %f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2],E_int[i][3]);
 
-    config_lookup_int(cf,"DipoleCutOff",&DipoleCutOff);
+    config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
 
     config_lookup_int(cf,"TempSteps",&TempSteps);
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);

@@ -18,7 +18,7 @@
 
 // Prototypes...
 
-static double site_energy(int x, int y, int z, int species);
+static double site_energy(int x, int y, int z, int species, int CutOff);
 static void MC_move();
 static int rand_int(int SPAN);
 
@@ -153,7 +153,7 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
     return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
 }
 
-static double site_energy(int x, int y, int z, int species_a)
+static double site_energy(int x, int y, int z, int species_a, int CutOff)
 {
     int dx,dy,dz=0;
     float d;
@@ -164,17 +164,19 @@ static double site_energy(int x, int y, int z, int species_a)
     // Sum over near neighbours for formalcharge-formalcharge interaction
 #pragma omp parallel for reduction(+:dE) 
 // OPENMP PARALLISATION
-    for (dx=-DipoleCutOff;dx<=DipoleCutOff;dx++)
-        for (dy=-DipoleCutOff;dy<=DipoleCutOff;dy++)
+    for (dx=-CutOff;dx<=CutOff;dx++)
+        for (dy=-CutOff;dy<=CutOff;dy++)
 #if(Z>1) //i.e. 3D in Z
-            for (dz=-DipoleCutOff;dz<=DipoleCutOff;dz++) //NB: conditional zDipoleCutOff to allow for 2D version
+            for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
 #endif
             {
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
 
                 d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
-                if (d>(float)DipoleCutOff) continue; // Cutoff in d
+//                if (d>(float)DipoleCutOff) continue; // Cutoff in d
+//                -->
+//                EXPANSIONS IN SPHERES; probably not convergent
 
                 species_b= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
 
@@ -265,11 +267,11 @@ static void MC_move()
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.
-    dE+=site_energy(x_a,y_a,z_a, species_a);
-    dE-=site_energy(x_a,y_a,z_a, species_b);
+    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);
+    dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
 
-    dE+=site_energy(x_b,y_b,z_b, species_b);
-    dE-=site_energy(x_b,y_b,z_b, species_a);
+    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
+    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
 
     // Report on planned move + dE -- for debugging only (makes a ridiculous
     // number of prints...)
