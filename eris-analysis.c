@@ -428,3 +428,8 @@ for (z=0;z<4;z++)
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
+
+void lattice_energy ()
+{
+    
+}
