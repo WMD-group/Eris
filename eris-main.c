@@ -61,7 +61,10 @@ int main(int argc, char *argv[])
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     initialise_lattice_CZTS();
- 
+
+//    lattice_energy(); // check energy sums
+//    exit(-1);
+
     //old code - now read in option, so I can parallise externally
     //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
         for (T=10000;T>0;T=T*0.99) //I know, I know... shouldn't hard code this.

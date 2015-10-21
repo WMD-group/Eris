@@ -13,6 +13,10 @@ static void MC_move();
 static void equlibriation_statistics(float dE);
 double sum_dE=0.0;
 
+#define EVJEN 0 // could convert these into ints later if wanting to make them dynamic
+#define SPHERICAL 0 
+// Nb: in C, 0=FALSE, 1=TRUE
+
 static double site_energy(int x, int y, int z, int species_a, int CutOff)
 {
     int dx,dy,dz=0;
@@ -34,15 +38,33 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
                     continue; //no infinities / self interactions please!
 
                 d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
-//                if (d>(float)DipoleCutOff) continue; // Cutoff in d
+
+                if (SPHERICAL)
+                    if (d>(float)CutOff) continue; // Cutoff in d
 //                -->
 //                EXPANSIONS IN SPHERES; probably not convergent
 
                 species_b= lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
 
                 // E_int runs from 1..4
-                if (species_a>0 && species_b>0) // if gaps in lattice, no interaction energy contribution
-                    dE+=E_int[species_a-1][species_b-1]/d;
+                if (species_a==0 || species_b==0) // if gaps in lattice, no interaction energy contribution
+                    continue;
+
+                // "... the potentials of of the ions forming the surface of
+                // the cube, however, are given the weights 1/2, 1/4 or 1/8
+                // according as they are situated on a face, an edge, or
+                // a corner of the cube.
+                // Evjen - Physical Review Vol 39, 1932
+                double evjen_E=E_int[species_a-1][species_b-1]/d;
+                double evjen_weight=1.0;
+                if (EVJEN)
+                {
+                    if (abs(dx)==CutOff) evjen_weight*=0.5; 
+                    if (abs(dy)==CutOff) evjen_weight*=0.5;
+                    if (abs(dz)==CutOff) evjen_weight*=0.5;// corner
+//                  fprintf(stderr,"X:%d Y:%d Z:%d CutOff:%d evjenweight: %f\n",dx,dy,dz,CutOff,evjen_weight);
+                }
+                dE+=evjen_E * evjen_weight;
             }
 
     // Interaction of dipole with (unshielded) E-field

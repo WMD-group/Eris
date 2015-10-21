@@ -1,4 +1,4 @@
-eris: eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c
+eris: eris-kernel.c eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c
 	gcc -O4 -std=gnu11 -lm -lconfig -o eris eris-main.c
 
 eris-openmp: eris-analysis.c   eris-config.c  eris-lattice.c  eris-main.c
