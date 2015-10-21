@@ -79,7 +79,7 @@ void initialise_lattice_CZTS()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-		// 3: Copper (equiv to 1)
+        		// 3: Copper (equiv to 1)
                 // 4: Tin   (IIII)
                 if (species==3) species=1; //Twice as much copper
 

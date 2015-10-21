@@ -64,9 +64,11 @@ int main(int argc, char *argv[])
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
+    initialise_lattice_CZTS();
+ 
     //old code - now read in option, so I can parallise externally
     //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
-    //    for (T=0;T<1500;T+=100) //I know, I know... shouldn't hard code this.
+        for (T=10000;T>0;T=T*0.99) //I know, I know... shouldn't hard code this.
     {
         beta=1/((float)T/300.0);
         printf("T: %d beta: %f\n",T,beta);
@@ -93,7 +95,7 @@ int main(int argc, char *argv[])
 
 //            initialise_lattice_random();
 //            initialise_lattice_stripe();
-            initialise_lattice_CZTS();
+//            initialise_lattice_CZTS();
             // test RDF routine...
             radial_distribution_function();
             fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
