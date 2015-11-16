@@ -211,19 +211,17 @@ void radial_distribution_function()
 
                             if (lattice[x][y][z]!=2) continue; // if not Copper
 
-                            // Correlation function - present just simple dot
-                            // product (not dipole like)
-//                            FE_correlation=dot(& lattice[x][y][z],& lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]); //complicated modulus arithmatic deals with PBCs
-                            pair_correlation= lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
-                            // if speciesA=speciesB; add one to the pair
+                            //complicated modulus arithmatic deals with PBCs
+                            pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
+                            // if species at site A = species at site B; add one to the pair correlation
                             // correlation...
 
-                            // OK; save into histogram
+                            // Collect sum into RDF histogram 
                             RDF[distance_squared]+=pair_correlation;
-                            site_count[distance_squared]++; // count for number of species in this segment, for normalisation
+                            site_count[distance_squared]++; // count of number of lattice sites at this separation, for normalisation purposes
                         }
 
-    // Weight counts into a RDF
+    // Weight counts into a RDF & output to STDOUT
     printf("# r^2 r RDF(lattice) RDF(r^2) \t RDF[notnormalised] SitesInspected[r^2] T\n");
     for (i=0;i<CUTOFF*CUTOFF;i++)
     {
