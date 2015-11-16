@@ -195,9 +195,9 @@ void radial_distribution_function()
 
     // define data structures to keep histogram counts in
     float RDF[(CUTOFF*CUTOFF)+1];
-    int orientational_count[(CUTOFF*CUTOFF)+1];
-    for (i=0;i<CUTOFF*CUTOFF;i++) // Zero histogram arrays
-        { RDF[i]=0.0; orientational_count[i]=0; }
+    int site_count[(CUTOFF*CUTOFF)+1];
+    for (i=0;i<=CUTOFF*CUTOFF;i++) // Zero histogram arrays
+        { RDF[i]=0.0; site_count[i]=0; }
 
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
@@ -220,18 +220,19 @@ void radial_distribution_function()
 
                             // OK; save into histogram
                             RDF[distance_squared]+=pair_correlation;
-                            orientational_count[distance_squared]++; // count for number of species in this segment, for normalisation
+                            site_count[distance_squared]++; // count for number of species in this segment, for normalisation
                         }
 
     // Weight counts into a RDF
-    printf("# r^2 r RDF \t RDF[notnormalised] SitesInspected[r^2] T\n");
+    printf("# r^2 r RDF(lattice) RDF(r^2) \t RDF[notnormalised] SitesInspected[r^2] T\n");
     for (i=0;i<CUTOFF*CUTOFF;i++)
     {
-        if (orientational_count[i]>0)
+        if (site_count[i]>0) //i.e. any data here...
         {
-            printf("%d %f %f \t %d \t %d \t %d\n",i,sqrt(i),
-                    RDF[i]/orientational_count[i],
-                    (int)RDF[i],orientational_count[i],T);
+            printf("%d %f %f %f \t %d \t %d \t %d\n",i,sqrt(i),
+                    RDF[i]/site_count[i],
+                    RDF[i]/(float)i,
+                    (int)RDF[i],site_count[i],T);
         }
     }
     printf("\n"); //starts as new dataset in GNUPLOT --> discontinuous lines

@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     initialise_lattice_CZTS();
+    radial_distribution_function();
+    exit(-1);
 
 //    lattice_energy(); // check energy sums
 //    exit(-1);
