@@ -432,7 +432,7 @@ void lattice_energy ()
 {
     int x,y,z;
 
-    int dx=1,dy=1,dz=1; //which partner
+    int dx=0,dy=0,dz=1; //which partner
 
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
@@ -447,12 +447,12 @@ void lattice_energy ()
                     
                     double dE=0.0; 
                     int species_a=lattice[x][y][z]; 
-                    int species_b=lattice[x+dx][y+dy][z+dz];
+                    int species_b=lattice[(x+dx+X)%X][(y+dy+X)%X][(z+dz+Z)%Z];
                     
                     dE+=site_energy(x,y,z, species_a, cutoff);
                     dE-=site_energy(x,y,z, species_b, cutoff);
-                    dE+=site_energy(x+dx,y+dy,z+dz, species_b, cutoff);
-                    dE-=site_energy(x+dx,y+dy,z+dz, species_a, cutoff);
+                    dE+=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_b, cutoff);
+                    dE-=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_a, cutoff);
                     
                     printf(" %f",dE); 
                 }
