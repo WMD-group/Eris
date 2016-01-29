@@ -339,7 +339,7 @@ float DMEAN=0.0;
 
 void outputlattice_dumb_terminal()
 {
-    const char * species=".CZCT"; // Copper (I), Zinc (II), Tin (III)
+    const char * species=".CZTc"; // Copper (I), Zinc (II), Tin (III)
     int x,y;
     float a;
     int z=0;
@@ -430,20 +430,24 @@ for (z=0;z<4;z++)
 
 void lattice_energy ()
 {
-    int x,y,z;
+    int dx,dy,dz;
 
-    int dx=0,dy=0,dz=1; //which partner
+    int x=5,y=5,z=4; //which site to move around
 
-    for (x=0;x<X;x++)
-        for (y=0;y<Y;y++)
-            for (z=0;z<Z;z++)
+    int DELTA=3;;
+    for (dx=0;dx<DELTA;dx++)
+        for (dy=0;dy<DELTA;dy++)
+            for (dz=0;dz<DELTA;dz++)
             {
-                printf("X:%d Y:%d Z:%d ",x,y,z);
+                if (lattice[(x+dx+X)%X][(y+dy+X)%X][(z+dz+Z)%Z]==0)
+                    continue;
+
+                printf("X:%d Y:%d Z:%d dx: %d dy: %d dz: %d",x,y,z,dx,dy,dz);
                 //int cutoff=3;
-                for (int cutoff=1;cutoff<=7;cutoff++)
+                for (int cutoff=1;cutoff<=12;cutoff++)
                 {
                     double site_E=site_energy(x,y,z,lattice[x][y][z],cutoff);
-                    printf("\n\t %d: %f",cutoff,site_E); 
+                    printf("\n\t r: %d E:%f",cutoff,site_E); 
                     
                     double dE=0.0; 
                     int species_a=lattice[x][y][z]; 
@@ -454,7 +458,7 @@ void lattice_energy ()
                     dE+=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_b, cutoff);
                     dE-=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_a, cutoff);
                     
-                    printf(" %f",dE); 
+                    printf("\tdE:%f",dE); 
                 }
                 printf("\n");
             }

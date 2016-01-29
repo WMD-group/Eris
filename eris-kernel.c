@@ -13,7 +13,7 @@ static void MC_move();
 static void equlibriation_statistics(float dE);
 double sum_dE=0.0;
 
-#define EVJEN 0 // could convert these into ints later if wanting to make them dynamic
+#define EVJEN 1 // could convert these into ints later if wanting to make them dynamic
 #define SPHERICAL 0 
 // Nb: in C, 0=FALSE, 1=TRUE
 

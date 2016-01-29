@@ -26,11 +26,14 @@ void initialise_lattice_random()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-		// 3: Also Copper... (II)
-                // 4: Tin   (IIII)
-                if (species==3) species=1; //Twice as much copper
-
-                lattice[x][y][z]=species; 
+                // 3: Tin   (IIII)
+                // 4: Copper (Dummy --> change to 4)
+                if (species==4) species=1; //Twice as much copper
+            
+                if ((x+y+z)%2==0)
+                    lattice[x][y][z]=species; 
+                else
+                    lattice[x][y][z]=0; // gaps for the FCC sublattice
             }
     //Print lattice
     /*
@@ -55,13 +58,12 @@ void initialise_lattice_stripe()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-		// 3: Copper (Equiv to 1)
                 // 3: Tin   (IIII)
-                if (species==3) species=1; //Twice as much copper
+                // 4: Copper (Dummy --> change to 4)
+               if (species==3) species=1; //Twice as much copper
 
                 lattice[x][y][z]=species; 
             }
- 
 }
 
 void initialise_lattice_CZTS()
@@ -79,9 +81,9 @@ void initialise_lattice_CZTS()
                 // 0: Nothing
                 // 1: Copper (I)
                 // 2: Zinc  (II)
-        		// 3: Copper (equiv to 1)
-                // 4: Tin   (IIII)
-                if (species==3) species=1; //Twice as much copper
+                // 3: Tin   (IIII)
+                // 4: Copper (Dummy --> change to 4)
+                if (species==4) species=1; //Twice as much copper
 
                 if ((x+y+z)%2==0)
                     lattice[x][y][z]=species; 
