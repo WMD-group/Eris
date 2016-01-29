@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
     //old code - now read in option, so I can parallise externally
     //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
-        for (T=10000;T>0;T=T*0.9) //I know, I know... shouldn't hard code this.
+        for (T=100;T>0;T=T*0.9) //I know, I know... shouldn't hard code this.
     {
         beta=1/((float)T/300.0);
         printf("T: %d beta: %f\n",T,beta);

@@ -444,7 +444,7 @@ void lattice_energy ()
 
                 printf("X:%d Y:%d Z:%d dx: %d dy: %d dz: %d",x,y,z,dx,dy,dz);
                 //int cutoff=3;
-                for (int cutoff=1;cutoff<=12;cutoff++)
+                for (int cutoff=1;cutoff<=X/2;cutoff++)
                 {
                     double site_E=site_energy(x,y,z,lattice[x][y][z],cutoff);
                     printf("\n\t r: %d E:%f",cutoff,site_E); 
@@ -453,10 +453,15 @@ void lattice_energy ()
                     int species_a=lattice[x][y][z]; 
                     int species_b=lattice[(x+dx+X)%X][(y+dy+X)%X][(z+dz+Z)%Z];
                     
-                    dE+=site_energy(x,y,z, species_a, cutoff);
-                    dE-=site_energy(x,y,z, species_b, cutoff);
-                    dE+=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_b, cutoff);
-                    dE-=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_a, cutoff);
+//                    dE+=site_energy(x,y,z, species_a, cutoff);
+//                    dE-=site_energy(x,y,z, species_b, cutoff);
+//                    dE+=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_b, cutoff);
+//                    dE-=site_energy((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_a, cutoff);
+ 
+                    dE+=site_energy_stencil(x,y,z, species_a, cutoff, x,y,z);
+                    dE-=site_energy_stencil(x,y,z, species_b, cutoff, x,y,z);
+                    dE+=site_energy_stencil((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_b, cutoff, x, y, z);
+                    dE-=site_energy_stencil((x+dx+X)%X,(y+dy+Y)%Y,(z+dz+Z)%Z, species_a, cutoff, x, y, z);
                     
                     printf("\tdE:%f",dE); 
                 }

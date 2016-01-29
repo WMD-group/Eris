@@ -74,6 +74,68 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
     return(dE); 
 }
 
+static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff, int sx, int sy, int sz)
+{
+    int dx,dy,dz=0;
+    float d;
+    double dE=0.0;
+
+    int species_b;
+
+    // Sum over near neighbours for formalcharge-formalcharge interaction
+#pragma omp parallel for reduction(+:dE) 
+// OPENMP PARALLISATION
+    for (dx=-CutOff;dx<=CutOff;dx++)
+        for (dy=-CutOff;dy<=CutOff;dy++)
+#if(Z>1) //i.e. 3D in Z
+            for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
+#endif
+            {
+//                if (dx==0 && dy==0 && dz==0)
+//                    continue; //no infinities / self interactions please!
+
+//                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
+
+                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
+                
+                if (d<0.5) continue;
+
+//                if (SPHERICAL)
+//                    if (d>(float)CutOff) continue; // Cutoff in d
+//                -->
+//                EXPANSIONS IN SPHERES; probably not convergent
+
+                species_b= lattice[(X+sx+dx)%X][(Y+sy+dy)%Y][(Z+sz+dz)%Z];
+
+                // E_int runs from 1..4
+                if (species_a==0 || species_b==0) // if gaps in lattice, no interaction energy contribution
+                    continue;
+
+                // "... the potentials of of the ions forming the surface of
+                // the cube, however, are given the weights 1/2, 1/4 or 1/8
+                // according as they are situated on a face, an edge, or
+                // a corner of the cube.
+                // Evjen - Physical Review Vol 39, 1932
+                double evjen_E=E_int[species_a-1][species_b-1]/d;
+                double evjen_weight=1.0;
+                if (EVJEN)
+                {
+                    if (abs(dx)==CutOff) evjen_weight*=0.5; 
+                    if (abs(dy)==CutOff) evjen_weight*=0.5;
+                    if (abs(dz)==CutOff) evjen_weight*=0.5;// corner
+//                  fprintf(stderr,"X:%d Y:%d Z:%d CutOff:%d evjenweight: %f\n",dx,dy,dz,CutOff,evjen_weight);
+                }
+                dE+=evjen_E * evjen_weight;
+            }
+
+    // Interaction of dipole with (unshielded) E-field
+ /*   dE+= + dot(newdipole, & Efield)
+        - dot(olddipole, & Efield);*/
+
+    return(dE); 
+}
+
+
 static void MC_move()
 {
     int x_a, y_a, z_a;
@@ -149,11 +211,18 @@ static void MC_move()
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.
-    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);
-    dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
+//    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);
+//    dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
 
-    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
-    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
+//    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
+//    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
+
+    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+
+    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+
 
     // Report on planned move + dE -- for debugging only (makes a ridiculous
     // number of prints...)
