@@ -7,6 +7,8 @@
  * File begun 16th January 2014
  */
 
+#include <stdbool.h>
+
 #define X 20 // Malloc is for losers.
 #define Y 20 
 #define Z 20 
@@ -60,6 +62,14 @@ int TempSteps=256;
 double MCMegaMultiplier=1.0;
 unsigned long long int MCMinorSteps=0;
 char const *LOGFILE = NULL; //for output filenames
+
+int DEBUG=false;
+int DisplayDumbTerminal=true;
+int CalculateRadialOrderParameter=false;
+int CalculatePotential=false;
+int OrderedInitialLattice=false;
+
+int SaveXYZ=false;
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
@@ -112,7 +122,7 @@ static void random_sphere_point(struct dipole *p)
 }
 
 
-
+// Load eris.cfg; overwriting global variable defaults above.
 void load_config()
 {
     int i,j,k, x,y; //for loop iterators
@@ -166,6 +176,14 @@ void load_config()
     config_lookup_float(cf,"MCMegaMultiplier",&MCMegaMultiplier);
 
     MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMegaMultiplier);
+
+// Flags for output routines to run
+    config_lookup_bool(cf,"DEBUG",&DEBUG);
+    config_lookup_bool(cf,"DisplayDumbTerminal",&DisplayDumbTerminal);
+    config_lookup_bool(cf,"CalculateRadialOrderParameter",&CalculateRadialOrderParameter);
+    config_lookup_bool(cf,"CalculatePotential",&CalculatePotential);
+    config_lookup_bool(cf,"OrderedInitialLattice",&OrderedInitialLattice);
+    config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
 
     fprintf(stderr,"Config loaded. \n");
 }

@@ -60,16 +60,19 @@ int main(int argc, char *argv[])
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
-//    initialise_lattice_CZTS();
-    initialise_lattice_random();
-    radial_distribution_function();
+    if (OrderedInitialLattice)
+        initialise_lattice_CZTS();
+    else
+        initialise_lattice_random();
+
+    if (CalculateRadialOrderParameter) radial_distribution_function();
 
     lattice_energy(); // check energy sums
     //exit(-1);
 
     //old code - now read in option, so I can parallise externally
     //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
-        for (T=100;T>0;T=T*0.9) //I know, I know... shouldn't hard code this.
+        for (T=5000;T>0;T=T*0.9) //I know, I know... shouldn't hard code this.
     {
         beta=1/((float)T/300.0);
         printf("T: %d beta: %f\n",T,beta);
@@ -95,15 +98,16 @@ int main(int argc, char *argv[])
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
 
 //            initialise_lattice_random();
-//            initialise_lattice_stripe();
 //            initialise_lattice_CZTS();
             // test RDF routine...
-            radial_distribution_function();
+            if (CalculateRadialOrderParameter) radial_distribution_function();
             fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
 
             fprintf(stderr,"Lattice initialised.\n");
-            outputlattice_xyz("czts_lattice_initial.xyz");
-	        outputlattice_dumb_terminal();
+            if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
+	        
+            
+            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
@@ -114,8 +118,9 @@ int main(int argc, char *argv[])
                 toc=clock();
 
 // Analysis and output routines
-                outputlattice_dumb_terminal();
-//                radial_distribution_function();
+                if (DisplayDumbTerminal) outputlattice_dumb_terminal();
+                if (CalculateRadialOrderParameter) radial_distribution_function();
+
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                 fprintf(stderr,"MC Moves: %f MHz\n",
                     1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
@@ -126,11 +131,14 @@ int main(int argc, char *argv[])
             }
  
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
-		    lattice_potential_XYZ(electrostaticpotential_filename);
+		    if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
-            char name[100];
-            sprintf(name,"czts_lattice_T_%04d.xyz",T);
-            outputlattice_xyz(name);
+            if (SaveXYZ)
+            {
+                char name[100];
+                sprintf(name,"czts_lattice_T_%04d.xyz",T);
+                outputlattice_xyz(name);
+            }
             // Manipulate the run conditions depending on simulation time
             //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND
             //        if (i==200) { Efield.z=1.0;}      // relax back to nothing
