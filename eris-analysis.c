@@ -251,8 +251,8 @@ void outputlattice_xyz(char * filename)
             "Nu",
             "Cu",
             "Zn",
-            "Nu",
-            "Sn"
+            "Sn",
+            "Nu"
     };
     const float d=3.8; // Angstrom spacing of lattice to map to real space coords
 
