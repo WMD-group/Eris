@@ -58,7 +58,10 @@ int ElectrostaticCutOff=1;
 
 // These variables from the old main
 int MCMegaSteps=400;
-int TempSteps=256;
+int TMAX=500;
+int TMIN=0;
+int TSTEP=100; 
+
 double MCMegaMultiplier=1.0;
 unsigned long long int MCMinorSteps=0;
 char const *LOGFILE = NULL; //for output filenames
@@ -68,6 +71,7 @@ int DisplayDumbTerminal=true;
 int CalculateRadialOrderParameter=false;
 int CalculatePotential=false;
 int OrderedInitialLattice=false;
+int ReinitialiseLattice=false;
 
 int SaveXYZ=false;
 //END OF SIMULATION PARAMETERS
@@ -171,9 +175,14 @@ void load_config()
 
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
 
-    config_lookup_int(cf,"TempSteps",&TempSteps);
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
     config_lookup_float(cf,"MCMegaMultiplier",&MCMegaMultiplier);
+
+    config_lookup_int(cf,"TMIN",&TMIN);
+    config_lookup_int(cf,"TMAX",&TMAX);
+    config_lookup_int(cf,"TSTEP",&TSTEP);
+    if (TMIN<0 || TMAX<0 || TSTEP<1)
+        fprintf(stderr,"SOMETHING VERY ODD ABOUT THE TEMPERATURES I READ FROM THE CONFIG FILE. I HOPE YOU KNOW WHAT YOU ARE DOING!\n");
 
     MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMegaMultiplier);
 
@@ -183,6 +192,8 @@ void load_config()
     config_lookup_bool(cf,"CalculateRadialOrderParameter",&CalculateRadialOrderParameter);
     config_lookup_bool(cf,"CalculatePotential",&CalculatePotential);
     config_lookup_bool(cf,"OrderedInitialLattice",&OrderedInitialLattice);
+    config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
+    
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
 
     fprintf(stderr,"Config loaded. \n");

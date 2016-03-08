@@ -72,42 +72,36 @@ int main(int argc, char *argv[])
 
     //old code - now read in option, so I can parallise externally
     //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
-        for (T=5000;T>0;T=T*0.9) //I know, I know... shouldn't hard code this.
+    for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
         beta=1/((float)T/300.0);
         printf("T: %d beta: %f\n",T,beta);
 
-//        for (i=0;i<TempSteps;i++)
         {
-            // Alright, this is the plan
-            // First we take our variable
-            // Then we bit reverse it as binary
-            // Pretty confusing, but means it will fill in the temperature
-            // range with maximum coverage, rather than linear ramping
-          /*  unsigned char r=i;
-            r=(r&0xF0)>>4 | (r&0x0F)<<4;
-            r=(r&0xCC)>>2 | (r&0x33)<<2;
-            r=(r&0xAA)>>1 | (r&0x55)<<1;
-*/
-//            T=i*50;
-//            beta=1/((float)T/300.0);
-
             // Do some MC moves!
 
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
+            
+            if (ReinitialiseLattice) // Are we intending to reset the lattice?
+            {
+                if (OrderedInitialLattice)
+                    initialise_lattice_CZTS();
+                else
+                    initialise_lattice_random();
 
-//            initialise_lattice_random();
-//            initialise_lattice_CZTS();
-            // test RDF routine...
+                fprintf(stderr,"Lattice reinitialised at T = %d K\n",T);
+            }
+            else
+                fprintf(stderr,"Lattice carried over from previous simulation. Now at T = %d K\n",T);
+
             if (CalculateRadialOrderParameter) radial_distribution_function();
             fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
 
-            fprintf(stderr,"Lattice initialised.\n");
             if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
 	        
             
-            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
+//            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
@@ -139,11 +133,6 @@ int main(int argc, char *argv[])
                 sprintf(name,"czts_lattice_T_%04d.xyz",T);
                 outputlattice_xyz(name);
             }
-            // Manipulate the run conditions depending on simulation time
-            //        if (i==100) { DIM=3;}  // ESCAPE FROM FLATLAND
-            //        if (i==200) { Efield.z=1.0;}      // relax back to nothing
-            //        if (i==300) {Efield.z=0.0; Efield.x=1.0;}
-    
        }
 
     } 
