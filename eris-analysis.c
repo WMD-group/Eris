@@ -257,7 +257,9 @@ void outputlattice_xyz(char * filename)
     const float d=3.8; // Angstrom spacing of lattice to map to real space coords
 
     fo=fopen(filename,"w");
-    
+   
+    fprintf(fo,"%d\n\n",X*Y*Z);
+
     for (i=0;i<X;i++)
         for (j=0;j<Y;j++)
             for (k=0;k<Z;k++)
