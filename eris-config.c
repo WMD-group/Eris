@@ -30,6 +30,7 @@ struct dipole
 int lattice[X][Y][Z];
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
+double FormalCharge[SPECIES];
 
 struct mixture
 {
@@ -162,9 +163,10 @@ void load_config()
     fprintf(stderr,"Efield: x %f y %f z %f\n",Efield.x,Efield.y,Efield.z);
 
     config_lookup_float(cf,"electrostatic",&electrostatic); //Multiplier for E_ints
+    
     setting = config_lookup(cf, "E_int");
     E_ints   = config_setting_length(setting);
-    printf("I've found: %d values in the E_int list...\n",E_ints);
+    fprintf(stderr,"I've found: %d values in the E_int list...\n",E_ints);
 //   Nb: factor of 38.911 kBT at 300 K in eV; to convert eV values into internal ones...
     for (i=0;i<E_ints;i++)
         E_int[i/4][i%4]=config_setting_get_float_elem(setting,i)*electrostatic*38.911; //I know, I know - I'm sorry.
@@ -172,6 +174,17 @@ void load_config()
     fprintf(stderr,"My interactions look like:\n");
     for (i=0;i<4;i++)
         fprintf(stderr,"%f %f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2],E_int[i][3]);
+
+    int FormalCharges;
+    setting  = config_lookup(cf,"FormalCharges");
+    FormalCharges = config_setting_length(setting);
+    fprintf(stderr,"I've found: %d values in the FormalCharges list...\n",FormalCharges);
+    for (i=0;i<FormalCharges;i++)
+        FormalCharge[i]=config_setting_get_float_elem(setting,i);
+    fprintf(stderr,"Formal charges look like: ");
+    for (i=0;i<FormalCharges;i++)
+        fprintf(stderr,"%f\t",FormalCharge[i]);
+    fprintf(stderr,"\n");
 
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
 

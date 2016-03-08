@@ -59,7 +59,12 @@ static double dipole_potential(int x, int y, int z)
 // FIXME
                  //dipole                pot+=dot(& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z] ,& r)/(d*d*d);
                //for CZTS
-                pot+= (float)(lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z]-2)/d;
+                int species;
+                species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
+                double q;
+                q=FormalCharge[species];
+
+                pot+= q/(double)d;
             }
     return(pot);
 }
