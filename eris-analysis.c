@@ -29,6 +29,7 @@ void outputlattice_xyz_overprint(char * filename);
 void outputlattice_pymol_cgo(char * filename);
 void outputlattice_dumb_terminal();
 
+void outputlattice_stoichometry();
 
 //Calculate dipole potential at specific location
 static double dipole_potential(int x, int y, int z) 
@@ -476,3 +477,25 @@ void lattice_energy ()
             }
    
 }
+
+void outputlattice_stoichometry()
+{
+    int x,y,z,i,a;
+    const char * species=".CZTc"; // Copper (I), Zinc (II), Tin (III)
+   
+    // data structure for histogram of species count
+    int histogram[5];
+    for (i=0;i<5;i++)
+        histogram[i]=0;
+
+    // loop over lattice and sum histogram
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            histogram[lattice[x][y][z]]++;
+
+    // output histogram sums for user to read
+    for (i=0;i<5;i++)
+        printf("Species: %c Counts: %d\n",species[i],histogram[i]);
+}
+

@@ -64,6 +64,8 @@ int main(int argc, char *argv[])
         initialise_lattice_CZTS();
     else
         initialise_lattice_random();
+    
+    outputlattice_stoichometry(); // print histogram of stoichs for user.
 
     if (CalculateRadialOrderParameter) radial_distribution_function();
 
