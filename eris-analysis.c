@@ -497,5 +497,25 @@ void outputlattice_stoichometry()
     // output histogram sums for user to read
     for (i=0;i<5;i++)
         printf("Species: %c Counts: %d\n",species[i],histogram[i]);
+   
+    // conditional statements to check for stoichiometry and exit with error message if off-stoichiometry
+    if (histogram[0] != 2*histogram[1])
+    {
+        printf("Lattice not stoichiometric (number of gaps compared to Cu and maybe more problems!) \n");
+        exit(EXIT_FAILURE);
+    }
+ 
+    if (histogram[1] != 2*histogram[2])
+    {
+        printf("Lattice not stoichiometric (number of Cu compared to Zn and maybe compared to Sn!) \n");
+        exit(EXIT_FAILURE);   
+    }
+    if (histogram[1] != 2*histogram[3])
+    {
+        printf("Lattice not stoichiometric (number of Cu compared to Sn) \n");
+        exit(EXIT_FAILURE);    
+    }
+    //printf("%d \n",histogram[1]);
+
 }
 
