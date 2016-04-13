@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                 if (OrderedInitialLattice)
                     initialise_lattice_CZTS();
                 else
-                    initialise_lattice_random();
+                    initialise_lattice_CZTS_randomized();
 
                 fprintf(stderr,"Lattice reinitialised at T = %d K\n",T);
             }
