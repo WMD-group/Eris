@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     if (OrderedInitialLattice)
         initialise_lattice_CZTS();
     else
-        initialise_lattice_random();
+        initialise_lattice_CZTS_randomized();
     
     outputlattice_stoichometry(); // print histogram of stoichs for user.
 
