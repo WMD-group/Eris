@@ -123,7 +123,7 @@ void lattice_potential_XYZ(char * filename)
                 pot=dipole_potential(x,y,z);
                 fprintf(fo,"%d %d %d %f\n",x,y,z,pot);
                 
-                if (lattice[x][y][z]==4) // only count tin towards mean / variance
+                if (lattice[x][y][z]==3) // only count tin towards mean / variance
                 {
                     mean+=pot;
                     atoms++;
@@ -136,7 +136,7 @@ void lattice_potential_XYZ(char * filename)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                if (lattice[x][y][z]==4)
+                if (lattice[x][y][z]==3)
                 {
                     pot=dipole_potential(x,y,z);
                     variance+=(pot-mean)*(pot-mean);
