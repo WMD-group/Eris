@@ -121,7 +121,7 @@ void lattice_potential_XYZ(char * filename)
             {
                 // log potential at all sites (Cu,Zn,Sn)
                 pot=dipole_potential(x,y,z);
-                fprintf(fo,"%d %d %d %f\n",x,y,z,pot);
+                fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
                 
                 if (lattice[x][y][z]==3) // only count tin towards mean / variance
                 {
