@@ -452,7 +452,7 @@ void lattice_energy ()
 
                 printf("X:%d Y:%d Z:%d dx: %d dy: %d dz: %d",x,y,z,dx,dy,dz);
                 //int cutoff=3;
-                for (int cutoff=1;cutoff<=X/2;cutoff++)
+                for (int cutoff=1;cutoff<=10;cutoff++)
                 {
                     double site_E=site_energy(x,y,z,lattice[x][y][z],cutoff);
                     printf("\n\t r: %d E:%f",cutoff,site_E); 
