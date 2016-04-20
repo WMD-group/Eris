@@ -103,7 +103,7 @@ void initialise_lattice_CZTS_randomized()
     int x,y,z;
     int species;
 
-    initialise_lattice_stripe();
+    initialise_lattice_CZTS(); // start with correct stoichometry
 
     // Randomizing CZTS lattice by swapping species
     int swaps=X*Y*Z*1000; // Defining number of swap attempts based on tota no. of sites
