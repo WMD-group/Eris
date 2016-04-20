@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
     
     outputlattice_stoichometry(); // print histogram of stoichs for user.
 
+    if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
+
     if (CalculateRadialOrderParameter) radial_distribution_function();
 
     lattice_energy(); // check energy sums

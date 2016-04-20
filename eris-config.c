@@ -9,9 +9,9 @@
 
 #include <stdbool.h>
 
-#define X 80 // Malloc is for losers.
+#define X 20 // Malloc is for losers.
 #define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
-#define Z 20 
+#define Z 80 
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above

@@ -100,37 +100,36 @@ void initialise_lattice_CZTS()
 
 void initialise_lattice_CZTS_randomized()
 {
-    int x,y,z;
-    int species;
-
     initialise_lattice_CZTS(); // start with correct stoichometry
 
     // Randomizing CZTS lattice by swapping species
-    int swaps=X*Y*Z*1000; // Defining number of swap attempts based on tota no. of sites
+    int shuffles=10; // Defining number of swap attempts based on tota no. of sites
     int i;
-    int x_swap1, y_swap1, z_swap1, x_swap2, y_swap2, z_swap2, tmp_species;
-    for (i=0;i<swaps;i++)
-    {
-      // Choosing two random sites to swap
-      x_swap1 = rand_int(X);
-      y_swap1 = rand_int(Y);
-      z_swap1 = rand_int(Z);
+    int x_swap, y_swap, z_swap;
 
-      x_swap2 = rand_int(X);
-      y_swap2 = rand_int(Y);
-      z_swap2 = rand_int(Z);
-      // Checking that neither species is a gap (do not want to randomize gap sites)
-      if (lattice[x_swap1][y_swap1][z_swap1]==0){
-          continue;
-      }
-      if (lattice[x_swap2][y_swap2][z_swap2]==0){
-          continue;
-      }
-      // Swapping species on site1 with species on site2 and vice versa (using temporary intermediate variable)
-      tmp_species = lattice[x_swap1][y_swap1][z_swap1];
-      lattice[x_swap1][y_swap1][z_swap1] = lattice[x_swap2][y_swap2][z_swap2];
-     lattice[x_swap2][y_swap2][z_swap2] = tmp_species;
+    int x,y,z;
+    int species;
 
-    }
+    for (i=0;i<shuffles;i++)
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                if (lattice[x][y][z]==0) continue;
+                species=lattice[x][y][z];
+
+                // Choosing two random sites to swap
+                x_swap = rand_int(X);
+                y_swap = rand_int(Y);
+                z_swap = rand_int(Z);
+
+                // Checking that neither species is a gap (do not want to randomize gap sites)
+                if (lattice[x_swap][y_swap][z_swap]==0) continue;
+
+      
+                // Swapping species on site1 with species on site2 and vice versa (using temporary intermediate variable)
+                lattice[x][y][z]=lattice[x_swap][y_swap][z_swap];
+                lattice[x_swap][y_swap][z_swap]=species;
+            }
 
 }
