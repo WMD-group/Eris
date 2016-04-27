@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
-    if (CalculateRadialOrderParameter) radial_distribution_function();
+    if (CalculateRadialOrderParameter) radial_distribution_function("RDF_initial.dat");
 
     lattice_energy(); // check energy sums
     //exit(-1);
@@ -86,6 +86,10 @@ int main(int argc, char *argv[])
 
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
+            // Setting filename for RDF output
+            char RDF_filename[100];
+            sprintf(RDF_filename,"RDF_T_%04d.dat",T); // for electrostatic potential file
+            
             
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
@@ -99,10 +103,13 @@ int main(int argc, char *argv[])
             else
                 fprintf(stderr,"Lattice carried over from previous simulation. Now at T = %d K\n",T);
 
-            if (CalculateRadialOrderParameter) radial_distribution_function();
-            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+            if (CalculateRadialOrderParameter) radial_distribution_function(RDF_filename);
 
+            //            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+
+            // Outputting xyz file for initial lattice and potential file before performing any Monte Carlo moves
             if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
+            if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 	        
             
 //            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
@@ -117,7 +124,7 @@ int main(int argc, char *argv[])
 
 // Analysis and output routines
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
-                if (CalculateRadialOrderParameter) radial_distribution_function();
+                if (CalculateRadialOrderParameter) radial_distribution_function(RDF_filename);
 
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                 fprintf(stderr,"MC Moves: %f MHz\n",

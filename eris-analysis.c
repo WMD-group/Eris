@@ -183,13 +183,15 @@ void outputpotential_png(char * filename)
 
 }
 
-void radial_distribution_function()
+void radial_distribution_function(char * filename )
 // Calculates RDF for on-lattice material
 // Currently prints to stdout
 {
     int x,y,z;
     int dx,dy,dz;
     int i;
+    FILE *fo;
+    fo=fopen(filename, "w");
 
     int distance_squared;
 
@@ -227,20 +229,21 @@ void radial_distribution_function()
                             site_count[distance_squared]++; // count of number of lattice sites at this separation, for normalisation purposes
                         }
 
-    // Weight counts into a RDF & output to STDOUT
-    printf("# r^2 r RDF(lattice) RDF(r^2) \t RDF[notnormalised] SitesInspected[r^2] T\n");
+    // Weight counts into a RDF & output to file called RDF_T_temp.dat as specified in eris-main.c
+    fprintf(fo,"# r^2 r RDF(lattice) RDF(r^2) \t RDF[notnormalised] SitesInspected[r^2] T\n");
     for (i=0;i<CUTOFF*CUTOFF;i++)
     {
         if (site_count[i]>0) //i.e. any data here...
         {
-            printf("%d %f %f %f \t %d \t %d \t %d\n",i,sqrt(i),
+            fprintf(fo, "%d %f %f %f \t %d \t %d \t %d\n",i,sqrt(i),
                     RDF[i]/site_count[i],
                     RDF[i]/(float)i,
                     (int)RDF[i],site_count[i],T);
         }
     }
-    printf("\n"); //starts as new dataset in GNUPLOT --> discontinuous lines
+    fprintf(fo,"\n"); //starts as new dataset in GNUPLOT --> discontinuous lines
 
+    fclose(fo);
     return; //Ummm
 }
 
