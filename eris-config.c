@@ -11,7 +11,7 @@
 
 #define X 20 // Malloc is for losers.
 #define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
-#define Z 80 
+#define Z 40 
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
@@ -20,6 +20,15 @@
 
 int DIM=3; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
 int T; //global variable so accessible to analysis routines
+
+// These defines set enum values for the species type; so that we don't need
+// magic numbers.
+// BUT - it makes Eris specific to CZTS material.
+#define Cu 1
+#define Zn 2
+#define Sn 3
+// And similarly for the reverse lookup (single character), i.e. species[2]='Z'
+const char * specieslookup=".CZTc"; // Copper = 1, Zinc = 2, Tin = 3
 
 struct dipole
 {
@@ -31,6 +40,8 @@ int lattice[X][Y][Z];
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];
+
+int freezeSn = true; // should we freeze Sn ?
 
 struct mixture
 {
@@ -208,6 +219,8 @@ void load_config()
     config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
     
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
+
+    config_lookup_bool(cf,"freezeSn",&freezeSn);
 
     fprintf(stderr,"Config loaded. \n");
 }

@@ -42,7 +42,8 @@ int main(int argc, char *argv[])
     if (argc>1)
     {
         sscanf(argv[1],"%d",&T);
-        fprintf(stderr,"Command line temperature: T = %d\n",T);
+        fprintf(stderr,"Command line temperature: Overiding settings and doing single shot calculation with: T = %d\n",T);
+        TMAX=T; TMIN=T; // overide any loop settings from config
     }
 
     // If we're going to do some actual science, we better have a logfile...
@@ -71,11 +72,10 @@ int main(int argc, char *argv[])
 
     if (CalculateRadialOrderParameter) radial_distribution_function("RDF_initial.dat");
 
-    lattice_energy(); // check energy sums
+//    lattice_energy(); // check energy sums
     //exit(-1);
 
-    //old code - now read in option, so I can parallise externally
-    //    for (Efield.x=0.1; Efield.x<3.0; Efield.x+=0.5)
+    // Core simulation loop
     for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
         beta=1/((float)T/300.0);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
             // Setting filename for RDF output
             char RDF_filename[100];
-            sprintf(RDF_filename,"RDF_T_%04d.dat",T); // for electrostatic potential file
+            sprintf(RDF_filename,"RDF_T_%04d.dat",T); // RDF filename 
             
             
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
 // Analysis and output routines
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
                 if (CalculateRadialOrderParameter) radial_distribution_function(RDF_filename);
+		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                 fprintf(stderr,"MC Moves: %f MHz\n",
@@ -136,7 +137,6 @@ int main(int argc, char *argv[])
             }
  
             fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
-		    if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
             if (SaveXYZ)
             {

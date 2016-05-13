@@ -109,7 +109,7 @@ void lattice_potential_XYZ(char * filename)
     int atoms;
     double pot,mean,variance;
     FILE *fo;
-    fo=fopen(filename,"w");
+    fo=fopen(filename,"a");
 
     FILE *fvariance;
     fvariance=fopen("variance.dat","a"); // append to variance file
@@ -191,7 +191,7 @@ void radial_distribution_function(char * filename )
     int dx,dy,dz;
     int i;
     FILE *fo;
-    fo=fopen(filename, "w");
+    fo=fopen(filename, "a");
 
     int distance_squared;
 
@@ -200,6 +200,9 @@ void radial_distribution_function(char * filename )
     struct dipole n;
     float d;
     float pair_correlation;
+
+    int speciesA=Zn; // set what-to-what correlations to count
+    int speciesB=Sn;
 
     // define data structures to keep histogram counts in
     float RDF[(CUTOFF*CUTOFF)+1];
@@ -217,10 +220,13 @@ void radial_distribution_function(char * filename )
                             distance_squared=dx*dx + dy*dy + dz*dz;
                             if (distance_squared>CUTOFF*CUTOFF) continue; // skip ones that exceed spherical limit of CUTOFF
 
-                            if (lattice[x][y][z]!=2) continue; // if not Zinc
-
+                            if (lattice[x][y][z]!=speciesA) continue; // if not speciesA
+                            if (lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]!=speciesB) continue;
                             //complicated modulus arithmatic deals with PBCs
-                            pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
+                            pair_correlation=1.0; // if we get this far, these sites are part of our RDF
+
+                            // Old speciesA=speciesB code
+//                            pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
                             // if species at site A = species at site B; add one to the pair correlation
                             // correlation...
 
@@ -350,7 +356,6 @@ float DMEAN=0.0;
 
 void outputlattice_dumb_terminal()
 {
-    const char * species=".CZTc"; // Copper (I), Zinc (II), Tin (III)
     int x,y;
     float a;
     int z=0;
@@ -384,7 +389,7 @@ for (z=0;z<4;z++)
             fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
 //            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
                 fprintf(stderr,";7"); // inverted colours
-            char arrow=species[(int)a];
+            char arrow=specieslookup[(int)a];
      //       if (lattice[x][y][z].z> sqrt(2)/2.0) arrow='o';
      //       if (lattice[x][y][z].z<-sqrt(2)/2.0) arrow='x';
 
@@ -422,7 +427,7 @@ for (z=0;z<4;z++)
 
             a=lattice[x][y][z];
 
-            char arrow=species[(int)a];  // selectss arrow
+            char arrow=specieslookup[(int)a];  // selectss arrow
 
             fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],arrow,27);
         }
@@ -484,7 +489,6 @@ void lattice_energy ()
 void outputlattice_stoichometry()
 {
     int x,y,z,i,a;
-    const char * species=".CZTc"; // Copper (I), Zinc (II), Tin (III)
    
     // data structure for histogram of species count
     int histogram[5];
@@ -499,7 +503,7 @@ void outputlattice_stoichometry()
 
     // output histogram sums for user to read
     for (i=0;i<5;i++)
-        printf("Species: %c Counts: %d\n",species[i],histogram[i]);
+        printf("Species: %c Counts: %d\n",specieslookup[i],histogram[i]);
    
     // conditional statements to check for stoichiometry and exit with error message if off-stoichiometry
     if (histogram[0] != 2*histogram[1])

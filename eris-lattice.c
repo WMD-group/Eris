@@ -126,6 +126,9 @@ void initialise_lattice_CZTS_randomized()
                 // Checking that neither species is a gap (do not want to randomize gap sites)
                 if (lattice[x_swap][y_swap][z_swap]==0) continue;
 
+                if (freezeSn) // don't swap Tin if requested
+                    if (species==Sn || lattice[x_swap][y_swap][z_swap]==Sn)
+                        continue;
       
                 // Swapping species on site1 with species on site2 and vice versa (using temporary intermediate variable)
                 lattice[x][y][z]=lattice[x_swap][y_swap][z_swap];
