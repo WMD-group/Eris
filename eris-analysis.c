@@ -185,7 +185,7 @@ void outputpotential_png(char * filename)
 
 void radial_distribution_function(char * filename )
 // Calculates RDF for on-lattice material
-// Currently prints to stdout
+// Updated version prints to a file called RDF_T_temp.dat
 {
     int x,y,z;
     int dx,dy,dz;
@@ -217,7 +217,7 @@ void radial_distribution_function(char * filename )
                             distance_squared=dx*dx + dy*dy + dz*dz;
                             if (distance_squared>CUTOFF*CUTOFF) continue; // skip ones that exceed spherical limit of CUTOFF
 
-                            if (lattice[x][y][z]!=2) continue; // if not Copper
+                            if (lattice[x][y][z]!=2) continue; // if not Zinc
 
                             //complicated modulus arithmatic deals with PBCs
                             pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
