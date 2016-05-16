@@ -70,8 +70,11 @@ int main(int argc, char *argv[])
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
-    if (CalculateRadialOrderParameter) radial_distribution_function("RDF_initial.dat");
-
+    // Analysis files of the initial lattice, before performing any MC moves 
+    if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
+    if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
+    if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
+	
 //    lattice_energy(); // check energy sums
     //exit(-1);
 
@@ -79,18 +82,14 @@ int main(int argc, char *argv[])
     for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
         beta=1/((float)T/300.0);
-        printf("T: %d beta: %f\n",T,beta);
+        printf("Temperature now T: %d K \t beta: %f\n",T,beta);
 
         {
             // Do some MC moves!
 
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
-            // Setting filename for RDF output
-            char RDF_filename[100];
-            sprintf(RDF_filename,"RDF_T_%04d.dat",T); // RDF filename 
-            
-            
+           
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
                 if (OrderedInitialLattice)
@@ -98,33 +97,24 @@ int main(int argc, char *argv[])
                 else
                     initialise_lattice_CZTS_randomized();
 
-                fprintf(stderr,"Lattice reinitialised at T = %d K\n",T);
+                fprintf(stderr,"Lattice reinitialised: \n");
             }
             else
-                fprintf(stderr,"Lattice carried over from previous simulation. Now at T = %d K\n",T);
-
-            if (CalculateRadialOrderParameter) radial_distribution_function(RDF_filename);
-
-            //            fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
-
-            // Outputting xyz file for initial lattice and potential file before performing any Monte Carlo moves
-            if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
-            if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
-	        
-            
-//            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
+                fprintf(stderr,"Lattice carried over from previous simulation: \n");
+           
+            if (DisplayDumbTerminal) outputlattice_dumb_terminal();
 //break;
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
             {
                 tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
-                for (k=0;k<MCMinorSteps;k++) //let's hope the compiler inlines this to avoid stack abuse. Alternatively move core loop to MC_move fn?
+                for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
                     MC_move();
                 toc=clock();
 
 // Analysis and output routines
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
-                if (CalculateRadialOrderParameter) radial_distribution_function(RDF_filename);
+                if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
 		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output

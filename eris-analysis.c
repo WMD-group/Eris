@@ -18,7 +18,8 @@ static double lattice_energy_log(FILE *log);
 double landau_order();
 
 void outputpotential_png(char * filename);
-void radial_distribution_function();
+void radial_distribution_function(char * filename, int speciesA, int speciesB);
+void radial_distribution_function_allsites();
 
 void outputlattice_xyz(char * filename);
 void outputlattice_pnm(char * filename);
@@ -183,7 +184,19 @@ void outputpotential_png(char * filename)
 
 }
 
-void radial_distribution_function(char * filename )
+void radial_distribution_function_allsites()
+{
+    int speciesA=Zn; // set what-to-what correlations to count
+    int speciesB=Sn;
+
+// Setting filename for RDF output
+    char RDF_filename[100]; 
+    sprintf(RDF_filename,"RDF_T_%04d.dat",T);
+    
+    radial_distribution_function(RDF_filename, speciesA, speciesB);
+}           
+ 
+void radial_distribution_function(char * filename, int speciesA, int speciesB )
 // Calculates RDF for on-lattice material
 // Updated version prints to a file called RDF_T_temp.dat
 {
@@ -200,9 +213,6 @@ void radial_distribution_function(char * filename )
     struct dipole n;
     float d;
     float pair_correlation;
-
-    int speciesA=Zn; // set what-to-what correlations to count
-    int speciesB=Sn;
 
     // define data structures to keep histogram counts in
     float RDF[(CUTOFF*CUTOFF)+1];
