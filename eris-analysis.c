@@ -191,14 +191,21 @@ void radial_distribution_function_allsites()
 
 // Setting filename for RDF output
     char RDF_filename[100]; 
-    sprintf(RDF_filename,"RDF_T_%04d.dat",T);
     
-    radial_distribution_function(RDF_filename, speciesA, speciesB);
+    for (speciesA=1;speciesA<=3;speciesA++)
+        for (speciesB=speciesA;speciesB<=3;speciesB++)
+        {
+        sprintf(RDF_filename,"RDF_%c_%c_T_%04d.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
+        
+        fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
+    
+        radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+        }
 }           
  
 void radial_distribution_function(char * filename, int speciesA, int speciesB )
 // Calculates RDF for on-lattice material
-// Updated version prints to a file called RDF_T_temp.dat
+//    arguments are filename to write to, then atomic-pair to calculate RDF for
 {
     int x,y,z;
     int dx,dy,dz;
