@@ -202,7 +202,28 @@ void radial_distribution_function_allsites()
         radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
         }
 }           
- 
+
+
+void radial_distribution_function_allsites_initial() // Extra wrapper function added for outputting initial RDF to a separate file before performing any MC steps
+{
+    int speciesA=Zn; // set what-to-what correlations to count
+    int speciesB=Sn;
+
+// Setting filename for RDF output
+    char RDF_filename[100]; 
+    
+    for (speciesA=1;speciesA<=3;speciesA++)
+        for (speciesB=speciesA;speciesB<=3;speciesB++)
+        {
+        sprintf(RDF_filename,"RDF_%c_%c_initial.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
+        
+        fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
+    
+        radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+        }
+}
+
+
 void radial_distribution_function(char * filename, int speciesA, int speciesB )
 // Calculates RDF for on-lattice material
 //    arguments are filename to write to, then atomic-pair to calculate RDF for
@@ -211,7 +232,7 @@ void radial_distribution_function(char * filename, int speciesA, int speciesB )
     int dx,dy,dz;
     int i;
     FILE *fo;
-    fo=fopen(filename, "a");
+    fo=fopen(filename, "w"); // w setting used so RDF file is overwritten, not appended
 
     int distance_squared;
 
