@@ -302,7 +302,7 @@ void outputlattice_xyz(char * filename)
             "Sn",
             "Nu"
     };
-    const float d=3.8; // Angstrom spacing of lattice to map to real space coords
+    const float d=2.72; // Angstrom spacing of lattice to map to real space coords
 
     fo=fopen(filename,"w");
    
