@@ -195,7 +195,7 @@ void radial_distribution_function_allsites()
     for (speciesA=1;speciesA<=3;speciesA++)
         for (speciesB=speciesA;speciesB<=3;speciesB++)
         {
-        sprintf(RDF_filename,"RDF_%c_%c_T=%04d.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
+        sprintf(RDF_filename,"RDF_%c_%c_Teq%04d.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
         
         fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
     
