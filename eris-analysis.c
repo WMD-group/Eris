@@ -20,6 +20,7 @@ double landau_order();
 void outputpotential_png(char * filename);
 void radial_distribution_function(char * filename, int speciesA, int speciesB);
 void radial_distribution_function_allsites();
+void radial_distribution_function_allsites_initial(); 
 
 void outputlattice_xyz(char * filename);
 void outputlattice_pnm(char * filename);
@@ -186,43 +187,36 @@ void outputpotential_png(char * filename)
 
 void radial_distribution_function_allsites()
 {
-    int speciesA=Zn; // set what-to-what correlations to count
-    int speciesB=Sn;
-
-// Setting filename for RDF output
+    int speciesA,speciesB;
+// Variable to contain filename for RDF output
     char RDF_filename[100]; 
     
     for (speciesA=1;speciesA<=3;speciesA++)
         for (speciesB=speciesA;speciesB<=3;speciesB++)
         {
-        sprintf(RDF_filename,"RDF_%c_%c_Teq%04d.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
-        
-        fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
-    
-        radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+            sprintf(RDF_filename,"RDF_%c_%c_Teq%04d.dat",specieslookup[speciesA],specieslookup[speciesB],T); // automatically construct filename
+            radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+
+            fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
         }
 }           
 
-
-void radial_distribution_function_allsites_initial() // Extra wrapper function added for outputting initial RDF to a separate file before performing any MC steps
+void radial_distribution_function_allsites_initial() 
+// Extra wrapper function added for outputting initial RDF to a separate file before performing any MC steps
 {
-    int speciesA=Zn; // set what-to-what correlations to count
-    int speciesB=Sn;
-
-// Setting filename for RDF output
+    int speciesA,speciesB;
+// Variable to contain filename for RDF output
     char RDF_filename[100]; 
     
     for (speciesA=1;speciesA<=3;speciesA++)
         for (speciesB=speciesA;speciesB<=3;speciesB++)
         {
-        sprintf(RDF_filename,"RDF_%c_%c_initial.dat",specieslookup[speciesA],specieslookup[speciesB]); // automatically construct filename
-        
-        fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
-    
-        radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+            sprintf(RDF_filename,"RDF_%c_%c_initial.dat",specieslookup[speciesA],specieslookup[speciesB]); // automatically construct filename 
+            radial_distribution_function(RDF_filename, speciesA, speciesB); // run the RDF for this pair
+
+            fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,RDF_filename); // for debugging
         }
 }
-
 
 void radial_distribution_function(char * filename, int speciesA, int speciesB )
 // Calculates RDF for on-lattice material
