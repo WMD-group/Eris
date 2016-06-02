@@ -399,7 +399,7 @@ void outputlattice_dumb_terminal()
     fprintf(stderr,"%*s%*s\n",X+3, "SPECIES", (2*X)+4,"POTENTIAL"); //padded labels
 
 
-for (z=0;z<4;z++)
+for (z=0;z<DumbTerminalLayers;z++) // number of layers to display on Z
 {
     fprintf(stderr,"Z=%d\n",z);
 
@@ -421,17 +421,10 @@ for (z=0;z<4;z++)
             fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
 //            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
                 fprintf(stderr,";7"); // inverted colours
-            char arrow=specieslookup[(int)a];
-     //       if (lattice[x][y][z].z> sqrt(2)/2.0) arrow='o';
-     //       if (lattice[x][y][z].z<-sqrt(2)/2.0) arrow='x';
+            char species=specieslookup[(int)a];
 
-   //         if (lattice[x][y][z].x==0.0 && lattice[x][y][z].y==0.0 && lattice[x][y][z].z==0.0) arrow='*'; 
-
-            fprintf(stderr,"m%c %c[0m",arrow,27);  // prints arrow
+            fprintf(stderr,"m%c %c[0m",species,27);  // prints 1-character reference to species
             fprintf(stderr,"%c[37m%c[0m",27,27); //RESET
-
-            //            fprintf(stderr,"%c ",arrows[(int)a]); // dumb - just black 'n'
-            //            white
         }
 
         // OK - now potential plot :^)
@@ -459,9 +452,9 @@ for (z=0;z<4;z++)
 
             a=lattice[x][y][z];
 
-            char arrow=specieslookup[(int)a];  // selectss arrow
+            char species=specieslookup[(int)a];  // prints 1-character reference to species
 
-            fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],arrow,27);
+            fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],species,27);
         }
 
         fprintf(stderr,"\n");

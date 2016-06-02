@@ -80,6 +80,7 @@ char const *LOGFILE = NULL; //for output filenames
 
 int DEBUG=false;
 int DisplayDumbTerminal=true;
+int DumbTerminalLayers=4;
 int CalculateRadialOrderParameter=false;
 int CalculatePotential=false;
 int OrderedInitialLattice=false;
@@ -213,6 +214,7 @@ void load_config()
 // Flags for output routines to run
     config_lookup_bool(cf,"DEBUG",&DEBUG);
     config_lookup_bool(cf,"DisplayDumbTerminal",&DisplayDumbTerminal);
+    config_lookup_int(cf,"DumbTerminalLayers",&DumbTerminalLayers); 
     config_lookup_bool(cf,"CalculateRadialOrderParameter",&CalculateRadialOrderParameter);
     config_lookup_bool(cf,"CalculatePotential",&CalculatePotential);
     config_lookup_bool(cf,"OrderedInitialLattice",&OrderedInitialLattice);
