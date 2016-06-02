@@ -28,22 +28,23 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 int main(int argc, char *argv[])
 {
     int i,j,k, x,y; //for loop iterators
-
+    int tic,toc; // time counters; Goes the old grandfather clock
+    
     double P=0.0;
-
-    int tic,toc;
 
     fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
     fprintf(stderr,"Loading config...\n");
-    load_config();
+    load_config(); // see eris-config.c ; mainly sets global variables and Bools
 
     // Now override with command line options if supplied...
+    // Currently assumes first argument is overriding TEMPERATURE; to be able
+    // to be used with GNU parallel
     if (argc>1)
     {
         sscanf(argv[1],"%d",&T);
         fprintf(stderr,"Command line temperature: Overiding settings and doing single shot calculation with: T = %d\n",T);
-        TMAX=T; TMIN=T; // overide any loop settings from config
+        TMAX=T; TMIN=T; // overide any loop settings from config; just this single temperature
     }
 
     // If we're going to do some actual science, we better have a logfile...
@@ -51,22 +52,22 @@ int main(int argc, char *argv[])
     log=fopen(LOGFILE,"w");
     fprintf(stderr,"Log file '%s' opened. ",LOGFILE);
 
-    //Fire up the twister!
+    //Fire up the Mersenne twister!
     init_genrand(0xDEADBEEF); //314159265);  // reproducible data :)
     //init_genrand(time(NULL)); // seeded with current time
-    fprintf(stderr,"Twister initialised. ");
+    fprintf(stderr,"Mersenne Twister initialised. ");
 
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
     fprintf(stderr,"'.' is %llu MC moves attempted.\n",MCMinorSteps);
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
-    if (OrderedInitialLattice)
+    if (OrderedInitialLattice) // set by eris.cfg
         initialise_lattice_CZTS();
     else
         initialise_lattice_CZTS_randomized();
     
-    outputlattice_stoichometry(); // print histogram of stoichs for user.
+    outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
@@ -76,12 +77,11 @@ int main(int argc, char *argv[])
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 	
 //    lattice_energy(); // check energy sums
-    //exit(-1);
 
     // Core simulation loop
     for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
-        beta=1/((float)T/300.0);
+        beta=1/((float)T/300.0); // Thermodynamic Beta; in units of kbT @ 300K
         printf("Temperature now T: %d K \t beta: %f\n",T,beta);
 
         {
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr,"Lattice carried over from previous simulation: \n");
            
             if (DisplayDumbTerminal) outputlattice_dumb_terminal();
-//break;
+
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
             {
@@ -126,8 +126,7 @@ int main(int argc, char *argv[])
                 fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             }
  
-            fprintf(stderr,"Efield: x %f y %f z %f | Dipole %f CageStrain %f K %f\n",Efield.x,Efield.y,Efield.z,Dipole,CageStrain,K);
-
+            // OK, we have now finished all of our MC steps
             if (SaveXYZ)
             {
                 char name[100];
