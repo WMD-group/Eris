@@ -70,11 +70,12 @@ int ElectrostaticCutOff=1;
 
 // These variables from the old main
 int MCMegaSteps=400;
+int MCEqmSteps=0;
 int TMAX=500;
 int TMIN=0;
 int TSTEP=100; 
 
-double MCMegaMultiplier=1.0;
+double MCMoves=1.0;
 unsigned long long int MCMinorSteps=0;
 char const *LOGFILE = NULL; //for output filenames
 
@@ -201,7 +202,8 @@ void load_config()
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
 
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
-    config_lookup_float(cf,"MCMegaMultiplier",&MCMegaMultiplier);
+    config_lookup_int(cf,"MCEqmSteps",&MCEqmSteps);
+    config_lookup_float(cf,"MCMoves",&MCMoves);
 
     config_lookup_int(cf,"TMIN",&TMIN);
     config_lookup_int(cf,"TMAX",&TMAX);
@@ -209,7 +211,7 @@ void load_config()
     if (TMIN<0 || TMAX<0 || TSTEP<1)
         fprintf(stderr,"SOMETHING VERY ODD ABOUT THE TEMPERATURES I READ FROM THE CONFIG FILE. I HOPE YOU KNOW WHAT YOU ARE DOING!\n");
 
-    MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMegaMultiplier);
+    MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMoves);
 
 // Flags for output routines to run
     config_lookup_bool(cf,"DEBUG",&DEBUG);

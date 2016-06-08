@@ -104,6 +104,19 @@ int main(int argc, char *argv[])
            
             if (DisplayDumbTerminal) outputlattice_dumb_terminal();
 
+            // equilibriation before data collection
+            if (MCEqmSteps>0)
+            {
+                fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
+                for (j=0;j<MCEqmSteps;j++)
+                {
+                    for (k=0;k<MCMinorSteps;k++)
+                        MC_move();
+                    fprintf(stderr,",");
+                }
+                fprintf(stderr,"\n");
+            }
+
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
             {
