@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
                 fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             }
  
-            // OK, we have now finished all of our MC steps
+            // OK, we have now finished all of our MC steps for this T value
             if (SaveXYZ)
             {
                 char name[100];
@@ -148,12 +148,10 @@ int main(int argc, char *argv[])
             }
        }
 
-    } 
+    }
+
     // OK; we're finished...
-
     fprintf(stderr,"\n");
-
-    fprintf(stderr,"Monte Carlo moves - ACCEPT: %llu REJECT: %llu ratio: %f\n",ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
     fprintf(stderr," For us, there is only the trying. The rest is not our business. ~T.S.Eliot\n\n");
 
     return 0;
