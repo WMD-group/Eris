@@ -618,6 +618,7 @@ void lattice_energy_full(char * filename)
 
 // Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
 // Will need to remove writing empty sites to file
+// Will need to reintroduce S ions!
 
     int i,j,k;
     FILE *fo;
@@ -654,6 +655,7 @@ void lattice_energy_cutoff()
 
 
 // Code pinched from eris-kernal.c... needs work!
+// Make sure you calculate the lattice energy of the same finite region each time
 
 
     for (dx=-CutOff;dx<=CutOff;dx++)
