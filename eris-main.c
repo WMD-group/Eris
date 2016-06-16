@@ -89,7 +89,12 @@ int main(int argc, char *argv[])
 
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
-           
+            char electrostaticpotential_equil_filename[100];
+            sprintf(electrostaticpotential_equil_filename,"equil_potential_T_%04d.dat",T); // for electrostatic potential file during equilibriation run
+            char variance_equil_filename[100];
+            sprintf(variance_equil_filename,"equil_variance_T_%04d.dat",T); // for variance of potential file during equilibriation run
+
+
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
                 if (OrderedInitialLattice)
@@ -113,6 +118,8 @@ int main(int argc, char *argv[])
                     for (k=0;k<MCMinorSteps;k++)
                         MC_move();
                     fprintf(stderr,",");
+                    if (EquilibriationChecks) T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, j);
+
                 }
                 fprintf(stderr,"\n");
             }
