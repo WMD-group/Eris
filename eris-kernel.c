@@ -241,8 +241,7 @@ static void MC_move()
 
         ACCEPT++;
 
-//        equlibriation_statistics(dE); # Pausing dev on this while making new
-//        array structures
+        if (EquilibriationChecks) equlibriation_statistics(dE); 
     }
     else
         REJECT++;
