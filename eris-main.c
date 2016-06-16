@@ -118,8 +118,18 @@ int main(int argc, char *argv[])
                     for (k=0;k<MCMinorSteps;k++)
                         MC_move();
                     fprintf(stderr,",");
-                    if (EquilibriationChecks) T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, j);
+                    if (EquilibriationChecks) 
+                    {
+                        T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, j);
+            
+                        // Generating gulp input files for intermittent configurations during equilibriation for post-processing to calculate full lattice energy with gulp
+                        char gulp_filename[100];
+                        sprintf(gulp_filename,"gulp_input_MCS_%04d.in",j);
+                        lattice_energy_full(gulp_filename);
 
+                        // Calculating lattice energy during equilibriation cycles just to finite cut-off radius
+                        lattice_energy_cutoff();
+                    }
                 }
                 fprintf(stderr,"\n");
             }

@@ -14,7 +14,9 @@ static double dipole_potential(int x, int y, int z);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
-void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num);
+void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num); // Extra lattice potential function for outputting the variance for each temperature separately as a function of MC steps during equilibriation
+void lattice_energy_cutoff();  // Function to calculate lattice energy out to a finite cut off radius during equilibriation
+void lattice_energy_full(); // Function to write intermittent configurations during equilibriation to a separate directory as gulp input files for a full lattice energy calculation as post-processing to compare to lattice energy calculated with a finite cut-off radius
 static double lattice_energy_log(FILE *log);
 double landau_order();
 
@@ -605,3 +607,95 @@ void outputlattice_stoichometry()
 
 }
 
+
+
+void lattice_energy_full(char * filename)
+{
+//int mkdir (const char *equilibriation_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibriation as gulp input files for post-processing
+
+// write to file in directory equilibriation_check_GULP_inputs
+
+
+// Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
+// Will need to remove writing empty sites to file
+
+    int i,j,k;
+    FILE *fo;
+    const char * atom[] = {
+            "Nu",
+            "Cu",
+            "Zn",
+            "Sn",
+            "Nu"
+    };
+    const float d=2.72; // Angstrom spacing of lattice to map to real space coords
+
+    fo=fopen(filename,"w");
+   
+    fprintf(fo,"%d\n\n",X*Y*Z);
+
+    for (i=0;i<X;i++)
+        for (j=0;j<Y;j++)
+            for (k=0;k<Z;k++)
+                if (atom[lattice[i][j][k]=Nu) continue; //avoid writing gap sites to gulp input file
+                else fprintf(fo,"%s %f %f %f\n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k);
+    fclose(fo);
+
+
+}
+
+
+
+
+
+
+void lattice_energy_cutoff()
+{
+
+
+// Code pinched from eris-kernal.c... needs work!
+
+
+    for (dx=-CutOff;dx<=CutOff;dx++)
+        for (dy=-CutOff;dy<=CutOff;dy++)
+#if(Z>1) //i.e. 3D in Z
+            for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
+#endif
+            {
+//                if (dx==0 && dy==0 && dz==0)
+//                    continue; //no infinities / self interactions please!
+
+//                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
+
+                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
+                
+                if (d<0.5) continue;
+
+//                if (SPHERICAL)
+//                    if (d>(float)CutOff) continue; // Cutoff in d
+//                -->
+//                EXPANSIONS IN SPHERES; probably not convergent
+
+                species_b= lattice[(X+sx+dx)%X][(Y+sy+dy)%Y][(Z+sz+dz)%Z];
+
+                // E_int runs from 1..4
+                if (species_a==0 || species_b==0) // if gaps in lattice, no interaction energy contribution
+                    continue;
+
+                // "... the potentials of of the ions forming the surface of
+                // the cube, however, are given the weights 1/2, 1/4 or 1/8
+                // according as they are situated on a face, an edge, or
+                // a corner of the cube.
+                // Evjen - Physical Review Vol 39, 1932
+                double evjen_E=E_int[species_a-1][species_b-1]/d;
+                double evjen_weight=1.0;
+                if (EVJEN)
+                {
+                    if (abs(dx)==CutOff) evjen_weight*=0.5; 
+                    if (abs(dy)==CutOff) evjen_weight*=0.5;
+                    if (abs(dz)==CutOff) evjen_weight*=0.5;// corner
+//                  fprintf(stderr,"X:%d Y:%d Z:%d CutOff:%d evjenweight: %f\n",dx,dy,dz,CutOff,evjen_weight);
+                }
+                dE+=evjen_E * evjen_weight;
+            }
+}
