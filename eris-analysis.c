@@ -638,7 +638,14 @@ void lattice_energy_full(char * filename)
     for (i=0;i<X;i++)
         for (j=0;j<Y;j++)
             for (k=0;k<Z;k++)
-                if (atom[lattice[i][j][k]=Nu) continue; //avoid writing gap sites to gulp input file
+
+               char gap[100];
+               char selected_site[100];
+               sprintf(gap,"Nu");
+           
+               sprintf(selected_site,"%s\n",atom[lattice[i][j][k]]);
+
+                if (strcmp(gap,selected_site) ==0) continue; //avoid writing gap sites to gulp input file
                 else fprintf(fo,"%s %f %f %f\n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k);
     fclose(fo);
 
@@ -650,12 +657,19 @@ void lattice_energy_full(char * filename)
 
 
 
-void lattice_energy_cutoff()
+void lattice_energy_cutoff(int x, int y, int z, int species_a, int CutOff, int sx, int sy, int sz)
 {
 
 
 // Code pinched from eris-kernal.c... needs work!
 // Make sure you calculate the lattice energy of the same finite region each time
+
+    int dx,dy,dz=0;
+    float d;
+    double dE=0.0;
+
+    int species_b;
+
 
 
     for (dx=-CutOff;dx<=CutOff;dx++)

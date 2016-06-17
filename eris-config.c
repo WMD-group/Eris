@@ -86,6 +86,7 @@ int CalculateRadialOrderParameter=false;
 int CalculatePotential=false;
 int OrderedInitialLattice=false;
 int ReinitialiseLattice=false;
+int EquilibriationChecks=false;
 
 int SaveXYZ=false;
 //END OF SIMULATION PARAMETERS
@@ -222,6 +223,8 @@ void load_config()
     config_lookup_bool(cf,"OrderedInitialLattice",&OrderedInitialLattice);
     config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
     
+    config_lookup_bool(cf, "EquilibriationChecks",&EquilibriationChecks);
+
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
