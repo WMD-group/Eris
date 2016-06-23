@@ -241,7 +241,7 @@ static void MC_move()
 
         ACCEPT++;
 
-        if (EquilibriationChecks) equlibriation_statistics(dE); 
+//        if (EquilibrationChecks) equlibriation_statistics(dE); 
     }
     else
         REJECT++;
