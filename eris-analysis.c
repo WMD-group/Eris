@@ -162,59 +162,6 @@ void lattice_potential_XYZ(char * filename)
 }
 
 
-//Calculates the on-site electrostatic potentials across the lattice and variance in the distribution of electrostatic potentials to separate output files for each simulation temperature
-void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num)
-{
-    int x,y,z;
-    int atoms;
-    double pot,mean,variance;
-    FILE *fo;
-    fo=fopen(filename_pot,"a"); // append to the electrostatic potential file, more data for better statistics
-
-    FILE *fvariance;
-    fvariance=fopen(filename_var,"a"); // append to variance file, where the variance is written as a function of MC steps during progression towards equilibration
-
-    mean=0.0; atoms=0;
-    for (x=0;x<X;x++)
-        for (y=0;y<Y;y++)
-            for (z=0;z<Z;z++)
-            {
-                // log potential at all sites (Cu,Zn,Sn)
-                pot=dipole_potential(x,y,z);
-                fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
-                
-                if (lattice[x][y][z]==3) // only count tin towards mean / variance
-                {
-                    mean+=pot;
-                    atoms++;
-                }
-            }
-    mean/=atoms;
-
-    variance=0.0; atoms=0;
-     for (x=0;x<X;x++)
-        for (y=0;y<Y;y++)
-            for (z=0;z<Z;z++)
-            {
-                if (lattice[x][y][z]==3)
-                {
-                    pot=dipole_potential(x,y,z);
-                    variance+=(pot-mean)*(pot-mean);
-                    atoms++;
-                }
-            }
-    variance/=atoms;
-
- //   fprintf(stderr,"T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
- //           T,mean,variance,atoms,X*Y*Z);
- //   fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
- //           T,mean,variance,atoms,X*Y*Z);
- //   fclose(fo);
-    
-    fprintf(fvariance,"MCS: %d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
-            MCS_num, mean,variance,atoms,X*Y*Z);
-    fclose(fvariance);
-}
 
 void outputpotential_png(char * filename)
 {
@@ -606,6 +553,66 @@ void outputlattice_stoichometry()
     //printf("%d \n",histogram[1]);
 
 }
+
+
+
+
+//Calculates the on-site electrostatic potentials across the lattice and variance in the distribution of electrostatic potentials to separate output files for each simulation temperature
+void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num)
+{
+    int x,y,z;
+    int MCS_num_scaled;
+    int atoms;
+    double pot,mean,variance;
+    FILE *fo;
+    fo=fopen(filename_pot,"a"); // append to the electrostatic potential file, more data for better statistics
+
+    FILE *fvariance;
+    fvariance=fopen(filename_var,"a"); // append to variance file, where the variance is written as a function of MC steps during progression towards equilibration
+
+    mean=0.0; atoms=0;
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                // log potential at all sites (Cu,Zn,Sn)
+                pot=dipole_potential(x,y,z);
+                fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
+                
+                if (lattice[x][y][z]==3) // only count tin towards mean / variance
+                {
+                    mean+=pot;
+                    atoms++;
+                }
+            }
+    mean/=atoms;
+
+    variance=0.0; atoms=0;
+     for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                if (lattice[x][y][z]==3)
+                {
+                    pot=dipole_potential(x,y,z);
+                    variance+=(pot-mean)*(pot-mean);
+                    atoms++;
+                }
+            }
+    variance/=atoms;
+
+ //   fprintf(stderr,"T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+ //           T,mean,variance,atoms,X*Y*Z);
+ //   fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+ //           T,mean,variance,atoms,X*Y*Z);
+ //   fclose(fo);
+    MCS_num_scaled = MCS_num*(MCMinorSteps-1); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point
+    fprintf(fvariance,"MCS: %d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
+            MCS_num_scaled, mean,variance,atoms,X*Y*Z);
+    fclose(fvariance);
+}
+
+
 
 
 

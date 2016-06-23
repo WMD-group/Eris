@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
                 // Analysis and output routines
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
                 if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
-		    //    if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
+		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                 fprintf(stderr,"MC Moves: %f MHz\n",
