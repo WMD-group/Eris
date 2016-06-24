@@ -564,6 +564,13 @@ void T_separated_lattice_potential(char * filename_pot, char * filename_var, int
     int MCS_num_scaled;
     int atoms;
     double pot,mean,variance;
+
+
+// Creating a separate directory for storing equilibration check files    
+int status;
+status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+
     FILE *fo;
     fo=fopen(filename_pot,"a"); // append to the electrostatic potential file, more data for better statistics
 
@@ -616,9 +623,14 @@ void T_separated_lattice_potential(char * filename_pot, char * filename_var, int
 
 
 
-void lattice_energy_full(char * filename)
+void lattice_energy_full(char * filename, int MCS_num)
 {
 //int mkdir (const char *equilibriation_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibriation as gulp input files for post-processing
+
+// Creating a separate directory for storing generated gulp input files    
+int status;
+status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
 
 // write to file in directory equilibriation_check_GULP_inputs
 
