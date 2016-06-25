@@ -13,6 +13,11 @@
 #define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
 #define Z 40 
 
+// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
+#define X_super 2
+#define Y_super 2
+#define Z_super 2
+
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
 
@@ -36,7 +41,9 @@ struct dipole
     float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
 }; 
 
-int lattice[X][Y][Z];
+// Altering lattice dimensions for producing initial lattice supercell cell from unit cell defined in eris-lattice.c
+int lattice[X_super*2][Y_super*2][Z_super*4];
+
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];

@@ -11,6 +11,7 @@
 void initialise_lattice_random();
 void initialise_lattice_stripe();
 void initialise_lattice_CZTS();
+void initialise_lattice_CZTS_supercell();
 void initialise_lattice_CZTS_randomized();
 
 void initialise_lattice_random()
@@ -97,10 +98,118 @@ void initialise_lattice_CZTS()
 
 
 
+void initialize_lattice_CZTS_supercell()
+{
+
+// This routine produces a lattice containing a unit cell of CZTS (constructed by inspecting CZTS POSCARs layer by layer)
+// Larger systems are then created as supercells of this unit cell using user inputted parameters for X_super, Y_super and Z_super in eris.cfg
+
+
+// 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
+// The unit cell is 2x2x4
+// Supercells are generated as 2*X_super x 2*Y_super x 4*Z_super
+
+int x,y,z;
+    
+// Filling corner of the supercell lattice with the unit cell array
+  lattice[0][0][0] = 1;
+  lattice[0][0][1] = 0;
+  lattice[0][0][2] = 2;
+  lattice[0][0][3] = 0;
+
+  lattice[0][1][0] = 0;
+  lattice[0][1][1] = 1;
+  lattice[0][1][2] = 0;
+  lattice[0][1][3] = 3;
+
+  lattice[1][0][0] = 0;
+  lattice[1][0][1] = 3;
+  lattice[1][0][2] = 0;
+  lattice[1][0][3] = 1;
+
+  lattice[1][1][0] = 2;
+  lattice[1][1][1] = 0;
+  lattice[1][1][2] = 1;
+  lattice[1][1][3] = 0;
+
+
+  // Creating supercell copies of unit cell in x-direction
+  for (x=1;x<X_super;x++)
+  {
+    lattice[0+2*x][0][0] = lattice[0][0][0];
+    lattice[0+2*x][0][1] = lattice[0][0][1];
+    lattice[0+2*x][0][2] = lattice[0][0][2];
+    lattice[0+2*x][0][3] = lattice[0][0][3];
+
+    lattice[0+2*x][1][0] = lattice[0][1][0];
+    lattice[0+2*x][1][1] = lattice[0][1][1];
+    lattice[0+2*x][1][2] = lattice[0][1][2];
+    lattice[0+2*x][1][3] = lattice[0][1][3];
+
+    lattice[1+2*x][0][0] = lattice[1][0][0];
+    lattice[1+2*x][0][1] = lattice[1][0][1];
+    lattice[1+2*x][0][2] = lattice[1][0][2];
+    lattice[1+2*x][0][3] = lattice[1][0][3];
+
+    lattice[1+2*x][1][0] = lattice[1][1][0];
+    lattice[1+2*x][1][1] = lattice[1][1][1];
+    lattice[1+2*x][1][2] = lattice[1][1][2];
+    lattice[1+2*x][1][3] = lattice[1][1][3];
+  }
+
+  // Creating supercell copies of unit cell in y-direction
+  for (y=1;y<Y_super;y++)
+  {
+    lattice[0][0+2*y][0] = lattice[0][0][0];
+    lattice[0][0+2*y][1] = lattice[0][0][1];
+    lattice[0][0+2*y][2] = lattice[0][0][2];
+    lattice[0][0+2*y][3] = lattice[0][0][3];
+
+    lattice[0][1+2*y][0] = lattice[0][1][0];
+    lattice[0][1+2*y][1] = lattice[0][1][1];
+    lattice[0][1+2*y][2] = lattice[0][1][2];
+    lattice[0][1+2*y][3] = lattice[0][1][3];
+
+    lattice[1][0+2*y][0] = lattice[1][0][0];
+    lattice[1][0+2*y][1] = lattice[1][0][1];
+    lattice[1][0+2*y][2] = lattice[1][0][2];
+    lattice[1][0+2*y][3] = lattice[1][0][3];
+
+    lattice[1][1+2*y][0] = lattice[1][1][0];
+    lattice[1][1+2*y][1] = lattice[1][1][1];
+    lattice[1][1+2*y][2] = lattice[1][1][2];
+    lattice[1][1+2*y][3] = lattice[1][1][3];
+  }
+  // Creating supercell copies of unit cell in z-direction
+  for (z=1;z<Z_super;z++)
+  {
+    lattice[0][0][0+4*z] = lattice[0][0][0];
+    lattice[0][0][1+4*z] = lattice[0][0][1];
+    lattice[0][0][2+4*z] = lattice[0][0][2];
+    lattice[0][0][3+4*z] = lattice[0][0][3];
+
+    lattice[0][1][0+4*z] = lattice[0][1][0];
+    lattice[0][1][1+4*z] = lattice[0][1][1];
+    lattice[0][1][2+4*z] = lattice[0][1][2];
+    lattice[0][1][3+4*z] = lattice[0][1][3];
+
+    lattice[1][0][0+4*z] = lattice[1][0][0];
+    lattice[1][0][1+4*z] = lattice[1][0][1];
+    lattice[1][0][2+4*z] = lattice[1][0][2];
+    lattice[1][0][3+4*z] = lattice[1][0][3];
+
+    lattice[1][1][0+4*z] = lattice[1][1][0];
+    lattice[1][1][1+4*z] = lattice[1][1][1];
+    lattice[1][1][2+4*z] = lattice[1][1][2];
+    lattice[1][1][3+4*z] = lattice[1][1][3];
+  }
+
+}
+
 
 void initialise_lattice_CZTS_randomized()
 {
-    initialise_lattice_CZTS(); // start with correct stoichometry
+    initialise_lattice_CZTS_supercell(); // start with correct stoichometry
 
     // Randomizing CZTS lattice by swapping species
     int shuffles=10; // Defining number of swap attempts based on tota no. of sites
