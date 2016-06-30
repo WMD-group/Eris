@@ -98,7 +98,7 @@ void initialise_lattice_CZTS()
 
 
 
-void initialize_lattice_CZTS_supercell()
+void initialise_lattice_CZTS_supercell()
 {
 
 // This routine produces a lattice containing a unit cell of CZTS (constructed by inspecting CZTS POSCARs layer by layer)
