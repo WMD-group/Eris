@@ -112,7 +112,7 @@ void initialise_lattice_CZTS_supercell()
 int x,y,z;
     
 // Filling corner of the supercell lattice with the unit cell array
-  lattice[0][0][0] = 1;
+ /* lattice[0][0][0] = 1;
   lattice[0][0][1] = 0;
   lattice[0][0][2] = 2;
   lattice[0][0][3] = 0;
@@ -131,7 +131,69 @@ int x,y,z;
   lattice[1][1][1] = 0;
   lattice[1][1][2] = 1;
   lattice[1][1][3] = 0;
+*/
 
+// Filling unit cell (top left corner of eris terminal display)
+// z = 0 layer
+lattice[0][0][0] = 2;
+lattice[1][0][0] = 0;
+lattice[0][1][0] = 0;
+lattice[1][1][0] = 1;
+// z = 1 layer
+lattice[0][0][1] = 0;
+lattice[1][0][1] = 1;
+lattice[0][1][1] = 3;
+lattice[1][1][1] = 0;
+// z = 2 layer
+lattice[0][0][2] = 1;
+lattice[1][0][2] = 0;
+lattice[0][1][2] = 0;
+lattice[1][1][2] = 2;
+// z = 3 layer
+lattice[0][0][3] = 0;
+lattice[1][0][3] = 3;
+lattice[0][1][3] = 1;
+lattice[1][1][3] = 0;
+
+
+
+
+// Loops to fill supercell using above unit cell
+for (z=0; z<Z_super; z++)
+{
+    for (y=0; y<Y_super; y++)
+    {
+        for (x=0; x<X_super; x++)
+        {
+// z = 0 layer
+lattice[0+2*x][0+2*y][0+4*z] = 1;
+lattice[1+2*x][0+2*y][0+4*z] = 0;
+lattice[0+2*x][1+2*y][0+4*z] = 0;
+lattice[1+2*x][1+2*y][0+4*z] = 2;
+// z = 1 layer
+lattice[0+2*x][0+2*y][1+4*z] = 0;
+lattice[1+2*x][0+2*y][1+4*z] = 3;
+lattice[0+2*x][1+2*y][1+4*z] = 1;
+lattice[1+2*x][1+2*y][1+4*z] = 0;
+// z = 2 layer
+lattice[0+2*x][0+2*y][2+4*z] = 2;
+lattice[1+2*x][0+2*y][2+4*z] = 0;
+lattice[0+2*x][1+2*y][2+4*z] = 0;
+lattice[1+2*x][1+2*y][2+4*z] = 1;
+// z = 3 layer
+lattice[0+2*x][0+2*y][3+4*z] = 0;
+lattice[1+2*x][0+2*y][3+4*z] = 1;
+lattice[0+2*x][1+2*y][3+4*z] = 3;
+lattice[1+2*x][1+2*y][3+4*z] = 0;
+
+        }
+    }
+}
+
+
+
+
+/*
   // Checking initial lattice size
   //int elements = sizeof(lattice)/sizeof(lattice[0][0][0]);
   //int xdim= X_super*2, ydim=Y_super*2, zdim=Z_super*4;
@@ -266,6 +328,9 @@ for(int i = 0; i < 4; i++) {
     //fprintf(stderr, "Current zdim: %d, current iteration: %d \n", zdim, z);
   
   }
+*/
+
+
 
 }
 
