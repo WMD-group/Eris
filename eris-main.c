@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     else
         initialise_lattice_CZTS_randomized();
     
-    outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
+//    outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 

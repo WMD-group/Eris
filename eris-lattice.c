@@ -132,6 +132,10 @@ int x,y,z;
   lattice[1][1][2] = 1;
   lattice[1][1][3] = 0;
 
+  // Checking initial lattice size
+  //int elements = sizeof(lattice)/sizeof(lattice[0][0][0]);
+  //int xdim= X_super*2, ydim=Y_super*2, zdim=Z_super*4;
+  //fprintf(stderr, "Size of lattice: %d, xdim: %d, ydim: %d, zdim: %d \n", elements, xdim, ydim, zdim);
 
   // Creating supercell copies of unit cell in x-direction
   for (x=1;x<X_super;x++)
@@ -141,20 +145,39 @@ int x,y,z;
     lattice[0+2*x][0][2] = lattice[0][0][2];
     lattice[0+2*x][0][3] = lattice[0][0][3];
 
+int xdim1 = 0+2*x; 
+fprintf(stderr, "x supercell1 index: %d \n", xdim1); 
+
     lattice[0+2*x][1][0] = lattice[0][1][0];
     lattice[0+2*x][1][1] = lattice[0][1][1];
     lattice[0+2*x][1][2] = lattice[0][1][2];
     lattice[0+2*x][1][3] = lattice[0][1][3];
+
+
+int xdim1_again = 0+2*x; 
+fprintf(stderr, "x supercell1 index again: %d \n", xdim1_again); 
 
     lattice[1+2*x][0][0] = lattice[1][0][0];
     lattice[1+2*x][0][1] = lattice[1][0][1];
     lattice[1+2*x][0][2] = lattice[1][0][2];
     lattice[1+2*x][0][3] = lattice[1][0][3];
 
+int xdim2 = 1+2*x; 
+fprintf(stderr, "x supercell2 index: %d \n", xdim2); 
+
     lattice[1+2*x][1][0] = lattice[1][1][0];
     lattice[1+2*x][1][1] = lattice[1][1][1];
     lattice[1+2*x][1][2] = lattice[1][1][2];
     lattice[1+2*x][1][3] = lattice[1][1][3];
+
+
+int xdim2_again = 1+2*x; 
+fprintf(stderr, "x supercell2 index again: %d \n", xdim2_again); 
+
+    //debugging
+    //int xdim=1+2*x;
+    //fprintf(stderr, "Current xdim: %d, current iteration: %d \n", xdim, x);
+
   }
 
   // Creating supercell copies of unit cell in y-direction
@@ -165,21 +188,41 @@ int x,y,z;
     lattice[0][0+2*y][2] = lattice[0][0][2];
     lattice[0][0+2*y][3] = lattice[0][0][3];
 
+int ydim1 = 0+2*y; 
+fprintf(stderr, "y supercell1 index: %d \n", ydim1); 
+
     lattice[0][1+2*y][0] = lattice[0][1][0];
     lattice[0][1+2*y][1] = lattice[0][1][1];
     lattice[0][1+2*y][2] = lattice[0][1][2];
     lattice[0][1+2*y][3] = lattice[0][1][3];
+
+
+int ydim1_again = 0+2*y; 
+fprintf(stderr, "y supercell1 index again: %d \n", ydim1_again); 
 
     lattice[1][0+2*y][0] = lattice[1][0][0];
     lattice[1][0+2*y][1] = lattice[1][0][1];
     lattice[1][0+2*y][2] = lattice[1][0][2];
     lattice[1][0+2*y][3] = lattice[1][0][3];
 
+int ydim2 = 1+2*y; 
+fprintf(stderr, "y supercell2 index: %d \n", ydim2); 
+
     lattice[1][1+2*y][0] = lattice[1][1][0];
     lattice[1][1+2*y][1] = lattice[1][1][1];
     lattice[1][1+2*y][2] = lattice[1][1][2];
     lattice[1][1+2*y][3] = lattice[1][1][3];
+
+
+int ydim2_again = 1+2*y; 
+fprintf(stderr, "y supercell2 index again: %d \n", ydim2_again); 
+
+    //debugging
+    //int ydim=1+2*y;
+    //fprintf(stderr, "Current ydim: %d, current iteration: %d \n", ydim, y);
+    
   }
+
   // Creating supercell copies of unit cell in z-direction
   for (z=1;z<Z_super;z++)
   {
@@ -188,20 +231,49 @@ int x,y,z;
     lattice[0][0][2+4*z] = lattice[0][0][2];
     lattice[0][0][3+4*z] = lattice[0][0][3];
 
+int zdim1 = 3+4*z; 
+fprintf(stderr, "z supercell1 index: %d \n", zdim1); 
+
     lattice[0][1][0+4*z] = lattice[0][1][0];
     lattice[0][1][1+4*z] = lattice[0][1][1];
     lattice[0][1][2+4*z] = lattice[0][1][2];
     lattice[0][1][3+4*z] = lattice[0][1][3];
+
+
+int zdim1_again = 3+4*z; 
+fprintf(stderr, "z supercell1 index again: %d \n", zdim1_again); 
 
     lattice[1][0][0+4*z] = lattice[1][0][0];
     lattice[1][0][1+4*z] = lattice[1][0][1];
     lattice[1][0][2+4*z] = lattice[1][0][2];
     lattice[1][0][3+4*z] = lattice[1][0][3];
 
+
+int zdim2 = 3+4*z; 
+fprintf(stderr, "z supercell2 index: %d \n", zdim2); 
+
     lattice[1][1][0+4*z] = lattice[1][1][0];
     lattice[1][1][1+4*z] = lattice[1][1][1];
     lattice[1][1][2+4*z] = lattice[1][1][2];
     lattice[1][1][3+4*z] = lattice[1][1][3];
+
+
+int zdim2_again = 3+4*z; 
+fprintf(stderr, "z supercell2 index again: %d \n", zdim2_again); 
+
+
+// Printing full array for debugging
+for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++) {
+                   fprintf(stderr,"%d ", lattice[i][j][0]);
+        }
+        fprintf(stderr,"\n");
+}
+
+    //debugging
+    //int zdim=1+4*z;
+    //fprintf(stderr, "Current zdim: %d, current iteration: %d \n", zdim, z);
+  
   }
 
 }
