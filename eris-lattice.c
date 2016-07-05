@@ -145,34 +145,25 @@ int x,y,z;
     lattice[0+2*x][0][2] = lattice[0][0][2];
     lattice[0+2*x][0][3] = lattice[0][0][3];
 
-int xdim1 = 0+2*x; 
-fprintf(stderr, "x supercell1 index: %d \n", xdim1); 
+//debugging
+//int xdim1 = 0+2*x; 
+//fprintf(stderr, "x supercell1 index: %d \n", xdim1); 
 
     lattice[0+2*x][1][0] = lattice[0][1][0];
     lattice[0+2*x][1][1] = lattice[0][1][1];
     lattice[0+2*x][1][2] = lattice[0][1][2];
     lattice[0+2*x][1][3] = lattice[0][1][3];
 
-
-int xdim1_again = 0+2*x; 
-fprintf(stderr, "x supercell1 index again: %d \n", xdim1_again); 
-
     lattice[1+2*x][0][0] = lattice[1][0][0];
     lattice[1+2*x][0][1] = lattice[1][0][1];
     lattice[1+2*x][0][2] = lattice[1][0][2];
     lattice[1+2*x][0][3] = lattice[1][0][3];
-
-int xdim2 = 1+2*x; 
-fprintf(stderr, "x supercell2 index: %d \n", xdim2); 
 
     lattice[1+2*x][1][0] = lattice[1][1][0];
     lattice[1+2*x][1][1] = lattice[1][1][1];
     lattice[1+2*x][1][2] = lattice[1][1][2];
     lattice[1+2*x][1][3] = lattice[1][1][3];
 
-
-int xdim2_again = 1+2*x; 
-fprintf(stderr, "x supercell2 index again: %d \n", xdim2_again); 
 
     //debugging
     //int xdim=1+2*x;
