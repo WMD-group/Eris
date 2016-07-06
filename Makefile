@@ -19,4 +19,4 @@ clean:
 	rm eris 
 	
 cleanupdata:
-	rm *.xyz potential*.dat variance.dat
+	rm czts* potential* Efield* variance* RDF*; rm -r equil*
