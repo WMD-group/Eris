@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
                 if (OrderedInitialLattice)
-                    initialise_lattice_CZTS();
+                    initialise_lattice_CZTS_supercell();
                 else
                     initialise_lattice_CZTS_randomized();
 

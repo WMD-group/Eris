@@ -25,11 +25,6 @@ int Y=Y_super*2;
 int Z=Z_super*4;
 
 
-// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
-#define X_super 2
-#define Y_super 2
-#define Z_super 2
-
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
 
