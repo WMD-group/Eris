@@ -682,7 +682,39 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
     fprintf(fo, "%f %f %f 90.000000 90.000000 90.000000 \n", X_dim, Y_dim, Z_dim);
     fprintf(fo, "cartesian \n");
 
-        // Looping over lattice to write coordinates to gulp input file
+        // Adding S anions to top of the coordinates list based on the fixed S positions in a unit cell, expanded using supercell parameters
+        for (i=0; i<X_super; i++)
+        {
+          for (j=0; j<Y_super; j++)
+          {
+            for (k=0; k<Z_super; k++)
+            {
+/*
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.254750013*2.0*d)+(2.0*d*j), (0.758700013*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.745249987*2.0*d)+(2.0*d*j), (0.241300002*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.241300002*2.0*d)+(2.0*d*j), (0.254750013*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.758700013*2.0*d)+(2.0*d*j), (0.745249987*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.754750013*2.0*d)+(2.0*d*j), (0.258700013*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.245249987*2.0*d)+(2.0*d*j), (0.741299987*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.741299987*2.0*d)+(2.0*d*j), (0.754750013*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.258700013*2.0*d)+(2.0*d*j), (0.245249987*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
+*/
+                
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.758700013*2.0*d)+(2.0*d*i), (0.254750013*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.241300002*2.0*d)+(2.0*d*i), (0.745249987*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.254750013*2.0*d)+(2.0*d*i), (0.241300002*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.745249987*2.0*d)+(2.0*d*i), (0.758700013*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.258700013*2.0*d)+(2.0*d*i), (0.754750013*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.741299987*2.0*d)+(2.0*d*i), (0.245249987*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.754750013*2.0*d)+(2.0*d*i), (0.741299987*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.245249987*2.0*d)+(2.0*d*i), (0.258700013*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
+              
+            }
+          }
+        }
+
+
+        // Looping over lattice to write coordinates of cations (C, Z, T) to gulp input file
         for (i=0;i<X;i++)
           for (j=0;j<Y;j++)
             for (k=0;k<Z;k++)
@@ -691,8 +723,8 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
                 else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
    
 
-     fprintf(fo, "space \n");
-     fprintf(fo, "82 \n");
+    // fprintf(fo, "space \n");
+    // fprintf(fo, "82 \n");
      fclose(fo);
 
 }
