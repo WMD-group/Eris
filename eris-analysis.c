@@ -621,7 +621,7 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
 
 
 
-void lattice_energy_full(char * filename, int MCS_num)
+void lattice_energy_full(char * filename)
 {
 //int mkdir (const char *equilibriation_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibriation as gulp input files for post-processing
 
