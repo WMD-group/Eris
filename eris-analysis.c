@@ -699,7 +699,8 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
               fprintf(fo,"S core %f %f %f -2.0 \n",  (0.741299987*2.0*d)+(2.0*d*j), (0.754750013*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
               fprintf(fo,"S core %f %f %f -2.0 \n",  (0.258700013*2.0*d)+(2.0*d*j), (0.245249987*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
 */
-                
+               
+              // x- and y- coordinates are swapped to make visual of xyz file consistent with POSCAR in VESTA
               fprintf(fo,"S core %f %f %f -2.0 \n", (0.758700013*2.0*d)+(2.0*d*i), (0.254750013*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
               fprintf(fo,"S core %f %f %f -2.0 \n", (0.241300002*2.0*d)+(2.0*d*i), (0.745249987*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
               fprintf(fo,"S core %f %f %f -2.0 \n", (0.254750013*2.0*d)+(2.0*d*i), (0.241300002*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
