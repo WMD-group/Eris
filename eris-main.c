@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     if (OrderedInitialLattice) // set by eris.cfg
-        initialise_lattice_CZTS();
+        initialise_lattice_CZTS_supercell();
     else
         initialise_lattice_CZTS_randomized();
     
-    outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
+//    outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
