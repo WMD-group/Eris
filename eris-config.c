@@ -9,9 +9,21 @@
 
 #include <stdbool.h>
 
+/* Commenting out old way to declare lattice size (before using supercell initial config)
 #define X 20 // Malloc is for losers.
 #define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
 #define Z 40 
+*/
+
+// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
+#define X_super 5
+#define Y_super 5
+#define Z_super 5
+// Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
+int X=X_super*2;
+int Y=Y_super*2;
+int Z=Z_super*4;
+
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
 #define X_super 2
