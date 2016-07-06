@@ -18,7 +18,7 @@
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
 #define X_super 2
 #define Y_super 2
-#define Z_super 2
+#define Z_super 1
 // Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
 int X=X_super*2;
 int Y=Y_super*2;
