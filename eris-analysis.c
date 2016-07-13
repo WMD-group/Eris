@@ -613,7 +613,7 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
  //   fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
  //           T,mean,variance,atoms,X*Y*Z);
  //   fclose(fo);
-    MCS_num_scaled = MCS_num*(MCMinorSteps-1); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point
+    MCS_num_scaled = MCS_num*(MCMinorSteps); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point
     fprintf(fvariance,"MCS: %d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
             MCS_num_scaled, mean,variance,atoms,X*Y*Z);
     fclose(fvariance);
