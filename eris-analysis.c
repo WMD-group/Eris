@@ -561,7 +561,7 @@ void outputlattice_stoichometry()
 void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num)
 {
     int x,y,z;
-    int MCS_num_scaled;
+    int MCS_num_scaled; //to avoid errors in printing no of MCS when number is too large for standard int may need to use long int
     int atoms;
     double pot,mean,variance;
 
@@ -613,7 +613,8 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
  //   fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
  //           T,mean,variance,atoms,X*Y*Z);
  //   fclose(fo);
-    MCS_num_scaled = MCS_num*(MCMinorSteps); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point
+    MCS_num_scaled = MCS_num;
+        //*(MCMinorSteps); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point (currently commenting out MCMinorSteps to avoid large negative values from integer overflow)
     fprintf(fvariance,"MCS: %d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
             MCS_num_scaled, mean,variance,atoms,X*Y*Z);
     fclose(fvariance);
