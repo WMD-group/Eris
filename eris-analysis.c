@@ -252,10 +252,10 @@ void radial_distribution_function(char * filename, int speciesA, int speciesB )
                             distance_squared=dx*dx + dy*dy + dz*dz;
                             if (distance_squared>CUTOFF*CUTOFF) continue; // skip ones that exceed spherical limit of CUTOFF
 
-                            if (lattice[x][y][z]!=speciesA) continue; // if not speciesA
-                            if (lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]!=speciesB) continue;
+                            if (lattice[x][y][z]!=speciesA) continue; // if not speciesA, discard this data
+
+                            pair_correlation =  lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]==speciesB ? 1.0 : 0.0; 
                             //complicated modulus arithmatic deals with PBCs
-                            pair_correlation=1.0; // if we get this far, these sites are part of our RDF
 
                             // Old speciesA=speciesB code
 //                            pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
