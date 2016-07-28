@@ -55,17 +55,6 @@ int dipolecount=0;
 
 double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
 
-struct dipole Efield; //now a vector, still k_B.T units per lattice unit
-//double Efield=0.01; // units k_B.T per lattice unit
-double Eangle=0.0;
-
-double K=1.0; //elastic coupling constant for dipole moving within cage
-
-double Dipole=1.0; //units of k_B.T for spacing = 1 lattice unit
-double CageStrain=1.0; // as above
-
-double dipole_fraction=0.9; //fraction of sites to be occupied by dipoles
-
 int ElectrostaticCutOff=1;
 
 // These variables from the old main
@@ -155,6 +144,7 @@ void load_config()
     cf = &cfg;
     config_init(cf);
 
+    fprintf(stderr,"Reading config file...\n");
     if (!config_read_file(cf,"eris.cfg")) 
     {
         fprintf(stderr, "%s:%d - %s\n",
@@ -164,19 +154,13 @@ void load_config()
         config_destroy(cf);
         exit(EXIT_FAILURE);
     }
+    fprintf(stderr,"Read OK! Variables have been set as follows:\n\n");
 
-    config_lookup_string(cf,"LOGFILE",&LOGFILE); //library does its own dynamic allocation
-
-    config_lookup_int(cf,"T",&T);
-
-    config_lookup_float(cf,"Efield.x",&tmp);  Efield.x=(float)tmp;
-    config_lookup_float(cf,"Efield.y",&tmp);  Efield.y=(float)tmp;
-    config_lookup_float(cf,"Efield.z",&tmp);  Efield.z=(float)tmp;
-
-    fprintf(stderr,"Efield: x %f y %f z %f\n",Efield.x,Efield.y,Efield.z);
-
+    config_lookup_string(cf,"LOGFILE",&LOGFILE); //config library does its own dynamic allocation
+    config_lookup_int(cf,"T",&T); 
     config_lookup_float(cf,"electrostatic",&electrostatic); //Multiplier for E_ints
-    
+    fprintf(stderr,"LOGFILE: %s\nT: %d\nelectrostatic: %f\n",LOGFILE,T,electrostatic);
+
     setting = config_lookup(cf, "E_int");
     E_ints   = config_setting_length(setting);
     fprintf(stderr,"I've found: %d values in the E_int list...\n",E_ints);
@@ -200,18 +184,20 @@ void load_config()
     fprintf(stderr,"\n");
 
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
-
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
     config_lookup_int(cf,"MCEqmSteps",&MCEqmSteps);
     config_lookup_float(cf,"MCMoves",&MCMoves);
+    fprintf(stderr,"ElectrostaticCutOff: %d\n\nMCMegaSteps: %d\nMCEqmSteps: %d\nMCMoves: %f\n",ElectrostaticCutOff,MCMegaSteps,MCEqmSteps,MCMoves);
+
+    MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMoves);
+    fprintf(stderr," ==> Results in MCMinorSteps: %llu\n",MCMinorSteps);
 
     config_lookup_int(cf,"TMIN",&TMIN);
     config_lookup_int(cf,"TMAX",&TMAX);
     config_lookup_int(cf,"TSTEP",&TSTEP);
+    fprintf(stderr,"\nTMIN: %d\nTMAX: %d\nTSTEP: %d\n",TMIN,TMAX,TSTEP);
     if (TMIN<0 || TMAX<0 || TSTEP<1)
         fprintf(stderr,"SOMETHING VERY ODD ABOUT THE TEMPERATURES I READ FROM THE CONFIG FILE. I HOPE YOU KNOW WHAT YOU ARE DOING!\n");
-
-    MCMinorSteps=(unsigned long long int)((float)X*(float)Y*(float)Z*MCMoves);
 
 // Flags for output routines to run
     config_lookup_bool(cf,"DEBUG",&DEBUG);
@@ -226,6 +212,6 @@ void load_config()
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
 
-    fprintf(stderr,"Config loaded. \n");
+    fprintf(stderr,"Config loaded. \n\n");
 }
 

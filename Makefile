@@ -24,4 +24,4 @@ clean:
 	rm eris 
 	
 cleandata:
-	rm *.xyz potential*.dat variance.dat
+	rm *.xyz potential*.dat variance.dat RDF_*.dat
