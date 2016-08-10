@@ -19,4 +19,4 @@ clean:
 	rm eris 
 	
 cleanupdata:
-	rm czts* potential* Efield* variance* RDF*; rm -r equil*
+	rm czts* potential* Efield* variance* RDF*; rm -r equil* gulp_inputs
