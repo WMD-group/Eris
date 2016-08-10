@@ -137,6 +137,13 @@ int main(int argc, char *argv[])
                 lattice_energy_full(gulp_filename_initial);
             }
 
+            // Producing gulp input file of initial lattice
+            if (SaveGULP)
+            {
+                char filename[100];
+                sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
+                generate_gulp_input(filename);
+            }
 
 // Jarv's equilibration run to use after suitable equilibration time has been established, set using MCEqmSteps in eris.cfg
 //---------------------------------------------------------------------------------------------------------------------------------- 
@@ -212,7 +219,7 @@ int main(int argc, char *argv[])
             if (SaveGULP)
             {
                 char filename[100];
-                sprintf(filename,"GULP_inputs/czts_lattice_T_%04d.in",T);
+                sprintf(filename,"GULP_inputs/czts_lattice_final_T_%04d.in",T);
                 generate_gulp_input(filename);
             }
         
