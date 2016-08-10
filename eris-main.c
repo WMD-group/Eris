@@ -207,7 +207,16 @@ int main(int argc, char *argv[])
                 sprintf(name,"czts_lattice_T_%04d.xyz",T);
                 outputlattice_xyz(name);
             }
-       }
+       
+        
+            if (SaveGULP)
+            {
+                char filename[100];
+                sprintf(filename,"GULP_inputs/czts_lattice_T_%04d.in",T);
+                generate_gulp_input(filename);
+            }
+        
+        }
 
     }
 
