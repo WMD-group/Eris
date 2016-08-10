@@ -16,9 +16,9 @@
 */
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
-#define X_super 5
-#define Y_super 5
-#define Z_super 5
+#define X_super 1
+#define Y_super 1
+#define Z_super 1
 // Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
 int X=X_super*2;
 int Y=Y_super*2;
@@ -92,6 +92,7 @@ int ReinitialiseLattice=false;
 int EquilibrationChecks=false;
 
 int SaveXYZ=false;
+int SaveGULP=false;
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
@@ -226,6 +227,7 @@ void load_config()
     config_lookup_bool(cf, "EquilibrationChecks",&EquilibrationChecks);
 
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
+    config_lookup_bool(cf,"SaveGULP",&SaveGULP);
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
 
