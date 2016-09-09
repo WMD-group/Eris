@@ -1,8 +1,13 @@
-/* Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
+/* Eris - a Monte Carlo code to simulate cation disorder in CZTS (Cu2ZnSnS4)
+ * 
+ * Adapted from Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
  * and behaviour in hybrid perovskite solar cells.
  *
  * By Jarvist Moore Frost
  * University of Bath
+ *
+ * Contributors: 
+ * Suzanne Wallace, University of Bath
  *
  * File begun 16th January 2014
  */
@@ -223,6 +228,9 @@ int main(int argc, char *argv[])
                 generate_gulp_input(filename);
             }
         
+            // Output RDF of final configuration at each T
+            radial_distribution_function_allsites();
+
         }
 
     }
