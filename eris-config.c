@@ -9,9 +9,21 @@
 
 #include <stdbool.h>
 
+/* Commenting out old way to declare lattice size (before using supercell initial config)
 #define X 20 // Malloc is for losers.
 #define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
 #define Z 40 
+*/
+
+// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
+#define X_super 1
+#define Y_super 1
+#define Z_super 1
+// Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
+int X=X_super*2;
+int Y=Y_super*2;
+int Z=Z_super*4;
+
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
@@ -36,7 +48,9 @@ struct dipole
     float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
 }; 
 
-int lattice[X][Y][Z];
+// Altering lattice dimensions for producing initial lattice supercell cell from unit cell defined in eris-lattice.c
+int lattice[X_super*2][Y_super*2][Z_super*4];
+
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];
@@ -75,8 +89,10 @@ int CalculateRadialOrderParameter=false;
 int CalculatePotential=false;
 int OrderedInitialLattice=false;
 int ReinitialiseLattice=false;
+int EquilibrationChecks=false;
 
 int SaveXYZ=false;
+int SaveGULP=false;
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
@@ -208,7 +224,10 @@ void load_config()
     config_lookup_bool(cf,"OrderedInitialLattice",&OrderedInitialLattice);
     config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
     
+    config_lookup_bool(cf, "EquilibrationChecks",&EquilibrationChecks);
+
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
+    config_lookup_bool(cf,"SaveGULP",&SaveGULP);
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
 

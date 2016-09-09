@@ -23,5 +23,5 @@ all: eris
 clean:
 	rm eris 
 	
-cleandata:
-	rm *.xyz potential*.dat variance.dat RDF_*.dat
+cleanupdata:
+	rm czts* potential* Efield* variance* RDF*; rm -r equil* gulp_inputs
