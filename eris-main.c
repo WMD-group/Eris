@@ -38,7 +38,7 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 int main(int argc, char *argv[])
 {
     int i,j,k, x,y; //for loop iterators
-    int tic,toc; // time counters; Goes the old grandfather clock
+    int tic,toc,tac; // time counters; Goes the old grandfather clock
     
     double P=0.0;
 
@@ -101,14 +101,12 @@ int main(int argc, char *argv[])
     for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
         beta=1/((float)T/300.0); // Thermodynamic Beta; in units of kbT @ 300K
-        printf("Temperature now T: %d K \t beta: %f\n",T,beta);
+        printf("Temperature now T: %d K \t Beta: %f (kbT@300K)\n",T,beta);
 
         {
 
-
 // Re-initialising lattice for new temperature (if requested by user)
 //---------------------------------------------------------------------------------------------------------------------------------- 
-
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
                 if (OrderedInitialLattice)
@@ -203,8 +201,13 @@ int main(int argc, char *argv[])
 		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
                 fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+
+                tac=clock(); // timings for analysis/output
+
                 fprintf(stderr,"MC Moves: %f MHz\n",
-                    1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC); 
+                    1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
+                fprintf(stderr,"Time spent MC vs. analysis: %f %\n",100.0*(double)(toc-tic)/(double)(tac-tic));
+
                 fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
 
