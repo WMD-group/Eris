@@ -157,38 +157,32 @@ static void MC_move()
     while (lattice[x_a][y_a][z_a]==0); // keep selecting new random numbers until find occupied site...
 
     // Choice direction + size of moves...
-    int RADIAL_CUTOFF=3;
+    int RADIAL_CUTOFF=2;
     do
     {
 // Local cube; Anyhere <> limit
+// Nearest Neighbour limit is RADIAL_CUTOFF=1
         dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-
-// Nearest neighbour moves - NB: issues with gappy lattice! 
-//    dx=(rand_int(2)*2)-1; // on interval [-1,1]
-//    dy=(rand_int(2)*2)-1;
-//    dz=(rand_int(2)*2)-1;
-
-// Global move; anywhere <> anywhere in lattice
-//    dx=rand_int(X);
-//    dy=rand_int(Y);
-//    dz=rand_int(Z);
-  
     }
-    while( (dx+dy+dz)%2!=0 || dx==dy==dz==0); //check to see whether site at this offset in gappy FCC lattice.
+    while( (dx==0 && dy==0 && dz==0) || (dx+dy+dz)%2!=0 ); // Check this works as intended! 
+        // check to see whether site at this offset in gappy FCC lattice.
     // and we're not trying to swap with ourselves...
 
-//    fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz); 
+    //fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz); 
         // for debug - check weighting of moves
-
-//    if (dx==dy==dz==0) return; //skip consideration if null move
 
     // 2nd site to look at...
     x_b=(x_a+dx+X)%X;
     y_b=(y_a+dy+Y)%Y;
     z_b=(z_a+dz+Z)%Z;
 
+    // Global move; anywhere <> anywhere in lattice
+    //x_b=rand_int(X);
+    //y_b=rand_int(Y);
+    //z_b=rand_int(Z);
+ 
     // Nb: this is the definition of a MC move - might want to consider
     // alternative / global / less disruptive moves as well
 
