@@ -24,6 +24,8 @@ int X=X_super*2;
 int Y=Y_super*2;
 int Z=Z_super*4;
 
+// Altering lattice dimensions for producing initial lattice supercell cell from unit cell defined in eris-lattice.c
+int lattice[X_super*2][Y_super*2][Z_super*4];
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 // ill defined if this is > than half any of the above
@@ -48,14 +50,9 @@ struct dipole
     float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
 }; 
 
-// Altering lattice dimensions for producing initial lattice supercell cell from unit cell defined in eris-lattice.c
-int lattice[X_super*2][Y_super*2][Z_super*4];
-
-
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];
 
-int freezeSn = true; // should we freeze Sn ?
 
 struct mixture
 {
@@ -70,8 +67,8 @@ int dipolecount=0;
 double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
 
 int ElectrostaticCutOff=1;
+int freezeSn = true; // should we freeze Sn ?
 
-// These variables from the old main
 int MCMegaSteps=400;
 int MCEqmSteps=0;
 int TMAX=500;

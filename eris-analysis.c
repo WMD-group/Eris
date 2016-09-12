@@ -10,7 +10,7 @@
 // Prototypes...
 static void lattice_angle_log(FILE *log);
 static double polarisation();
-static double dipole_potential(int x, int y, int z);
+static double potential_at_site(int x, int y, int z);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
@@ -26,9 +26,6 @@ void radial_distribution_function_allsites();
 void radial_distribution_function_allsites_initial(); 
 
 void outputlattice_xyz(char * filename);
-void outputlattice_pnm(char * filename);
-void outputlattice_ppm_hsv(char * filename);
-void outputlattice_svg(char * filename);
 void outputlattice_xyz(char * filename);
 void outputlattice_xyz_overprint(char * filename);
 void outputlattice_pymol_cgo(char * filename);
@@ -38,8 +35,9 @@ void outputlattice_stoichometry();
 
 void generate_gulp_input(char * filename);
 
-//Calculate dipole potential at specific location
-static double dipole_potential(int x, int y, int z) 
+#define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
+
+static double potential_at_site(int x, int y, int z) 
 {
     int dx,dy,dz=0;
     double pot=0.0;
@@ -61,11 +59,8 @@ static double dipole_potential(int x, int y, int z)
 
                 if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
 
-                 // pot(r) = 1/4PiEpsilon * p.r / r^3
-               // pot(r) = 1.0d0/4PiEpsilon * p.r / r^3
-                // Electric dipole potential
-// FIXME
-                 //dipole                pot+=dot(& lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z] ,& r)/(d*d*d);
+                // pot(r) = 1/4PiEpsilon * p.r / r^3
+               
                //for CZTS
                 int species;
                 species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
@@ -90,8 +85,8 @@ static void lattice_potential_log(FILE *log)
     {
         pot=0.0;
         for (y=0;y<Y;y++)
-            pot+=dipole_potential(x,y,z);
-        fprintf(log,"%d %f %f\n",x,pot/(double)Y,dipole_potential(x,Y/2,z));
+            pot+=potential_at_site(x,y,z);
+        fprintf(log,"%d %f %f\n",x,pot/(double)Y,potential_at_site(x,Y/2,z));
     }
 
 }
@@ -106,7 +101,7 @@ void lattice_potential_XY(char * filename)
 
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
-            fprintf(fo,"%d %d %f\n",x,y,dipole_potential(x,y,0));
+            fprintf(fo,"%d %d %f\n",x,y,potential_at_site(x,y,0));
 }
 
 //Calculates dipole potential across XYZ volume
@@ -127,7 +122,7 @@ void lattice_potential_XYZ(char * filename)
             for (z=0;z<Z;z++)
             {
                 // log potential at all sites (Cu,Zn,Sn)
-                pot=dipole_potential(x,y,z);
+                pot=potential_at_site(x,y,z);
                 fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
                 
                 if (lattice[x][y][z]==3) // only count tin towards mean / variance
@@ -145,7 +140,7 @@ void lattice_potential_XYZ(char * filename)
             {
                 if (lattice[x][y][z]==3)
                 {
-                    pot=dipole_potential(x,y,z);
+                    pot=potential_at_site(x,y,z);
                     variance+=(pot-mean)*(pot-mean);
                     atoms++;
                 }
@@ -177,7 +172,7 @@ void outputpotential_png(char * filename)
     {
         for (k=0;k<Y;k++)
         {
-            pixel=SHRT_MAX/2+(int)(SHRT_MAX*0.1*dipole_potential(i,k,0));
+            pixel=SHRT_MAX/2+(int)(SHRT_MAX*0.1*potential_at_site(i,k,0));
 
             // Bounds checking :^)
             if (pixel<0) pixel=0;
@@ -314,78 +309,6 @@ void outputlattice_xyz(char * filename)
     fclose(fo);
 }
 
-void outputlattice_png(char * filename) // TODO: Fix me for new code
-{
-    int i,k;
-    FILE *fo;
-    fo=fopen(filename,"w");
-
-    fprintf (fo,"P2\n%d %d\n%d\n", X, Y, SHRT_MAX);
-
-    for (i=0;i<X;i++)
-    {
-        for (k=0;k<Y;k++)
-//            fprintf(fo,"%d ",(int)(SHRT_MAX*atan2(lattice[i][k][0].y,lattice[i][k][0].x)/(2*M_PI)));
-        fprintf(fo,"\n");
-    }
-
-}
-
-// Outputs a PPM bitmap of lattice dipole orientation on a HSV colourwheel
-void outputlattice_ppm_hsv(char * filename)
-{
-    int i,k;
-    float angle;
-
-    float r,g,b; // RGB
-    float h,s,v; // HSV
-    float p,t,q,f; // intemediates for HSV->RGB conversion
-    int hp;
-
-    FILE *fo;
-    fo=fopen(filename,"w");
-
-    //Set Saturation + Value, vary hue
-    s=0.6; v=0.8;
-
-    fprintf (fo,"P6\n%d %d\n255\n", X, Y);
-
-    for (i=0;i<X;i++) //force same ordering as SVG...
-        for (k=0;k<Y;k++)
-        {
-/* TODO: Fix for new lattice types
-            h=M_PI+atan2(lattice[i][k][0].y,lattice[i][k][0].x); //Nb: assumes 0->2PI interval!
-            v=0.5+0.4*lattice[i][k][0].z; //darken towards the south (-z) pole
-            s=0.6-0.6*fabs(lattice[i][k][0].z); //desaturate towards the poles
-*/
-            // http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
-            hp=(int)floor(h/(M_PI/3.0)); //radians, woo
-            f=h/(M_PI/3.0)-(float)hp;
-
-            p=v*(1.0-s);
-            q=v*(1.0-f*s);
-            t=v*(1.0-(1.0-f)*s);
-
-            switch (hp){
-                case 0: r=v; g=t; b=p; break;
-                case 1: r=q; g=v; b=p; break;
-                case 2: r=p; g=v; b=t; break;
-                case 3: r=p; g=q; b=v; break;
-                case 4: r=t; g=p; b=v; break;
-                case 5: r=v; g=p; b=q; break;
-            }
-
-            //            fprintf(stderr,"h: %f r: %f g: %f b: %f\n",h,r,g,b);
-
-  //          if (lattice[i][k][0].x == 0.0 && lattice[i][k][0].y == 0.0 && lattice[i][k][0].z == 0.0)
-  //          { r=0.0; g=0.0; b=0.0; } // #FADE TO BLACK
-            //zero length dipoles, i.e. absent ones - appear as black pixels
-
-            fprintf(fo,"%c%c%c",(char)(254.0*r),(char)(254.0*g),(char)(254.0*b));
-        }
-    fclose(fo); //don't forget :^)
-}
-
 #define ZSCALE 5.0 // Scales Z-axis in Pymol xyz / CGO outputs
 
 float DMAX=55.0; //sensible starting value...
@@ -411,7 +334,7 @@ for (z=0;z<DumbTerminalLayers;z++) // number of layers to display on Z
      for (y=0;y<Y;y++)
         for (x=0;x<X;x++)
         {
-             potential=dipole_potential(x,y,z);
+             potential=potential_at_site(x,y,z);
              if (fabs(potential-DMEAN)>new_DMAX)
                 new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
         }
@@ -438,7 +361,7 @@ for (z=0;z<DumbTerminalLayers;z++) // number of layers to display on Z
         fprintf(stderr,"    ");
         for (x=0;x<X;x++)
         {
-            potential=dipole_potential(x,y,z);
+            potential=potential_at_site(x,y,z);
             
             variance+=potential*potential;
             mean+=potential;
@@ -585,7 +508,7 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
             for (z=0;z<Z;z++)
             {
                 // log potential at all sites (Cu,Zn,Sn)
-                pot=dipole_potential(x,y,z);
+                pot=potential_at_site(x,y,z);
                 fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
                 
                 if (lattice[x][y][z]==3) // only count tin towards mean / variance
@@ -603,7 +526,7 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
             {
                 if (lattice[x][y][z]==3)
                 {
-                    pot=dipole_potential(x,y,z);
+                    pot=potential_at_site(x,y,z);
                     variance+=(pot-mean)*(pot-mean);
                     atoms++;
                 }
