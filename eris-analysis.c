@@ -8,8 +8,6 @@
  */
 
 // Prototypes...
-static void lattice_angle_log(FILE *log);
-static double polarisation();
 static double potential_at_site(int x, int y, int z);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
@@ -578,22 +576,11 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
             "4.0",
             "empty site again"
     };
-    // Defining gap for empty sites so that they can be skipped over when writing the cooradinates to a gulp input file 
-    char gap[100];
-    sprintf(gap,"Nu");
-    
     const float d=2.72; // Angstrom spacing of lattice to map to real space coords
 
     fo=fopen(filename,"w");
    
 //    fprintf(fo,"%d\n\n",X*Y*Z);
-
-//    printf("%s \n", gap);
-//    printf("%s \n", atom[4]);
-
-  //  if (strcmp(gap,atom[4]) == 0) printf("yes!");
-  //  else printf("no!");
- 
 
     // Writing top lines of gulp input file
     const float X_dim=d*X, Y_dim=d*Y, Z_dim=d*Z;
@@ -646,7 +633,7 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
           for (j=0;j<Y;j++)
             for (k=0;k<Z;k++)
 
-                if (strcmp(gap,atom[lattice[i][j][k]]) ==0) continue; //avoid writing gap sites to gulp input file
+                if (lattice[i][j][k]==0) continue; //avoid writing gap sites to gulp input file
                 else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
    
 
@@ -687,22 +674,11 @@ status = mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
             "4.0",
             "empty site again"
     };
-    // Defining gap for empty sites so that they can be skipped over when writing the cooradinates to a gulp input file 
-    char gap[100];
-    sprintf(gap,"Nu");
-    
     const float d=2.72; // Angstrom spacing of lattice to map to real space coords
 
     fo=fopen(filename,"w");
    
 //    fprintf(fo,"%d\n\n",X*Y*Z);
-
-//    printf("%s \n", gap);
-//    printf("%s \n", atom[4]);
-
-  //  if (strcmp(gap,atom[4]) == 0) printf("yes!");
-  //  else printf("no!");
- 
 
     // Writing top lines of gulp input file
     const float X_dim=d*X, Y_dim=d*Y, Z_dim=d*Z;
@@ -755,7 +731,7 @@ status = mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
           for (j=0;j<Y;j++)
             for (k=0;k<Z;k++)
 
-                if (strcmp(gap,atom[lattice[i][j][k]]) ==0) continue; //avoid writing gap sites to gulp input file
+                if (lattice[i][j][k]==0) continue; //avoid writing gap sites to gulp input file
                 else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
    
 

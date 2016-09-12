@@ -22,8 +22,6 @@
 #include <sys/stat.h> // to enable to use of mkdir in functions in program
 #include <sys/types.h>
 
-#include <string.h> // needed to use strcmp() function
-
 #include "mt19937ar-cok.c" //Code _included_ to allow more global optimisation
 static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an OK speed.
 {
