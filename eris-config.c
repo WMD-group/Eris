@@ -177,11 +177,11 @@ void load_config()
     fprintf(stderr,"I've found: %d values in the E_int list...\n",E_ints);
 //   Nb: factor of 38.911 kBT at 300 K in eV; to convert eV values into internal ones...
     for (i=0;i<E_ints;i++)
-        E_int[i/4][i%4]=config_setting_get_float_elem(setting,i)*electrostatic*38.911; //I know, I know - I'm sorry.
+        E_int[i/3][i%3]=config_setting_get_float_elem(setting,i)*electrostatic*38.911; //I know, I know - I'm sorry.
     //    config_lookup_float(cf,"Eangle",&Eangle);
     fprintf(stderr,"My interactions look like:\n");
-    for (i=0;i<4;i++)
-        fprintf(stderr,"%f %f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2],E_int[i][3]);
+    for (i=0;i<E_ints;i++)
+        fprintf(stderr,"%f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2]);
 
     int FormalCharges;
     setting  = config_lookup(cf,"FormalCharges");
