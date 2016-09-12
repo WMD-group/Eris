@@ -228,10 +228,10 @@ static void MC_move()
     // Report on planned move + dE -- for debugging only (makes a ridiculous
     // number of prints...)
     if (DEBUG)
-    fprintf(stderr,"MC Move: %d on %d %d %d, %d on %d %d %d --> dE: %f\n",
-            lattice[x_a][y_a][z_a], x_a, y_a, z_a,
-            lattice[x_b][y_b][z_b], x_b, y_b, z_b,
-            dE);
+        fprintf(stderr,"MC Move: %d on %d %d %d, %d on %d %d %d --> dE: %f\n",
+                lattice[x_a][y_a][z_a], x_a, y_a, z_a,
+                lattice[x_b][y_b][z_b], x_b, y_b, z_b,
+                dE);
 
     // OK; now we have dE - proceed with Metropolis Accept/Reject Criteria
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )

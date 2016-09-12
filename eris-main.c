@@ -75,7 +75,12 @@ int main(int argc, char *argv[])
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     if (OrderedInitialLattice) // set by eris.cfg
-        initialise_lattice_CZTS_supercell();
+    {
+        if (SuzySupercell)
+            initialise_lattice_CZTS_supercell();
+        else
+            initialise_lattice_CZTS();
+    }
     else
         initialise_lattice_CZTS_randomized();
     
@@ -108,7 +113,12 @@ int main(int argc, char *argv[])
             if (ReinitialiseLattice) // Are we intending to reset the lattice?
             {
                 if (OrderedInitialLattice)
-                    initialise_lattice_CZTS_supercell();
+                {
+                    if (SuzySupercell)
+                        initialise_lattice_CZTS_supercell();
+                    else
+                        initialise_lattice_CZTS();
+                }
                 else
                     initialise_lattice_CZTS_randomized();
 

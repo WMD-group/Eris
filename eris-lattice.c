@@ -79,7 +79,9 @@ void initialise_lattice_CZTS()
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                species=1+ (x+2*y+2*z)%4;
+//                species=1+ (x+2*y+2*z)%4;
+                species=1+ 2*(z%2) + (x+2*y)%2;
+                // Alternating layers (in Z) of C+T and C+Z
 
                 // 0: Nothing
                 // 1: Copper (I)

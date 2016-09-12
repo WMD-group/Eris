@@ -9,9 +9,9 @@
 
 #include <stdbool.h>
 
-#define X 20 // Malloc is for losers.
-#define Y 20 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
-#define Z 40 
+#define X 10 // Malloc is for losers.
+#define Y 10 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
+#define Z 20 
 int lattice[X][Y][Z];
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
@@ -83,6 +83,8 @@ int CalculatePotential=false;
 int OrderedInitialLattice=false;
 int ReinitialiseLattice=false;
 int EquilibrationChecks=false;
+
+int SuzySupercell=false;
 
 int SaveXYZ=false;
 int SaveGULP=false;
@@ -218,6 +220,8 @@ void load_config()
     config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
     
     config_lookup_bool(cf, "EquilibrationChecks",&EquilibrationChecks);
+
+    config_lookup_bool(cf,"SuzySupercell",&SuzySupercell);
 
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
     config_lookup_bool(cf,"SaveGULP",&SaveGULP);
