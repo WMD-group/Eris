@@ -453,9 +453,14 @@ void outputlattice_stoichometry()
             histogram[lattice[x][y][z]]++;
 
     // output histogram sums for user to read
+    printf("Lattice stoichometry:\n");
     for (i=0;i<5;i++)
-        printf("Species: %c Counts: %d\n",specieslookup[i],histogram[i]);
-   
+        printf("    Species: %c Counts: %d\n",specieslookup[i],histogram[i]);
+
+    if (histogram[1]!=2*histogram[2] || histogram[1]!=2*histogram[3])
+        fprintf(stderr,"Warning! Lattice not stoichometric!\n");
+
+/* Added by Suzy to immediately exit if lattice not stoichometric   
     // conditional statements to check for stoichiometry and exit with error message if off-stoichiometry
     if (histogram[0] != 2*histogram[1])
     {
@@ -474,7 +479,7 @@ void outputlattice_stoichometry()
         exit(EXIT_FAILURE);    
     }
     //printf("%d \n",histogram[1]);
-
+*/
 }
 
 
