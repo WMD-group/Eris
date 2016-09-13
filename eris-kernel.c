@@ -164,7 +164,8 @@ static void MC_move()
 // Nearest Neighbour limit is RADIAL_CUTOFF=1
         dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-        dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+        //dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+        dz=0; // freeze motion in Z; i.e. between Cu/Zn and Cu/Sn layers
     }
     while( (dx==0 && dy==0 && dz==0) || (dx+dy+dz)%2!=0 ); // Check this works as intended! 
         // check to see whether site at this offset in gappy FCC lattice.
