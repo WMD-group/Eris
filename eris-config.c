@@ -179,9 +179,9 @@ void load_config()
     for (i=0;i<E_ints;i++)
         E_int[i/3][i%3]=config_setting_get_float_elem(setting,i)*electrostatic*38.911; //I know, I know - I'm sorry.
     //    config_lookup_float(cf,"Eangle",&Eangle);
-    fprintf(stderr,"My interactions look like:\n");
-    for (i=0;i<E_ints;i++)
-        fprintf(stderr,"%f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2]);
+    fprintf(stderr,"My interaction matrix (should be symmetric) look like:\n");
+    for (i=0;i<E_ints/3;i++)
+        fprintf(stderr,"    %f %f %f\n",E_int[i][0],E_int[i][1],E_int[i][2]);
 
     int FormalCharges;
     setting  = config_lookup(cf,"FormalCharges");
