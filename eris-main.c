@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 
                 fprintf(stderr,"MC Moves: %f MHz\n",
                     1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
-                fprintf(stderr,"Time spent MC vs. analysis: %f %\n",100.0*(double)(toc-tic)/(double)(tac-tic));
+                fprintf(stderr,"Time spent MC vs. analysis: %f\n",100.0*(double)(toc-tic)/(double)(tac-tic));
 
                 fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
