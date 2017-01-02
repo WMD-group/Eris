@@ -12,9 +12,9 @@ static double potential_at_site(int x, int y, int z);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
-void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num); // Extra lattice potential function for outputting the variance for each temperature separately as a function of MC steps during equilibriation
-void lattice_energy_cutoff();  // Function to calculate lattice energy out to a finite cut off radius during equilibriation
-void lattice_energy_full(); // Function to write intermittent configurations during equilibriation to a separate directory as gulp input files for a full lattice energy calculation as post-processing to compare to lattice energy calculated with a finite cut-off radius
+void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num); // Extra lattice potential function for outputting the variance for each temperature separately as a function of MC steps during equilibration
+void lattice_energy_cutoff();  // Function to calculate lattice energy out to a finite cut off radius during equilibration
+void lattice_energy_full(); // Function to write intermittent configurations during equilibration to a separate directory as gulp input files for a full lattice energy calculation as post-processing to compare to lattice energy calculated with a finite cut-off radius
 static double lattice_energy_log(FILE *log);
 double landau_order();
 
@@ -552,7 +552,7 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
 
 void lattice_energy_full(char * filename)
 {
-//int mkdir (const char *equilibriation_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibriation as gulp input files for post-processing
+//int mkdir (const char *equilibration_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibration as gulp input files for post-processing
 
 // Creating a separate directory for storing generated gulp input files    
 int status;
@@ -650,7 +650,7 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
 
 void generate_gulp_input(char * filename)
 {
-//int mkdir (const char *equilibriation_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibriation as gulp input files for post-processing
+//int mkdir (const char *equilibration_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibration as gulp input files for post-processing
 
 // Creating a separate directory for storing generated gulp input files    
 int status;

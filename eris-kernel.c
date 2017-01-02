@@ -10,7 +10,7 @@
 static double site_energy(int x, int y, int z, int species, int CutOff);
 static void MC_move();
 
-static void equlibriation_statistics(float dE);
+static void equlibration_statistics(float dE);
 double sum_dE=0.0;
 
 #define EVJEN 1 // could convert these into ints later if wanting to make them dynamic
@@ -236,7 +236,7 @@ static void MC_move()
 
         ACCEPT++;
 
-//        if (EquilibrationChecks) equlibriation_statistics(dE); 
+//        if (EquilibrationChecks) equilibration_statistics(dE); 
     }
     else
         REJECT++;
@@ -245,7 +245,7 @@ static void MC_move()
 #define BINS 100
 int endo_bins[BINS], exo_bins[BINS];
 
-static void equlibriation_statistics(float dE)
+static void equlibration_statistics(float dE)
 {
      sum_dE+=dE;
 
