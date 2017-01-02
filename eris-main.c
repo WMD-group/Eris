@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     // Fill initial lattice
+    // TODO: JMF - replace this with a switch statement, or wholly move logic
+    // into an 'initialise lattice' subroutine
     if (OrderedInitialLattice) // set by eris.cfg
     {
         if (SuzySupercell)
@@ -96,11 +98,6 @@ int main(int argc, char *argv[])
 	
 //    lattice_energy(); // check energy sums
 
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
-// START OF OUTERMOST TEMPERATURE LOOP
-//---------------------------------------------------------------------------------------------------------------------------------- 
-
     // Core simulation loop
     for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
     {
@@ -109,9 +106,9 @@ int main(int argc, char *argv[])
 
         {
 
-// Re-initialising lattice for new temperature (if requested by user)
-//---------------------------------------------------------------------------------------------------------------------------------- 
-            if (ReinitialiseLattice) // Are we intending to reset the lattice?
+// Re-initialise lattice at this new temperature (if requested by user)
+// TODO: Simplify to Switch statements / export this login into subroutine
+            if (ReinitialiseLattice) 
             {
                 if (OrderedInitialLattice)
                 {
@@ -130,10 +127,8 @@ int main(int argc, char *argv[])
            
             if (DisplayDumbTerminal) outputlattice_dumb_terminal();
 
-
-// Defining file names based on temperature
-//---------------------------------------------------------------------------------------------------------------------------------- 
-
+// Define log file names (stored as strings), with current temperature as part
+// of the filename
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
             char electrostaticpotential_equil_filename[100];
@@ -148,8 +143,6 @@ int main(int argc, char *argv[])
                 sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_initial.in",T);
                 lattice_energy_full(gulp_filename_initial);
             }
-
-            // Producing gulp input file of initial lattice
             if (SaveGULP)
             {
                 char filename[100];
@@ -157,10 +150,8 @@ int main(int argc, char *argv[])
                 generate_gulp_input(filename);
             }
 
-// Jarv's equilibration run to use after suitable equilibration time has been established, set using MCEqmSteps in eris.cfg
-//---------------------------------------------------------------------------------------------------------------------------------- 
-
-            // equilibration before data collection
+// Run the requested 'equilibration' steps as a burn in, before starting to
+// collect statistics 
             if (MCEqmSteps>0)
             {
                 fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
@@ -173,25 +164,18 @@ int main(int argc, char *argv[])
                 fprintf(stderr,"\n");
             }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
 // START OF OUTER MC LOOP (MCMegaSteps)
-//---------------------------------------------------------------------------------------------------------------------------------- 
            
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
             {
-//---------------------------------------------------------------------------------------------------------------------------------- 
 // INNER MC LOOP (MCMinorSteps)
-//---------------------------------------------------------------------------------------------------------------------------------- 
                 tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
                 for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
                     MC_move();
-//---------------------------------------------------------------------------------------------------------------------------------- 
                 toc=clock();
 
-
-// Equilibration checks, performed for each MCMegaStep, after each complete loop of MCMinorSteps
-//---------------------------------------------------------------------------------------------------------------------------------- 
+// OK, we've just done MCMinorSteps, now we can start analysis 
                 if (EquilibrationChecks) 
                 {
                    T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, j);
@@ -200,11 +184,9 @@ int main(int argc, char *argv[])
                    sprintf(gulp_filename,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_MCS_%04d.in",T,j);
                    lattice_energy_full(gulp_filename);
                  }
-//---------------------------------------------------------------------------------------------------------------------------------- 
 
                 
 // Analysis and output routines
-//---------------------------------------------------------------------------------------------------------------------------------- 
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
                 if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
 		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
@@ -223,7 +205,6 @@ int main(int argc, char *argv[])
                 fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
             // OK, we have now finished all of our MC steps for this T value
             if (SaveXYZ)
             {
@@ -231,7 +212,6 @@ int main(int argc, char *argv[])
                 sprintf(name,"czts_lattice_T_%04d.xyz",T);
                 outputlattice_xyz(name);
             }
-       
         
             if (SaveGULP)
             {
@@ -242,9 +222,7 @@ int main(int argc, char *argv[])
         
             // Output RDF of final configuration at each T
             radial_distribution_function_allsites();
-
         }
-
     }
 
     // OK; we're finished...
