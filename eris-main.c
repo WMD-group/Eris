@@ -40,9 +40,7 @@ int main(int argc, char *argv[])
     
     double P=0.0;
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
 // Initial terminal messages to user, reading in config files and initialising CZTS lattice
-//---------------------------------------------------------------------------------------------------------------------------------- 
 
     fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
@@ -132,20 +130,24 @@ int main(int argc, char *argv[])
             char electrostaticpotential_filename[100];
             sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
             char electrostaticpotential_equil_filename[100];
-            sprintf(electrostaticpotential_equil_filename,"equilibration_check_potential+variance/equil_potential_T_%04d.dat",T); // for electrostatic potential file during equilibration check run
+            sprintf(electrostaticpotential_equil_filename,"equil_potential_T_%04d.dat",T); // for electrostatic potential file during equilibration check run
             char variance_equil_filename[100];
-            sprintf(variance_equil_filename,"equilibration_check_potential+variance/equil_variance_T_%04d.dat",T); // for variance of potential file during equilibration run as a function of MC step (or j in MCMegaSteps loop)
+            sprintf(variance_equil_filename,"equil_variance_T_%04d.dat",T); // for variance of potential file during equilibration run as a function of MC step (or j in MCMegaSteps loop)
 
             // Producing GULP input file of lattice before performing MC moves for each T
             if (EquilibrationChecks) 
             {
                 char gulp_filename_initial[100];
+
+                mkdir("equilibration_check_GULP_inputs"), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
                 sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_initial.in",T);
                 lattice_energy_full(gulp_filename_initial);
             }
             if (SaveGULP)
             {
                 char filename[100];
+                
+                mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
                 sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
                 generate_gulp_input(filename);
             }

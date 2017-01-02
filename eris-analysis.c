@@ -483,9 +483,6 @@ void outputlattice_stoichometry()
 */
 }
 
-
-
-
 //Calculates the on-site electrostatic potentials across the lattice and variance in the distribution of electrostatic potentials to separate output files for each simulation temperature
 void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num)
 {
@@ -493,12 +490,6 @@ void T_separated_lattice_potential(char * filename_pot, char * filename_var, int
     int MCS_num_scaled; //to avoid errors in printing no of MCS when number is too large for standard int may need to use long int
     int atoms;
     double pot,mean,variance;
-
-
-// Creating a separate directory for storing equilibration check files    
-int status;
-status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
 
     FILE *fo;
     fo=fopen(filename_pot,"a"); // append to the electrostatic potential file, more data for better statistics
@@ -553,12 +544,6 @@ status = mkdir("equilibration_check_potential+variance", S_IRWXU | S_IRWXG | S_I
 
 void lattice_energy_full(char * filename)
 {
-//int mkdir (const char *equilibration_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibration as gulp input files for post-processing
-
-// Creating a separate directory for storing generated gulp input files    
-int status;
-status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
 
 // Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
 // Will need to remove writing empty sites to file
@@ -651,12 +636,6 @@ status = mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | 
 
 void generate_gulp_input(char * filename)
 {
-//int mkdir (const char *equilibration_check_GULP_inputs, mode_t mode); // Creating a separate directory to store intermittent configurations during equilibration as gulp input files for post-processing
-
-// Creating a separate directory for storing generated gulp input files    
-int status;
-status = mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
 
 // Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
 // Will need to remove writing empty sites to file
