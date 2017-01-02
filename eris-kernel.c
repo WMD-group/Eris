@@ -10,7 +10,6 @@
 static double site_energy(int x, int y, int z, int species, int CutOff);
 static void MC_move();
 
-static void equlibration_statistics(float dE);
 double sum_dE=0.0;
 
 #define EVJEN 1 // could convert these into ints later if wanting to make them dynamic
@@ -240,40 +239,5 @@ static void MC_move()
     }
     else
         REJECT++;
-}
-
-#define BINS 100
-int endo_bins[BINS], exo_bins[BINS];
-
-static void equlibration_statistics(float dE)
-{
-     sum_dE+=dE;
-
-     if (ACCEPT%10000==0) // every %XXX accepted moves...
-     {
-         printf("Change in energy over 1E4 moves: %f\n",sum_dE);
-         sum_dE=0.0;
-     }
-
-
-     if (dE>0.0)
-     {
-//     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),pow(fabsf(dE),0.5));
-        endo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++; 
-     }
-     else
-         exo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++;
-
-     if (ACCEPT%100000==0)
-     {
-        printf("Histogram of exo/endo over 1E5 moves: \n");
-         for (int i=0; i<BINS; i++)
-         {
-             printf("%d",endo_bins[i]);
-             printf("/%d ",exo_bins[i]);
-             endo_bins[i]=0;
-             exo_bins[i]=0;
-         }
-     }
 }
 
