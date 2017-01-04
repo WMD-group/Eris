@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
-    // Analysis files of the initial lattice, before performing any MC moves 
+    // Analysis of the _initial_ lattice, before performing any MC moves 
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");

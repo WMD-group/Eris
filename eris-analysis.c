@@ -157,8 +157,7 @@ void lattice_potential_XYZ(char * filename)
     fclose(fvariance);
 }
 
-
-
+// Outputs PNG (bitmap picture) for the potential across the X-Y plane at Z=0
 void outputpotential_png(char * filename)
 {
     int i,k,pixel;
@@ -175,7 +174,7 @@ void outputpotential_png(char * filename)
 
             // Bounds checking :^)
             if (pixel<0) pixel=0;
-            if (pixel>SHRT_MAX) pixel=SHRT_MAX;
+            if (pixel>SHRT_MAX) pixel=SHRT_MAX; // PNG P2 bitmap has binary values from 0..SHRT_MAX
 
             fprintf(fo,"%d ",pixel);
         }
@@ -184,6 +183,9 @@ void outputpotential_png(char * filename)
 
 }
 
+// Generates RDFs for {All Species} <-> {All Species}, constructing the
+// filename then calling the radial_distribution_function which does the actual
+// work
 void radial_distribution_function_allsites()
 {
     int speciesA,speciesB;
@@ -200,8 +202,8 @@ void radial_distribution_function_allsites()
         }
 }           
 
-void radial_distribution_function_allsites_initial() 
 // Extra wrapper function added for outputting initial RDF to a separate file before performing any MC steps
+void radial_distribution_function_allsites_initial() 
 {
     int speciesA,speciesB;
 // Variable to contain filename for RDF output
@@ -256,11 +258,6 @@ void radial_distribution_function(char * filename, int speciesA, int speciesB )
                             pair_correlation =  lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z]==speciesB ? 1.0 : 0.0; 
                             //complicated modulus arithmatic deals with PBCs
 
-                            // Old speciesA=speciesB code
-//                            pair_correlation = lattice[x][y][z]==lattice[(x+dx+X)%X][(y+dy+Y)%Y][(z+dz+Z)%Z] ? 1.0 : 0.0;
-                            // if species at site A = species at site B; add one to the pair correlation
-                            // correlation...
-
                             // Collect sum into RDF histogram 
                             RDF[distance_squared]+=pair_correlation;
                             site_count[distance_squared]++; // count of number of lattice sites at this separation, for normalisation purposes
@@ -281,7 +278,6 @@ void radial_distribution_function(char * filename, int speciesA, int speciesB )
     fprintf(fo,"\n"); //starts as new dataset in GNUPLOT --> discontinuous lines
 
     fclose(fo);
-    return; //Ummm
 }
 
 void outputlattice_xyz(char * filename)
@@ -313,6 +309,9 @@ void outputlattice_xyz(char * filename)
 float DMAX=55.0; //sensible starting value...
 float DMEAN=0.0;
 
+// Prints 2D reproresentation of the lattice to the terminal, using ANSI
+// colours to make it look pretty; and presenting it side-by-side with the
+// potential map for the simulated volume
 void outputlattice_dumb_terminal()
 {
     int x,y;
@@ -326,72 +325,72 @@ void outputlattice_dumb_terminal()
     fprintf(stderr,"%*s%*s\n",X+3, "SPECIES", (2*X)+4,"POTENTIAL"); //padded labels
 
 
-for (z=0;z<DumbTerminalLayers;z++) // number of layers to display on Z
-{
-    fprintf(stderr,"Z=%d\n",z);
-
-     for (y=0;y<Y;y++)
-        for (x=0;x<X;x++)
-        {
-             potential=potential_at_site(x,y,z);
-             if (fabs(potential-DMEAN)>new_DMAX)
-                new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
-        }
-     DMAX=new_DMAX;
-
-    for (y=0;y<Y;y++)
+    for (z=0;z<DumbTerminalLayers;z++) // number of layers to display on Z
     {
-        for (x=0;x<X;x++)
-        {
-            a=lattice[x][y][z];
+        fprintf(stderr,"Z=%d\n",z);
 
-            fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
-//            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
+        for (y=0;y<Y;y++)
+            for (x=0;x<X;x++)
+            {
+                potential=potential_at_site(x,y,z);
+                if (fabs(potential-DMEAN)>new_DMAX)
+                    new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
+            }
+        DMAX=new_DMAX;
+
+        for (y=0;y<Y;y++)
+        {
+            for (x=0;x<X;x++)
+            {
+                a=lattice[x][y][z];
+
+                fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
+                //            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
                 fprintf(stderr,";7"); // inverted colours
-            char species=specieslookup[(int)a];
+                char species=specieslookup[(int)a];
 
-            fprintf(stderr,"m%c %c[0m",species,27);  // prints 1-character reference to species
-            fprintf(stderr,"%c[37m%c[0m",27,27); //RESET
+                fprintf(stderr,"m%c %c[0m",species,27);  // prints 1-character reference to species
+                fprintf(stderr,"%c[37m%c[0m",27,27); //RESET
+            }
+
+            // OK - now potential plot :^)
+            //        const char * density=".,:;o*O#"; //increasing potential density
+            const char * density="012345689";
+            fprintf(stderr,"    ");
+            for (x=0;x<X;x++)
+            {
+                potential=potential_at_site(x,y,z);
+
+                variance+=potential*potential;
+                mean+=potential;
+
+                if (fabs(potential-DMEAN)>new_DMAX)
+                    new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
+                //printf("%f\t",potential); //debug routine to get scale
+
+                //fprintf(stderr,"%c[%d",27,31+((int)(8.0*fabs(potential)/DMAX))%8); //8 colours
+                //fprintf(stderr,"%c[48;5;%d",27,17+(int)(214.0*fabs(potential)/DMAX)); // Xterm 256 color map - (16..231)
+                fprintf(stderr,"%c[48;5;%d",27,232+12+(int)(12.0*(potential-DMEAN)/DMAX)); // Xterm 256 color map - shades of grey (232..255)
+                // https://code.google.com/p/conemu-maximus5/wiki/AnsiEscapeCodes#xterm_256_color_processing_requirements
+
+                //if (potential<0.0) // if negative
+                //    fprintf(stderr,";7"); // bold
+
+                a=lattice[x][y][z];
+
+                char species=specieslookup[(int)a];  // prints 1-character reference to species
+
+                fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],species,27);
+            }
+
+            fprintf(stderr,"\n");
         }
+        mean=mean/(X*Y);
+        DMEAN=mean; // for calibration of scale
 
-        // OK - now potential plot :^)
-        //        const char * density=".,:;o*O#"; //increasing potential density
-        const char * density="012345689";
-        fprintf(stderr,"    ");
-        for (x=0;x<X;x++)
-        {
-            potential=potential_at_site(x,y,z);
-            
-            variance+=potential*potential;
-            mean+=potential;
-
-            if (fabs(potential-DMEAN)>new_DMAX)
-                new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
-            //printf("%f\t",potential); //debug routine to get scale
-
-            //fprintf(stderr,"%c[%d",27,31+((int)(8.0*fabs(potential)/DMAX))%8); //8 colours
-            //fprintf(stderr,"%c[48;5;%d",27,17+(int)(214.0*fabs(potential)/DMAX)); // Xterm 256 color map - (16..231)
-            fprintf(stderr,"%c[48;5;%d",27,232+12+(int)(12.0*(potential-DMEAN)/DMAX)); // Xterm 256 color map - shades of grey (232..255)
-            // https://code.google.com/p/conemu-maximus5/wiki/AnsiEscapeCodes#xterm_256_color_processing_requirements
-
-            //if (potential<0.0) // if negative
-            //    fprintf(stderr,";7"); // bold
-
-            a=lattice[x][y][z];
-
-            char species=specieslookup[(int)a];  // prints 1-character reference to species
-
-            fprintf(stderr,"m%c%c%c[0m",density[(int)(8.0*fabs(potential-DMEAN)/DMAX)],species,27);
-        }
-
-        fprintf(stderr,"\n");
+        variance=variance/(X*Y); 
+        fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
     }
-    mean=mean/(X*Y);
-    DMEAN=mean; // for calibration of scale
-
-    variance=variance/(X*Y); 
-    fprintf(stdout,"T: %d DMAX: %f new_DMAX: %f (not quite) variance: %f mean: %f\n",T,DMAX,new_DMAX,variance,mean);
-}
     DMAX=new_DMAX; // infinite fast following - but leads to fluctuations at steady state
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
@@ -541,14 +540,11 @@ void T_separated_lattice_potential(char * filename_pot, char * filename_var, int
 }
 
 
-
-void lattice_energy_full(char * filename)
-{
-
 // Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
 // Will need to remove writing empty sites to file
 // Will need to reintroduce S ions!
-
+void lattice_energy_full(char * filename)
+{
     int i,j,k;
     char selected_site[100];
     FILE *fo;
