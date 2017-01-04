@@ -28,10 +28,28 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
         return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
 }
 
+
 #include "eris-config.c" //Global variables & config file reader function  
 #include "eris-lattice.c" //Lattice initialisation / zeroing / sphere picker fn; dot product
 #include "eris-kernel.c" // MC kernel, Lattice energies etc.
 #include "eris-analysis.c" //Analysis functions, and output routines
+
+// Prototype functions
+void initialise_lattice();
+
+// wrapper function to put all logic in choosing lattice together in one place
+void initialise_lattice()
+{
+    if (OrderedInitialLattice) // set by eris.cfg
+    {
+        if (SuzySupercell)
+            initialise_lattice_CZTS_supercell();
+        else
+            initialise_lattice_CZTS();
+    }
+    else
+        initialise_lattice_CZTS_randomized();
+}
 
 int main(int argc, char *argv[])
 {
@@ -75,16 +93,7 @@ int main(int argc, char *argv[])
     // Fill initial lattice
     // TODO: JMF - replace this with a switch statement, or wholly move logic
     // into an 'initialise lattice' subroutine
-    if (OrderedInitialLattice) // set by eris.cfg
-    {
-        if (SuzySupercell)
-            initialise_lattice_CZTS_supercell();
-        else
-            initialise_lattice_CZTS();
-    }
-    else
-        initialise_lattice_CZTS_randomized();
-    
+    initialise_lattice(); // contains logic about choosing what lattice to use   
     outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
 
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
@@ -108,16 +117,7 @@ int main(int argc, char *argv[])
 // TODO: Simplify to Switch statements / export this login into subroutine
             if (ReinitialiseLattice) 
             {
-                if (OrderedInitialLattice)
-                {
-                    if (SuzySupercell)
-                        initialise_lattice_CZTS_supercell();
-                    else
-                        initialise_lattice_CZTS();
-                }
-                else
-                    initialise_lattice_CZTS_randomized();
-
+                initialise_lattice();
                 fprintf(stderr,"Lattice reinitialised: \n");
             }
             else
