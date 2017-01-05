@@ -190,6 +190,7 @@ int main(int argc, char *argv[])
                 
 // Analysis and output routines
                 if (DisplayDumbTerminal) outputlattice_dumb_terminal();
+                if (EquilibrationChecks) report_dE();
                 if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
 		        if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
 
@@ -203,6 +204,7 @@ int main(int argc, char *argv[])
 
                 fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
+                if (EquilibrationChecks) reset_dE();
 
                 fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
             }

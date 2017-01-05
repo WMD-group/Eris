@@ -32,7 +32,7 @@ void outputlattice_dumb_terminal();
 void outputlattice_stoichometry();
 
 void generate_gulp_input(char * filename);
-static void equlibration_statistics(float dE);
+static void log_dE(float dE);
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 
@@ -722,40 +722,47 @@ void generate_gulp_input(char * filename)
 
 }
 
-// Suzy's equilibration check code below here
-#define BINS 100
-int endo_bins[BINS], exo_bins[BINS];
+// dE log to compare to Boltzmann stats below here 
+#define dE_BINS 100
+int endo_bins[dE_BINS], exo_bins[dE_BINS];
 
-static void equlibration_statistics(float dE)
+double sum_dE=0.0;
+
+static void reset_dE()
 {
-     sum_dE+=dE;
+    sum_dE=0.0;
+    for (int i=0;i<dE_BINS;i++)
+        endo_bins[i]=exo_bins[i]=0;
+}
 
-     if (ACCEPT%10000==0) // every %XXX accepted moves...
-     {
-         printf("Change in energy over 1E4 moves: %f\n",sum_dE);
-         sum_dE=0.0;
-     }
+static void report_dE()
+{
+         printf("Change in energy: %f\n",sum_dE);
 
-
-     if (dE>0.0)
-     {
-//     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),pow(fabsf(dE),0.5));
-        endo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++;
-     }
-     else
-         exo_bins[ (int) (pow(fabsf(dE),0.5)/0.05) ] ++;
-
-     if (ACCEPT%100000==0)
-     {
-        printf("Histogram of exo/endo over 1E5 moves: \n");
-         for (int i=0; i<BINS; i++)
+         printf("Histogram of exo/endo: \n");
+         for (int i=0; i<dE_BINS; i++)
          {
              printf("%d",endo_bins[i]);
              printf("/%d ",exo_bins[i]);
              endo_bins[i]=0;
              exo_bins[i]=0;
          }
-     }
+         printf("\n");
+}
+
+static void log_dE(float dE)
+{
+     sum_dE+=(double)dE;
+     int my_bin=(int) (pow(fabsf(dE),0.5)/0.05); // sqrt(data) for storage
+
+     if (my_bin>=dE_BINS) my_bin=dE_BINS-1; // range checking logic to avoid segfaults
+
+//     printf("beta: %f dE: %f logf(fabsf(dE)): %f logf(fabsf(dE*beta)): %f\n",beta,dE,logf(fabsf(dE)),pow(fabsf(dE),0.5));
+     if (dE>0.0)
+        endo_bins[ my_bin ] ++;
+     else
+         exo_bins[ my_bin ] ++;
+
 }
 
 

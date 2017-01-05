@@ -9,8 +9,7 @@
 
 static double site_energy(int x, int y, int z, int species, int CutOff);
 static void MC_move();
-
-double sum_dE=0.0;
+static void log_dE(float dE);
 
 #define EVJEN 1 // could convert these into ints later if wanting to make them dynamic
 #define SPHERICAL 0 
@@ -230,14 +229,17 @@ static void MC_move()
     // OK; now we have dE - proceed with Metropolis Accept/Reject Criteria
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )
     {
+        //ACCEPT move
         lattice[x_a][y_a][z_a]=species_b; //swap two atoms / species
         lattice[x_b][y_b][z_b]=species_a; 
 
         ACCEPT++;
 
-//        if (EquilibrationChecks) equilibration_statistics(dE); 
+        if (EquilibrationChecks) log_dE(dE); 
     }
     else
+        //REJECT move; doesn't need to do anything, just update REJECT for
+        //stats
         REJECT++;
 }
 
