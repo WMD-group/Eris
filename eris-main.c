@@ -28,7 +28,6 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
         return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
 }
 
-
 #include "eris-config.c" //Global variables & config file reader function  
 #include "eris-lattice.c" //Lattice initialisation / zeroing / sphere picker fn; dot product
 #include "eris-kernel.c" // MC kernel, Lattice energies etc.
@@ -57,8 +56,6 @@ void analysis_initial()
     outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
-    if (DisplayDumbTerminal) outputlattice_dumb_terminal();
-
     // Producing GULP input file of lattice before performing MC moves for each T
     if (EquilibrationChecks) 
     {
@@ -77,12 +74,10 @@ void analysis_initial()
         generate_gulp_input(filename);
     }
 
-
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
-
-    //    lattice_energy(); // check energy sums
+//    lattice_energy(); // check energy sums
 }
 
 // OK, we've just done MCMinorSteps, now we can start analysis 
@@ -138,10 +133,6 @@ int main(int argc, char *argv[])
 {
     int i,j,k, x,y; //for loop iterators
     int tic,toc,tac; // time counters; Goes the old grandfather clock
-    
-    double P=0.0;
-
-// Initial terminal messages to user, reading in config files and initialising CZTS lattice
 
     fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
@@ -167,24 +158,22 @@ int main(int argc, char *argv[])
     init_genrand(0xDEADBEEF); //314159265);  // reproducible data :)
     //init_genrand(time(NULL)); // seeded with current time
     fprintf(stderr,"Mersenne Twister initialised. ");
-
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
     fprintf(stderr,"'.' is %llu MC moves attempted.\n",MCMinorSteps);
 
     fprintf(log,"# ACCEPT+REJECT, Efield, Eangle, E_dipole, E_strain, E_field, (E_dipole+E_strain+E_field)\n");
 
     initialise_lattice(); // contains logic about choosing what lattice to use   
-    
+
     analysis_initial();
 
     // Core simulation loop
-    for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg 
+    for (T=TMAX;T>=TMIN;T-=TSTEP) // read in from eris.cfg; or overidden by single shot T from command line 
     {
         beta=1/((float)T/300.0); // Thermodynamic Beta; in units of kbT @ 300K
         printf("Temperature now T: %d K \t Beta: %f (kbT@300K)\n",T,beta);
 
         {
-// Re-initialise lattice at this new temperature (if requested by user)
             if (ReinitialiseLattice) 
             {
                 initialise_lattice();
@@ -192,11 +181,11 @@ int main(int argc, char *argv[])
             }
             else
                 fprintf(stderr,"Lattice carried over from previous simulation: \n");
-           
+
             analysis_initial();
 
-// Run the requested 'equilibration' steps as a burn in, before starting to
-// collect statistics 
+            // Run the requested 'equilibration' steps as a burn in, before starting to
+            // collect statistics 
             if (MCEqmSteps>0)
             {
                 fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
@@ -209,12 +198,12 @@ int main(int argc, char *argv[])
                 fprintf(stderr,"\n");
             }
 
-// START OF OUTER MC LOOP (MCMegaSteps)
-           
+            // START OF OUTER MC LOOP (MCMegaSteps)
+
             //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
             for (j=0;j<MCMegaSteps;j++)
             {
-// INNER MC LOOP (MCMinorSteps)
+                // INNER MC LOOP (MCMinorSteps)
                 tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
                 for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
                     MC_move();
@@ -226,7 +215,7 @@ int main(int argc, char *argv[])
                 tac=clock(); // timings for analysis/output
 
                 fprintf(stderr,"MC Moves: %f MHz\n",
-                    1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
+                        1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
                 fprintf(stderr,"Time spent MC vs. analysis: %f\n",100.0*(double)(toc-tic)/(double)(tac-tic));
                 fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
