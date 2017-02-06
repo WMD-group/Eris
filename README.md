@@ -2,6 +2,8 @@
 
 Codes to simulate on-lattice CZTS disorder
 
+Wiki page currently under construction: https://github.com/WMD-group/wmd-wiki/wiki/Eris (SW)
+
 ![](eris.jpg)
 
 ## Contributors
