@@ -9,18 +9,70 @@
 
 #include <stdbool.h>
 
-#define X 10 // Malloc is for losers.
-#define Y 10 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
-#define Z 20 
-int lattice[X][Y][Z];
+// ----------------------------------------------------------------------------------------------------
+// SIMULATION PARAMETERS
+// NB: These are defaults - most are now read from config file
+
+double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
+
+int ElectrostaticCutOff=1;
+int freezeSn = true; // should we freeze Sn ?
+
+int MCMegaSteps=400;
+int MCEqmSteps=0;
+int TMAX=500;
+int TMIN=0;
+int TSTEP=100; 
+
+double MCMoves=1.0;
+unsigned long long int MCMinorSteps=0;
+char const *LOGFILE = NULL; //for output filenames
+
+int DEBUG=false;
+int DisplayDumbTerminal=true;
+int DumbTerminalLayers=4;
+int CalculateRadialOrderParameter=false;
+int CalculatePotential=false;
+int OrderedInitialLattice=false;
+int ReinitialiseLattice=false;
+int EquilibrationChecks=false;
+
+int SuzySupercell=false;
+
+int SaveXYZ=false;
+int SaveGULP=false;
+//END OF SIMULATION PARAMETERS
+// ----------------------------------------------------------------------------------------------------------------------------------
+
+// User defined lattice dimensions for both original lattice initialisation method and for SuzySupercell method ---------------------- 
+// ----------------------------------------------------------------------------------------------------------------------------------
+
+config_lookup_bool(cf,"SuzySupercell",&SuzySupercell);
+
+if (SuzySupercell)
+  #define X_super 2
+  #define Y_super 2
+  #define Z_super 2
+  int X = X_super*2;
+  int Y = Y_super*2;
+  int Z = Z_Z_super*4;
+  int lattice[X][Y][Z];  
+else
+{
+  #define X 10 // Malloc is for losers.
+  #define Y 10 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
+  #define Z 20 
+  int lattice[X][Y][Z];
+}
+
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
 // Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
 // Nb: if the above X,Y,Z do not fit within the stride, code may crash
 // / produce non-stoichometric example
-int X_super=X/2;
-int Y_super=Y/2;
-int Z_super=Z/4;
+//int X_super=X/2;
+//int Y_super=Y/2;
+//int Z_super=Z/4;
 
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
@@ -57,38 +109,6 @@ struct mixture
 } dipoles[10];
 int dipolecount=0;
 
-// SIMULATION PARAMETERS
-// NB: These are defaults - most are now read from config file
-
-double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
-
-int ElectrostaticCutOff=1;
-int freezeSn = true; // should we freeze Sn ?
-
-int MCMegaSteps=400;
-int MCEqmSteps=0;
-int TMAX=500;
-int TMIN=0;
-int TSTEP=100; 
-
-double MCMoves=1.0;
-unsigned long long int MCMinorSteps=0;
-char const *LOGFILE = NULL; //for output filenames
-
-int DEBUG=false;
-int DisplayDumbTerminal=true;
-int DumbTerminalLayers=4;
-int CalculateRadialOrderParameter=false;
-int CalculatePotential=false;
-int OrderedInitialLattice=false;
-int ReinitialiseLattice=false;
-int EquilibrationChecks=false;
-
-int SuzySupercell=false;
-
-int SaveXYZ=false;
-int SaveGULP=false;
-//END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
 
