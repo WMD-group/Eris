@@ -44,35 +44,60 @@ int SaveGULP=false;
 //END OF SIMULATION PARAMETERS
 // ----------------------------------------------------------------------------------------------------------------------------------
 
+
 // User defined lattice dimensions for both original lattice initialisation method and for SuzySupercell method ---------------------- 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
-config_lookup_bool(cf,"SuzySupercell",&SuzySupercell);
+void set_lattice_dimensions(int * X, Y, Z);
 
-if (SuzySupercell)
-  #define X_super 2
-  #define Y_super 2
-  #define Z_super 2
-  int X = X_super*2;
-  int Y = Y_super*2;
-  int Z = Z_Z_super*4;
-  int lattice[X][Y][Z];  
-else
+void set_lattice_dimensions(int * X, Y, Z)
 {
-  #define X 10 // Malloc is for losers.
-  #define Y 10 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
-  #define Z 20 
-  int lattice[X][Y][Z];
+
+// Code for reading eris.cfg (just for setting lattice dimensions), file read fully in load_config function later-------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+  config_t cfg, *cf; //libconfig config structure
+  const config_setting_t *setting;
+    
+  //Load and parse config file
+  cf = &cfg;
+  config_init(cf);
+
+  fprintf(stderr,"Reading config file...\n");
+  if (!config_read_file(cf,"eris.cfg"))
+  {
+      fprintf(stderr, "%s:%d - %s\n",
+              config_error_file(cf),
+              config_error_line(cf),
+              config_error_text(cf));
+      config_destroy(cf);
+      exit(EXIT_FAILURE);
+  }
+// -------------------------------------------------------------------------------------
+
+  // Checking eris.cfg for which lattice initialisation method the user has selected (SuzySupercell or original method if false)
+  config_lookup_bool(cf,"SuzySupercell",&SuzySupercell);
+
+  if (SuzySupercell)
+  {
+    // User defined system dimensions to create a supercell of a 2x2x4 unit cell using SuzySupercell lattice initialisation method
+    #define X_super 2  // set supercell dimension here
+    #define Y_super 2  // and here
+    #define Z_super 2  // and here
+    int X = X_super*2;
+    int Y = Y_super*2;
+    int Z = Z_super*4;
+    int lattice[X][Y][Z];
+  }  
+  else
+  {
+    // User defined dimensions if using original lattice initialisation method
+    #define X 10 // Malloc is for losers.
+    #define Y 10 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
+    #define Z 20 
+    int lattice[X][Y][Z];
+  }
 }
 
-
-// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
-// Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
-// Nb: if the above X,Y,Z do not fit within the stride, code may crash
-// / produce non-stoichometric example
-//int X_super=X/2;
-//int Y_super=Y/2;
-//int Z_super=Z/4;
 
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
