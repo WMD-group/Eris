@@ -35,13 +35,10 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 
 // Prototype functions
 void initialise_lattice();
- // Calling function in eris-config.c to set lattice dimensions from SuzySupercell or original lattice initialisation method as specified in eris.cfg
-set_lattice_dimensions(X, Y, Z);
 
 // wrapper function to put all logic in choosing lattice together in one place
 void initialise_lattice()
 {
-
     if (OrderedInitialLattice) // set by eris.cfg
     {
         if (SuzySupercell)
