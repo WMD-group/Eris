@@ -63,7 +63,7 @@ void analysis_initial()
 
         mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_initial.in",T);
-        lattice_energy_full(gulp_filename_initial);
+        generate_gulp_input(gulp_filename_initial);
     }
     if (SaveGULP)
     {
