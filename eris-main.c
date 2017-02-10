@@ -98,7 +98,7 @@ void analysis_midpoint(int MCStep)
         // Generating gulp input files for intermittent configurations during equilibration for post-processing to calculate full lattice energy with gulp
         char gulp_filename[100];
         sprintf(gulp_filename,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_MCS_%04d.in",T,MCStep);
-        lattice_energy_full(gulp_filename);
+        generate_gulp_input(gulp_filename);
     }
 
     // Analysis and output routines
