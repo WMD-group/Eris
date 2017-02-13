@@ -626,7 +626,7 @@ void generate_gulp_input(char * filename)
                 if (lattice[i][j][k]==0) continue; //avoid writing gap sites to gulp input file
                 else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
    
-
+    fprintf(fo, "output xyz");
     // fprintf(fo, "space \n");
     // fprintf(fo, "82 \n");
      fclose(fo);
