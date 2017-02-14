@@ -104,7 +104,7 @@ void initialise_lattice_CZTS_supercell()
 {
 
   // This routine produces a lattice containing a unit cell of CZTS (constructed by inspecting CZTS POSCARs layer by layer)
-  // Larger systems are then created as supercells of this unit cell using user inputted parameters for X_super, Y_super and Z_super in eris.cfg
+  // Larger systems are then created as supercells of this unit cell using user inputted parameters for X_super, Y_super and Z_super in eris-config.c
 
   // 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
   // The unit cell is 2x2x4

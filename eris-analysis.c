@@ -543,11 +543,6 @@ void T_separated_lattice_potential(char * filename_pot, char * filename_var, int
 
 void generate_gulp_input(char * filename)
 {
-
-// Code for writing an .xyz file, needs adapting to a gulp input file and preferably save to a separate directory to tidy up outputs!
-// Will need to remove writing empty sites to file
-// Will need to reintroduce S ions!
-
     int i,j,k;
     char selected_site[100];
     FILE *fo;
