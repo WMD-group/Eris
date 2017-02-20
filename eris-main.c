@@ -154,10 +154,15 @@ int main(int argc, char *argv[])
     log=fopen(LOGFILE,"w");
     fprintf(stderr,"Log file '%s' opened. ",LOGFILE);
 
+    // TODO: Make this a setting in eris.cfg.
     //Fire up the Mersenne twister!
-    init_genrand(0xDEADBEEF); //314159265);  // reproducible data :)
-    //init_genrand(time(NULL)); // seeded with current time
-    fprintf(stderr,"Mersenne Twister initialised. ");
+    int SEED=0xDEADBEEF;
+    //int SEED=time(NULL);
+    init_genrand(SEED); // Initialise Pseudo-Random-Number-Generator
+    fprintf(stderr,"Mersenne Twister initialised with seed: %X. \n",SEED);
+    fprintf(log,"# Mersenne Twiser initialised with seed: %X",SEED);
+    fprintf(log,"# Eris run started at time = %ld",time(NULL));
+
     fprintf(stderr,"\n\tMC startup. 'Do I dare disturb the universe?'\n");
     fprintf(stderr,"'.' is %llu MC moves attempted.\n",MCMinorSteps);
 
@@ -216,7 +221,7 @@ int main(int argc, char *argv[])
 
                 fprintf(stderr,"MC Moves: %f MHz\n",
                         1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
-                fprintf(stderr,"Time spent MC vs. analysis: %f\n",100.0*(double)(toc-tic)/(double)(tac-tic));
+                fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",100.0*(double)(toc-tic)/(double)(tac-tic));
                 fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
                 REJECT=0; ACCEPT=0;
 
