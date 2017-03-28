@@ -199,20 +199,25 @@ static void MC_move()
             return;
 
     //calc site energy
+    
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.
-//    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);
-//    dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
+    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);
+    dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
 
-//    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
-//    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
+    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
+    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
 
-    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
-    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+// NOTE: Changed to 'site_energy' by JMF 2017-03-28, as the
+// 'site_energy_stencil_ was not producing a ground state at low temperature,
+// instead displaying periodic 'downhill' (-ve energy) moves, leading to
+// constant motion of the ions even at ~zero temperature.
 
-    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
-    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+//    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+//    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
 
+//    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+//    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
 
     // Report on planned move + dE -- for debugging only (makes a ridiculous
     // number of prints...)
