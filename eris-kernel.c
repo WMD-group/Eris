@@ -126,10 +126,6 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                 dE+=evjen_E * evjen_weight;
             }
 
-    // Interaction of dipole with (unshielded) E-field
- /*   dE+= + dot(newdipole, & Efield)
-        - dot(olddipole, & Efield);*/
-
     return(dE); 
 }
 
@@ -221,10 +217,11 @@ static void MC_move()
     // Report on planned move + dE -- for debugging only (makes a ridiculous
     // number of prints...)
     if (DEBUG)
-        fprintf(stderr,"MC Move: %d on %d %d %d, %d on %d %d %d --> dE: %f\n",
+        fprintf(stderr,"MC Move: %d on %d %d %d, %d on %d %d %d --> dE: %f ProbOfMove: %g\n",
                 lattice[x_a][y_a][z_a], x_a, y_a, z_a,
                 lattice[x_b][y_b][z_b], x_b, y_b, z_b,
-                dE);
+                dE,
+                (dE < 0.0 ? 1.0 : exp(-dE*beta)) );
 
     // OK; now we have dE - proceed with Metropolis Accept/Reject Criteria
     if (dE < 0.0 || exp(-dE * beta) > genrand_real2() )
