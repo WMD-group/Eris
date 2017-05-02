@@ -121,24 +121,24 @@ void initialise_lattice_CZTS_supercell()
       {
         // z = 0 layer (as viewed in VESTA)
         lattice[0+2*x][0+2*y][3+4*z] = 0;
-        lattice[1+2*x][0+2*y][3+4*z] = 2;
-        lattice[0+2*x][1+2*y][3+4*z] = 1;
+        lattice[1+2*x][0+2*y][3+4*z] = 2;  // 2d
+        lattice[0+2*x][1+2*y][3+4*z] = 1;  // 2c Cu (based on viewing 1x1x1 supercell in VESTA along x-axis for Cu-Zn and Cu-Sn planes)
         lattice[1+2*x][1+2*y][3+4*z] = 0;
         // z = 1 layer (as viewed in VESTA)
-        lattice[0+2*x][0+2*y][2+4*z] = 1;
+        lattice[0+2*x][0+2*y][2+4*z] = 1;  // 2a Cu
         lattice[1+2*x][0+2*y][2+4*z] = 0;
         lattice[0+2*x][1+2*y][2+4*z] = 0;
-        lattice[1+2*x][1+2*y][2+4*z] = 3;
+        lattice[1+2*x][1+2*y][2+4*z] = 3;  // 2b
         // z = 2 layer (as viewed in VESTA)
         lattice[0+2*x][0+2*y][1+4*z] = 0;
-        lattice[1+2*x][0+2*y][1+4*z] = 1;
-        lattice[0+2*x][1+2*y][1+4*z] = 2;
+        lattice[1+2*x][0+2*y][1+4*z] = 1;  // 2c Cu
+        lattice[0+2*x][1+2*y][1+4*z] = 2;  // 2d
         lattice[1+2*x][1+2*y][1+4*z] = 0;
         // z = 3 layer (as viewed in VESTA)
-        lattice[0+2*x][0+2*y][0+4*z] = 3;
+        lattice[0+2*x][0+2*y][0+4*z] = 3;  // 2b
         lattice[1+2*x][0+2*y][0+4*z] = 0;
         lattice[0+2*x][1+2*y][0+4*z] = 0;
-        lattice[1+2*x][1+2*y][0+4*z] = 1;
+        lattice[1+2*x][1+2*y][0+4*z] = 1;  // 2a Cu
       }
     }
   }
