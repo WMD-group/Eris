@@ -43,6 +43,8 @@ void initialise_lattice()
     {
         if (SuzySupercell)
             initialise_lattice_CZTS_supercell();
+        if (Method2)
+            initialise_lattice_CZTS_method2();
         else
             initialise_lattice_CZTS();
     }

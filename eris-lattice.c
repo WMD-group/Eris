@@ -12,6 +12,7 @@ void initialise_lattice_random();
 void initialise_lattice_stripe();
 void initialise_lattice_CZTS();
 void initialise_lattice_CZTS_supercell();
+void initialise_lattice_CZTS_method2();
 void initialise_lattice_CZTS_randomized();
 
 void initialise_lattice_random()
@@ -146,9 +147,71 @@ void initialise_lattice_CZTS_supercell()
 }
 
 
+void initialise_lattice_CZTS_method2()
+{
+
+  // 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
+  int x,y,z;
+
+  for (z=0; z<Z; z+=4)
+  {
+    for (x=0; x<X; x++)
+    {
+      for (y=0; y<Y; y++)
+      {
+      
+        // ------------------  even x, y ---------------------------------------
+        if (x%2 == 0 && y%2 == 0)
+        {  
+          lattice[x][y][z] = 3; // 2b Sn
+          lattice[x][y][z+1] = 0;
+          lattice[x][y][z+2] = 1; // 2a Cu
+          lattice[x][y][z+3] = 0; 
+        }
+
+        // ------------------  even x, odd y ---------------------------------------
+        if (x%2 == 0 && y%2 == 1)
+        {
+          lattice[x][y][z] = 0;
+          lattice[x][y][z+1] = 2; // Zn 2d
+          lattice[x][y][z+2] = 0;
+          lattice[x][y][z+3] = 1; // Cu 2c
+        }
+
+        // ------------------  odd x, even y ---------------------------------------
+        if (x%2 == 1 && y%2 == 0)
+        {
+          lattice[x][y][z] = 0;
+          lattice[x][y][z+1] = 1; // Cu 2c
+          lattice[x][y][z+2] = 0;
+          lattice[x][y][z+3] = 2; // Zn 2d
+        }
+
+        // ------------------  odd x, y ---------------------------------------
+        if (x%2 == 1 && y%2 == 1)
+        {
+          lattice[x][y][z] = 1; // Cu 2a
+          lattice[x][y][z+1] = 0;
+          lattice[x][y][z+2] = 3; // Sn 2b
+          lattice[x][y][z+3] = 0;
+        }
+
+    }
+  }
+}
+}
+
+
+
 void initialise_lattice_CZTS_randomized()
 {
-    initialise_lattice_CZTS_supercell(); // start with correct stoichometry
+    // Making shuffling method compatible with various ordered lattice initialisation methods - needs testing!
+    if (SuzySupercell)
+      initialise_lattice_CZTS_supercell();
+    if (Method2)
+      initialise_lattice_CZTS_method2(); 
+    else
+      initialise_lattice_CZTS();
 
     // Randomizing CZTS lattice by swapping species
     int shuffles=10; // Defining number of swap attempts based on tota no. of sites
