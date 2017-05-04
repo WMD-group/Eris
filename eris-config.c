@@ -9,8 +9,9 @@
 
 #include <stdbool.h>
 
+// To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
 #define X 4 // Malloc is for losers.
-#define Y 4 // X must be divisible by 4, Y divisible by 2, to generate stoichometric CZTS 
+#define Y 4  
 #define Z 4 
 int lattice[X][Y][Z];
 
