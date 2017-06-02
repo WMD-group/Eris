@@ -33,6 +33,11 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 #include "eris-kernel.c" // MC kernel, Lattice energies etc.
 #include "eris-analysis.c" //Analysis functions, and output routines
 
+
+// -----------------------------------------------------------------------------------------------------------------
+// Functions for lattice initialisation and analysis of initial config
+// -----------------------------------------------------------------------------------------------------------------
+
 // Prototype functions
 void initialise_lattice();
 
@@ -62,7 +67,6 @@ void analysis_initial()
     if (EquilibrationChecks) 
     {
         char gulp_filename_initial[100];
-
         mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_initial.in",T);
         generate_gulp_input(gulp_filename_initial);
@@ -70,7 +74,6 @@ void analysis_initial()
     if (SaveGULP)
     {
         char filename[100];
-
         mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
         generate_gulp_input(filename);
@@ -81,6 +84,12 @@ void analysis_initial()
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 //    lattice_energy(); // check energy sums
 }
+
+
+
+// -----------------------------------------------------------------------------------------------------------------
+// Defining functions for analyses: during the simulation after each MC mega step (analysis_midpoint) and after each temperature step (analysis_final)
+// -----------------------------------------------------------------------------------------------------------------
 
 // OK, we've just done MCMinorSteps, now we can start analysis 
 void analysis_midpoint(int MCStep)
@@ -130,6 +139,14 @@ void analysis_final()
     // Output RDF of final configuration at each T
     radial_distribution_function_allsites();
 }
+
+
+
+// -----------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------
+// Begin main loops of Monte Carlo simulation (calling above functions for analysis)
+// -----------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
 {
@@ -207,30 +224,43 @@ int main(int argc, char *argv[])
 
             // START OF OUTER MC LOOP (MCMegaSteps)
 
-            //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
-            for (j=0;j<MCMegaSteps;j++)
+            // If checking electrostatics, check lattice summation over one step for each T instead of full production run below
+            if (ElectrostaticsCheck)
             {
-                // INNER MC LOOP (MCMinorSteps)
-                tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
-                for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
-                    MC_move();
-                toc=clock();
-
-                analysis_midpoint(j); // analysis run after every MCMinorSteps block of moves 
-                fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
-
-                tac=clock(); // timings for analysis/output
-
-                fprintf(stderr,"MC Moves: %f MHz\n",
-                        1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
-                fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",100.0*(double)(toc-tic)/(double)(tac-tic));
-                fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
-                REJECT=0; ACCEPT=0;
-
-                fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
+              for (j=0;j<101;j++) // perform more than once incase MC_move function selects either same or empty sites for swaps (so we get some output!)
+              {
+                MC_move_dE_check();
+              }
+              if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // don't display all configs for each T (just initial and final)
             }
+            else
+            {     
 
-            analysis_final(); //analysis run at end of sim
+              //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
+              for (j=0;j<MCMegaSteps;j++)
+              {
+                  // INNER MC LOOP (MCMinorSteps)
+                  tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
+                  for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
+                      MC_move();
+                  toc=clock();
+
+                  analysis_midpoint(j); // analysis run after every MCMinorSteps block of moves 
+                  fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+
+                  tac=clock(); // timings for analysis/output
+
+                  fprintf(stderr,"MC Moves: %f MHz\n",
+                          1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
+                  fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",100.0*(double)(toc-tic)/(double)(tac-tic));
+                  fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+                  REJECT=0; ACCEPT=0;
+
+                  fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
+              }
+
+              analysis_final(); //analysis run at end of sim
+            }
         }
     }
 
