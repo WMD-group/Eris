@@ -232,6 +232,7 @@ int main(int argc, char *argv[])
                 MC_move_dE_check();
               }
               if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // don't display all configs for each T (just initial and final)
+              analysis_final(); //analysis run at end of sim
             }
             else
             {     
