@@ -67,8 +67,10 @@ void analysis_initial()
     if (EquilibrationChecks) 
     {
         char gulp_filename_initial[100];
+        char directory_name[100];
+        sprintf(directory_name,"equilibration_check_GULP_inputs");
         mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_initial.in",T);
+        sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/T_%04d_gulp_input_initial.in",T);
         generate_gulp_input(gulp_filename_initial);
     }
     if (SaveGULP)
@@ -105,10 +107,10 @@ void analysis_midpoint(int MCStep)
 
     if (EquilibrationChecks) 
     {
-        T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, MCStep);
+        //T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, MCStep); // This is now performed as gulp post-processing
         // Generating gulp input files for intermittent configurations during equilibration for post-processing to calculate full lattice energy with gulp
         char gulp_filename[100];
-        sprintf(gulp_filename,"equilibration_check_GULP_inputs/gulp_input_Temp_%04d_MCS_%04d.in",T,MCStep);
+        sprintf(gulp_filename,"equilibration_check_GULP_inputs/T_%04d_gulp_input_MCS_%04d.in",T,MCStep);
         generate_gulp_input(gulp_filename);
     }
 
@@ -210,7 +212,7 @@ int main(int argc, char *argv[])
 
             // Run the requested 'equilibration' steps as a burn in, before starting to
             // collect statistics 
-            if (MCEqmSteps>0)
+            if (!EquilibrationChecks)
             {
                 fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
                 for (j=0;j<MCEqmSteps;j++)
