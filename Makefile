@@ -15,6 +15,10 @@ eris-mac-openmp: ${SRCS}
 profile: ${SRCS} 
 	gcc -std=gnu11 -lm -lconfig -o eris eris-main.c -pg
 
+cx1-icc: 
+	icc -std=c99 -Llibconfig-1.5/lib -Ilibconfig-1.5/lib \
+	-O4 -o eris eris-main.c libconfig-1.5/lib/.libs/libconfig.a
+
 parallel: eris 
 	seq 0 50 1000 | parallel  ./eris {}
 
