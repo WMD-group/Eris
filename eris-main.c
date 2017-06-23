@@ -78,7 +78,7 @@ void analysis_initial()
         char filename[100];
         mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
-        generate_gulp_input(filename);
+        generate_gulp_input_DFT_param(T, filename);
     }
 
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
@@ -135,7 +135,7 @@ void analysis_final()
     {
         char filename[100];
         sprintf(filename,"GULP_inputs/czts_lattice_final_T_%04d.in",T);
-        generate_gulp_input(filename);
+        generate_gulp_input_DFT_param(T, filename);
     }
 
     // Output RDF of final configuration at each T

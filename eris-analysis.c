@@ -29,7 +29,8 @@ void outputlattice_dumb_terminal();
 
 void outputlattice_stoichometry();
 
-void generate_gulp_input(char * filename);
+void generate_gulp_input(char * filename);  // old function, still use for equilibration check run (for gulp calculations based on formal charges)
+void generate_gulp_input_DFT_param(int temp, char * filename);
 static void log_dE(float dE);
 
 #define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
@@ -625,6 +626,108 @@ void generate_gulp_input(char * filename)
      fclose(fo);
 
 }
+
+
+
+
+
+void generate_gulp_input_DFT_param(int temp, char * filename)
+{
+    int i,j,k;
+    char selected_site[100];
+    FILE *fo;
+    const char * atom[] = {
+            "Nu",
+            "Cu",
+            "Zn",
+            "Sn",
+            "Nu"
+    };
+    
+    const char * formal_charge[] = {
+            "empty site",
+            "1.0",
+            "2.0",
+            "4.0",
+            "empty site again"
+    };
+    const float d=2.72; // Angstrom spacing of lattice to map to real space coords
+
+    fo=fopen(filename,"w");
+   
+//    fprintf(fo,"%d\n\n",X*Y*Z);
+
+    // Writing top lines of gulp input file
+    const float X_dim=d*X, Y_dim=d*Y, Z_dim=d*Z;
+
+    fprintf(fo, "# Keywords: \n");
+    fprintf(fo, "# \n");
+    fprintf(fo, "pot \n");
+    fprintf(fo, "# \n");
+    fprintf(fo, "# Options: \n");
+    fprintf(fo, "# \n");
+    fprintf(fo, "cell \n");
+    fprintf(fo, "%f %f %f 90.000000 90.000000 90.000000 \n", X_dim, Y_dim, Z_dim);
+    fprintf(fo, "cartesian \n");
+
+        // Adding S anions to top of the coordinates list based on the fixed S positions in a unit cell, expanded using supercell parameters
+        for (i=0; i<X/2; i++)
+        {
+          for (j=0; j<Y/2; j++)
+          {
+            for (k=0; k<Z/4; k++)
+            {
+/*
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.254750013*2.0*d)+(2.0*d*j), (0.758700013*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.745249987*2.0*d)+(2.0*d*j), (0.241300002*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.241300002*2.0*d)+(2.0*d*j), (0.254750013*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.758700013*2.0*d)+(2.0*d*j), (0.745249987*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.754750013*2.0*d)+(2.0*d*j), (0.258700013*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.245249987*2.0*d)+(2.0*d*j), (0.741299987*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.741299987*2.0*d)+(2.0*d*j), (0.754750013*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.258700013*2.0*d)+(2.0*d*j), (0.245249987*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
+*/
+               
+              // x- and y- coordinates are swapped to make visual of xyz file consistent with POSCAR in VESTA
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.758700013*2.0*d)+(2.0*d*i), (0.254750013*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.241300002*2.0*d)+(2.0*d*i), (0.745249987*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.254750013*2.0*d)+(2.0*d*i), (0.241300002*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.745249987*2.0*d)+(2.0*d*i), (0.758700013*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.258700013*2.0*d)+(2.0*d*i), (0.754750013*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.741299987*2.0*d)+(2.0*d*i), (0.245249987*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.754750013*2.0*d)+(2.0*d*i), (0.741299987*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
+              fprintf(fo,"S core %f %f %f -2.0 \n", (0.245249987*2.0*d)+(2.0*d*i), (0.258700013*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
+              
+            }
+          }
+        }
+
+
+        // Looping over lattice to write coordinates of cations (C, Z, T) to gulp input file
+        for (i=0;i<X;i++)
+          for (j=0;j<Y;j++)
+            for (k=0;k<Z;k++)
+
+                if (lattice[i][j][k]==0) continue; //avoid writing gap sites to gulp input file
+                else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
+   
+    fprintf(fo, "output xyz final_lattice_T_%04d.xyz",T);
+   // fprintf(fo, "space \n");
+    // fprintf(fo, "82 \n");
+     fclose(fo);
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // dE log to compare to Boltzmann stats below here 
 #define dE_BINS 100
