@@ -10,9 +10,10 @@
 #include <stdbool.h>
 
 // To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
-#define X 4 // Malloc is for losers.
-#define Y 4  
-#define Z 4 
+// For a cutoff radius of 4 for the lattice summations, min lattice dimension in any direction is 8
+#define X 8 // Malloc is for losers.
+#define Y 8  
+#define Z 8 
 int lattice[X][Y][Z];
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
