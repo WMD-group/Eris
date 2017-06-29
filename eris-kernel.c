@@ -354,8 +354,8 @@ static void MC_move_dE_check()
     FILE *fo;
     char dE_check_file[100];
     sprintf(dE_check_file,"dE_conv_check_T_%04d.dat",T);
-    fo=fopen(dE_check_file,"w");
-    fprintf(fo,"(r_cutoff for electrostatic sum)  (dE) \n");
+    fo=fopen(dE_check_file,"a");
+    fprintf(fo,"#r_cutoff dE \n");
     int CutOff_test=0;
 
     // Defining max for cut off radius for lattice sums based on lattice dimensions (i.e. min dimension/2) 
