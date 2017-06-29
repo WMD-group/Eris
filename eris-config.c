@@ -65,6 +65,7 @@ int dipolecount=0;
 double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
 
 int ElectrostaticCutOff=1;
+int POTENTIAL_CUTOFF=4; // cutoff for calculation of electrostatic potential
 int freezeSn = true; // should we freeze Sn ?
 
 int MCMegaSteps=400;
@@ -198,6 +199,7 @@ void load_config()
     fprintf(stderr,"\n");
 
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
+    config_lookup_int(cf,"POTENTIAL_CUTOFF",&POTENTIAL_CUTOFF);
     config_lookup_int(cf,"MCMegaSteps",&MCMegaSteps);
     config_lookup_int(cf,"MCEqmSteps",&MCEqmSteps);
     config_lookup_float(cf,"MCMoves",&MCMoves);

@@ -33,7 +33,6 @@ void generate_gulp_input(char * filename);  // old function, still use for equil
 void generate_gulp_input_DFT_param(int temp, char * filename);
 static void log_dE(float dE);
 
-#define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
 
 static double potential_at_site(int x, int y, int z) 
 {
