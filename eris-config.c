@@ -84,6 +84,7 @@ int CalculatePotential=false;
 int OrderedInitialLattice=false;
 int ReinitialiseLattice=false;
 int EquilibrationChecks=false;
+int EquilibrationChecksTestCutOff=false;
 int ElectrostaticsCheck=false;
 int SuzySupercell=false;
 int Method2=false;
@@ -223,6 +224,7 @@ void load_config()
     config_lookup_bool(cf,"ReinitialiseLattice",&ReinitialiseLattice);
     
     config_lookup_bool(cf, "EquilibrationChecks",&EquilibrationChecks);
+    config_lookup_bool(cf, "EquilibrationChecksTestCutOff",&EquilibrationChecksTestCutOff);
     config_lookup_bool(cf, "ElectrostaticsCheck",&ElectrostaticsCheck);
 
     config_lookup_bool(cf,"SuzySupercell",&SuzySupercell);

@@ -66,7 +66,6 @@ void analysis_initial()
     // Producing GULP input file of lattice before performing MC moves for each T
     if (EquilibrationChecks) 
     {
-        //char gulp_filename_initial[100];
         char electrostaticpotential_equil_filename[100];
         mkdir("equilibration_check_Sn_potentials", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
@@ -77,7 +76,7 @@ void analysis_initial()
         char filename[100];
         mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
-        generate_gulp_input_DFT_param(T, filename);
+        generate_gulp_input(T, filename);
     }
 
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
@@ -105,10 +104,6 @@ void analysis_midpoint(int MCStep)
         char electrostaticpotential_equil_filename[100];
         sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file during equilibration check run
         equil_lattice_potential(electrostaticpotential_equil_filename); 
-        // Generating gulp input files for intermittent configurations during equilibration for post-processing to calculate full lattice energy with gulp
-        //char gulp_filename[100];
-        //sprintf(gulp_filename,"equilibration_check_GULP_inputs/T_%04d_gulp_input_MCS_%04d.in",T,MCStep);
-        //generate_gulp_input(gulp_filename);
     }
 
     // Analysis and output routines
@@ -132,7 +127,17 @@ void analysis_final()
     {
         char filename[100];
         sprintf(filename,"GULP_inputs/czts_lattice_final_T_%04d.in",T);
-        generate_gulp_input_DFT_param(T, filename);
+        generate_gulp_input(T, filename);
+    }
+
+    if (EquilibrationChecksTestCutOff)
+    {
+        char gulp_filename[100];
+        sprintf(gulp_filename,"equilibration_check_Sn_potentials/Gulp_check_T_%04d.in",T);
+        generate_gulp_input(T, gulp_filename);
+        char eris_filename[100];
+        sprintf(eris_filename,"equilibration_check_Sn_potentials/Eris_check_all_r_T_%04d.dat",T);
+        lattice_potential_r_test(eris_filename);
     }
 
     // Output RDF of final configuration at each T

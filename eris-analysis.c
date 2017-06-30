@@ -9,10 +9,12 @@
 
 // Prototypes...
 static double potential_at_site(int x, int y, int z);
+static double potential_at_site_r_test(int x, int y, int z, int r_cutoff);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
 void equil_lattice_potential(char * filename);
+void lattice_potential_r_test(char * filename);
 static double lattice_energy_log(FILE *log);
 double landau_order();
 
@@ -29,9 +31,9 @@ void outputlattice_dumb_terminal();
 
 void outputlattice_stoichometry();
 
-void generate_gulp_input(char * filename);  // old function, still use for equilibration check run (for gulp calculations based on formal charges)
-void generate_gulp_input_DFT_param(int temp, char * filename);
+void generate_gulp_input(int temp, char * filename);  
 static void log_dE(float dE);
+
 
 
 static double potential_at_site(int x, int y, int z) 
@@ -55,6 +57,42 @@ static double potential_at_site(int x, int y, int z)
                 d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
 
                 if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
+
+                // pot(r) = 1/4PiEpsilon * p.r / r^3
+               
+               //for CZTS
+                int species;
+                species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
+                double q;
+                q=FormalCharge[species];
+
+                pot+= q/(double)d;
+            }
+    return(pot);
+}
+
+
+static double potential_at_site_r_test(int x, int y, int z, int r_cutoff) 
+{
+    int dx,dy,dz=0;
+    double pot=0.0;
+    float d;
+    struct dipole r;
+
+    for (dx=-r_cutoff;dx<r_cutoff;dx++)
+        for (dy=-r_cutoff;dy<r_cutoff;dy++)
+#if(Z>1) //i.e. 3D in Z
+            for (dz=-r_cutoff;dz<r_cutoff;dz++)
+#endif
+            {
+                if (dx==0 && dy==0 && dz==0)
+                    continue; //no infinities / self interactions please!
+
+                r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
+
+                d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
+
+                if (d>(float)r_cutoff) continue; // Cutoff in d
 
                 // pot(r) = 1/4PiEpsilon * p.r / r^3
                
@@ -307,7 +345,7 @@ void outputlattice_xyz(char * filename)
 float DMAX=55.0; //sensible starting value...
 float DMEAN=0.0;
 
-// Prints 2D reproresentation of the lattice to the terminal, using ANSI
+// Prints 2D reproresentation of the lar_cutof using ANSI
 // colours to make it look pretty; and presenting it side-by-side with the
 // potential map for the simulated volume
 void outputlattice_dumb_terminal()
@@ -480,14 +518,13 @@ void outputlattice_stoichometry()
 */
 }
 
-//Calculates the on-site electrostatic potentials across the lattice and variance in the distribution of electrostatic potentials to separate output files for each simulation temperature
 void equil_lattice_potential(char * filename)
 {
     int x,y,z;
     double pot;
 
     FILE *fo;
-    fo=fopen(filename,"w"); // append to the electrostatic potential file, more data for better statistics
+    fo=fopen(filename,"w"); 
 
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
@@ -506,98 +543,38 @@ fclose(fo);
 
 
 
-void generate_gulp_input(char * filename)
+void lattice_potential_r_test(char * filename)
 {
-    int i,j,k;
-    char selected_site[100];
+    int x,y,z,r_cutoff;
+    double pot;
+
+    // Defining max r_cutoff for potential calculation based on lattice dimensions
+    int CutOffMax = floor(min(X,Y,Z)/2);
+
     FILE *fo;
-    const char * atom[] = {
-            "Nu",
-            "Cu",
-            "Zn",
-            "Sn",
-            "Nu"
-    };
-    
-    const char * formal_charge[] = {
-            "empty site",
-            "1.0",
-            "2.0",
-            "4.0",
-            "empty site again"
-    };
-    const float d=2.72; // Angstrom spacing of lattice to map to real space coords
+    fo=fopen(filename,"w"); 
 
-    fo=fopen(filename,"w");
-   
-//    fprintf(fo,"%d\n\n",X*Y*Z);
+    for (r_cutoff=1;r_cutoff<CutOffMax;r_cutoff++)
+    {
+      for (x=0;x<X;x++)
+          for (y=0;y<Y;y++)
+              for (z=0;z<Z;z++)
+              {
+                  // log potential at only Sn sites
+                  if (lattice[x][y][z]==3)
+                  {
+                    pot=potential_at_site_r_test(x,y,z,r_cutoff);
+                    fprintf(fo, "%f \n",pot);
+                  }                
 
-    // Writing top lines of gulp input file
-    const float X_dim=d*X, Y_dim=d*Y, Z_dim=d*Z;
-
-    fprintf(fo, "# Keywords: \n");
-    fprintf(fo, "# \n");
-    fprintf(fo, "pot \n");
-    fprintf(fo, "# \n");
-    fprintf(fo, "# Options: \n");
-    fprintf(fo, "# \n");
-    fprintf(fo, "cell \n");
-    fprintf(fo, "%f %f %f 90.000000 90.000000 90.000000 \n", X_dim, Y_dim, Z_dim);
-    fprintf(fo, "cartesian \n");
-
-        // Adding S anions to top of the coordinates list based on the fixed S positions in a unit cell, expanded using supercell parameters
-        for (i=0; i<X/2; i++)
-        {
-          for (j=0; j<Y/2; j++)
-          {
-            for (k=0; k<Z/4; k++)
-            {
-/*
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.254750013*2.0*d)+(2.0*d*j), (0.758700013*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.745249987*2.0*d)+(2.0*d*j), (0.241300002*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.241300002*2.0*d)+(2.0*d*j), (0.254750013*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.758700013*2.0*d)+(2.0*d*j), (0.745249987*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.754750013*2.0*d)+(2.0*d*j), (0.258700013*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.245249987*2.0*d)+(2.0*d*j), (0.741299987*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.741299987*2.0*d)+(2.0*d*j), (0.754750013*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.258700013*2.0*d)+(2.0*d*j), (0.245249987*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
-*/
-               
-              // x- and y- coordinates are swapped to make visual of xyz file consistent with POSCAR in VESTA
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.758700013*2.0*d)+(2.0*d*i), (0.254750013*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.241300002*2.0*d)+(2.0*d*i), (0.745249987*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.254750013*2.0*d)+(2.0*d*i), (0.241300002*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.745249987*2.0*d)+(2.0*d*i), (0.758700013*2.0*d)+(2.0*d*j), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.258700013*2.0*d)+(2.0*d*i), (0.754750013*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.741299987*2.0*d)+(2.0*d*i), (0.245249987*2.0*d)+(2.0*d*j), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.754750013*2.0*d)+(2.0*d*i), (0.741299987*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n", (0.245249987*2.0*d)+(2.0*d*i), (0.258700013*2.0*d)+(2.0*d*j), (0.622129977*4.0*d)+(4.0*d*k));
-              
-            }
-          }
-        }
-
-
-        // Looping over lattice to write coordinates of cations (C, Z, T) to gulp input file
-        for (i=0;i<X;i++)
-          for (j=0;j<Y;j++)
-            for (k=0;k<Z;k++)
-
-                if (lattice[i][j][k]==0) continue; //avoid writing gap sites to gulp input file
-                else fprintf(fo,"%s core %f %f %f %s \n",atom[lattice[i][j][k]],d*(float)i,d*(float)j,d*(float)k,formal_charge[lattice[i][j][k]]);
-   
-    fprintf(fo, "output xyz");
-    // fprintf(fo, "space \n");
-    // fprintf(fo, "82 \n");
-     fclose(fo);
-
+              }
+    }  
+fclose(fo);
 }
 
 
 
-
-
-void generate_gulp_input_DFT_param(int temp, char * filename)
+void generate_gulp_input(int temp, char * filename)
 {
     int i,j,k;
     char selected_site[100];
