@@ -66,12 +66,11 @@ void analysis_initial()
     // Producing GULP input file of lattice before performing MC moves for each T
     if (EquilibrationChecks) 
     {
-        char gulp_filename_initial[100];
-        char directory_name[100];
-        sprintf(directory_name,"equilibration_check_GULP_inputs");
-        mkdir("equilibration_check_GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(gulp_filename_initial,"equilibration_check_GULP_inputs/T_%04d_gulp_input_initial.in",T);
-        generate_gulp_input(gulp_filename_initial);
+        //char gulp_filename_initial[100];
+        char electrostaticpotential_equil_filename[100];
+        mkdir("equilibration_check_Sn_potentials", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
+        sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
+        equil_lattice_potential(electrostaticpotential_equil_filename);
     }
     if (SaveGULP)
     {
@@ -100,18 +99,16 @@ void analysis_midpoint(int MCStep)
     // of the filename
     char electrostaticpotential_filename[100];
     sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
-    char electrostaticpotential_equil_filename[100];
-    sprintf(electrostaticpotential_equil_filename,"equil_potential_T_%04d.dat",T); // for electrostatic potential file during equilibration check run
-    char variance_equil_filename[100];
-    sprintf(variance_equil_filename,"equil_variance_T_%04d.dat",T); // for variance of potential file during equilibration run as a function of MC step (or j in MCMegaSteps loop)
 
     if (EquilibrationChecks) 
     {
-        //T_separated_lattice_potential(electrostaticpotential_equil_filename, variance_equil_filename, MCStep); // This is now performed as gulp post-processing
+        char electrostaticpotential_equil_filename[100];
+        sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file during equilibration check run
+        equil_lattice_potential(electrostaticpotential_equil_filename); 
         // Generating gulp input files for intermittent configurations during equilibration for post-processing to calculate full lattice energy with gulp
-        char gulp_filename[100];
-        sprintf(gulp_filename,"equilibration_check_GULP_inputs/T_%04d_gulp_input_MCS_%04d.in",T,MCStep);
-        generate_gulp_input(gulp_filename);
+        //char gulp_filename[100];
+        //sprintf(gulp_filename,"equilibration_check_GULP_inputs/T_%04d_gulp_input_MCS_%04d.in",T,MCStep);
+        //generate_gulp_input(gulp_filename);
     }
 
     // Analysis and output routines

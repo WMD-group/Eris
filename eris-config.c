@@ -25,8 +25,6 @@ int Y_super=Y/2;
 int Z_super=Z/4;
 
 
-#define POTENTIAL_CUTOFF 4 // cutoff for calculation of electrostatic potential
-// ill defined if this is > than half any of the above
 
 #define SPECIES 4
 

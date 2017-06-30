@@ -12,7 +12,7 @@ static double potential_at_site(int x, int y, int z);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
-void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num); // Extra lattice potential function for outputting the variance for each temperature separately as a function of MC steps during equilibration
+void equil_lattice_potential(char * filename);
 static double lattice_energy_log(FILE *log);
 double landau_order();
 
@@ -481,60 +481,27 @@ void outputlattice_stoichometry()
 }
 
 //Calculates the on-site electrostatic potentials across the lattice and variance in the distribution of electrostatic potentials to separate output files for each simulation temperature
-void T_separated_lattice_potential(char * filename_pot, char * filename_var, int MCS_num)
+void equil_lattice_potential(char * filename)
 {
     int x,y,z;
-    int MCS_num_scaled; //to avoid errors in printing no of MCS when number is too large for standard int may need to use long int
-    int atoms;
-    double pot,mean,variance;
+    double pot;
 
     FILE *fo;
-    fo=fopen(filename_pot,"a"); // append to the electrostatic potential file, more data for better statistics
+    fo=fopen(filename,"w"); // append to the electrostatic potential file, more data for better statistics
 
-    FILE *fvariance;
-    fvariance=fopen(filename_var,"a"); // append to variance file, where the variance is written as a function of MC steps during progression towards equilibration
-
-    mean=0.0; atoms=0;
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-                // log potential at all sites (Cu,Zn,Sn)
-                pot=potential_at_site(x,y,z);
-                fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
-                
-                if (lattice[x][y][z]==3) // only count tin towards mean / variance
-                {
-                    mean+=pot;
-                    atoms++;
-                }
-            }
-    mean/=atoms;
-
-    variance=0.0; atoms=0;
-     for (x=0;x<X;x++)
-        for (y=0;y<Y;y++)
-            for (z=0;z<Z;z++)
-            {
+                // log potential at only Sn sites
                 if (lattice[x][y][z]==3)
                 {
-                    pot=potential_at_site(x,y,z);
-                    variance+=(pot-mean)*(pot-mean);
-                    atoms++;
-                }
-            }
-    variance/=atoms;
+                  pot=potential_at_site(x,y,z);
+                  fprintf(fo, "%f \n",pot);
+                }                
 
- //   fprintf(stderr,"T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
- //           T,mean,variance,atoms,X*Y*Z);
- //   fprintf(fo,"# T: %04d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
- //           T,mean,variance,atoms,X*Y*Z);
- //   fclose(fo);
-    MCS_num_scaled = MCS_num;
-        //*(MCMinorSteps); // Multiplying j of outer MC loop by number in inner loop to determine total no. of MC performed for each data point (currently commenting out MCMinorSteps to avoid large negative values from integer overflow)
-    fprintf(fvariance,"MCS: %d Mean: %f Variance(rigorous): %f TinAtoms: %d Total(X*Y*Z):%d\n",
-            MCS_num_scaled, mean,variance,atoms,X*Y*Z);
-    fclose(fvariance);
+            }
+fclose(fo);
 }
 
 
