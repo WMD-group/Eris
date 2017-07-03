@@ -225,17 +225,17 @@ static void MC_move()
     //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.
-    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);   
-     dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
+//    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);   
+//     dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
 
-    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
-    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
+//    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
+//    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
 
-//    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
-//    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
 
-//    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
-//    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
+    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
 
 
     // Report on planned move + dE -- for debugging only (makes a ridiculous
@@ -363,11 +363,14 @@ static void MC_move_dE_check()
 
     for (CutOff_test=1; CutOff_test<CutOffMax+1; CutOff_test++)
     {
-      dE+=site_energy(x_a,y_a,z_a, species_a, CutOff_test);
-      dE-=site_energy(x_a,y_a,z_a, species_b, CutOff_test);
 
-      dE+=site_energy(x_b,y_b,z_b, species_b, CutOff_test);
-      dE-=site_energy(x_b,y_b,z_b, species_a, CutOff_test);
+      dE+=site_energy_stencil(x_a,y_a,z_a, species_a, CutOff_test, x_a, y_a, z_a);
+      dE-=site_energy_stencil(x_a,y_a,z_a, species_b, CutOff_test, x_a, y_a, z_a);
+
+      dE+=site_energy_stencil(x_b,y_b,z_b, species_b, CutOff_test, x_a, y_a, z_a);
+      dE-=site_energy_stencil(x_b,y_b,z_b, species_a, CutOff_test, x_a, y_a, z_a);
+
+
       fprintf(fo,"%d %f \n", CutOff_test, dE);
       dE=0.0;
      }
