@@ -79,7 +79,7 @@ void analysis_initial()
         generate_gulp_input(T, filename);
     }
 
-    if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
+    radial_distribution_function_allsites_initial();
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 //    lattice_energy(); // check energy sums
