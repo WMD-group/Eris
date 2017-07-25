@@ -11,9 +11,9 @@
 
 // To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
 // For a cutoff radius of 4 for the lattice summations, min lattice dimension in any direction is 8
-#define X 8 // Malloc is for losers.
-#define Y 8  
-#define Z 8 
+#define X 28 // Malloc is for losers.
+#define Y 28  
+#define Z 28 
 int lattice[X][Y][Z];
 
 // New user defined system dimensions to create a supercell of a 2x2x4 unit cell
@@ -48,7 +48,7 @@ struct dipole
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];
-
+double EffectiveCharge[SPECIES];
 
 struct mixture
 {
@@ -196,6 +196,19 @@ void load_config()
     for (i=0;i<FormalCharges;i++)
         fprintf(stderr,"%f\t",FormalCharge[i]);
     fprintf(stderr,"\n");
+
+    
+    int EffectiveCharges;
+    setting  = config_lookup(cf,"EffectiveCharges");
+    EffectiveCharges = config_setting_length(setting);
+    fprintf(stderr,"I've found: %d values in the EffectiveCharges list...\n",EffectiveCharges);
+    for (i=0;i<EffectiveCharges;i++)
+        EffectiveCharge[i]=config_setting_get_float_elem(setting,i);
+    fprintf(stderr,"Effective charges look like: ");
+    for (i=0;i<EffectiveCharges;i++)
+        fprintf(stderr,"%f\t",EffectiveCharge[i]);
+    fprintf(stderr,"\n");
+
 
     config_lookup_int(cf,"ElectrostaticCutOff",&ElectrostaticCutOff);
     config_lookup_int(cf,"POTENTIAL_CUTOFF",&POTENTIAL_CUTOFF);

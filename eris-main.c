@@ -71,15 +71,27 @@ void analysis_initial()
         sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
         equil_lattice_potential(electrostaticpotential_equil_filename);
     }
+
+    if (EquilibrationChecksTestCutOff)
+    {
+        char gulp_filename[100];
+        sprintf(gulp_filename,"equilibration_check_Sn_potentials/Gulp_check_initial_T_%04d.in",T);
+        generate_gulp_input(T, gulp_filename);
+        char eris_filename[100];
+        sprintf(eris_filename,"equilibration_check_Sn_potentials/Eris_check_initial_all_r_T_%04d.dat",T);
+        lattice_potential_r_test(eris_filename);
+    }
+
+
     if (SaveGULP)
     {
         char filename[100];
         mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_initial.in",T);
+        sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
         generate_gulp_input(T, filename);
     }
 
-    radial_distribution_function_allsites_initial();
+    if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 //    lattice_energy(); // check energy sums
@@ -106,13 +118,6 @@ void analysis_midpoint(int MCStep)
         equil_lattice_potential(electrostaticpotential_equil_filename); 
     }
 
-    if (SaveGULP)
-    {
-        char filename[100];
-        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_MCS_%05d.in",T,MCStep);
-        generate_gulp_input(T, filename);
-    }
-    
     // Analysis and output routines
     if (DisplayDumbTerminal) outputlattice_dumb_terminal();
     if (EquilibrationChecks) { report_dE(); reset_dE(); }
@@ -130,6 +135,12 @@ void analysis_final()
         outputlattice_xyz(name);
     }
 
+    if (SaveGULP)
+    {
+        char filename[100];
+        sprintf(filename,"GULP_inputs/czts_lattice_final_T_%04d.in",T);
+        generate_gulp_input(T, filename);
+    }
 
     if (EquilibrationChecksTestCutOff)
     {

@@ -100,7 +100,8 @@ static double potential_at_site_r_test(int x, int y, int z, int r_cutoff)
                 int species;
                 species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
                 double q;
-                q=FormalCharge[species];
+               // Use effetive charges (defined in eris.cfg) to account for S anion in between each cation
+                q=EffectiveCharge[species];
 
                 pot+= q/(double)d;
             }
