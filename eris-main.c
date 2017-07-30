@@ -87,7 +87,7 @@ void analysis_initial()
     {
         char filename[100];
         mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(filename,"GULP_inputs/czts_lattice_initial_T_%04d.in",T);
+        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_initial.in",T);
         generate_gulp_input(T, filename);
     }
 
@@ -118,6 +118,14 @@ void analysis_midpoint(int MCStep)
         equil_lattice_potential(electrostaticpotential_equil_filename); 
     }
 
+   if (ExtraData)
+   {
+        char gulpfilename[100];
+        mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
+        sprintf(gulpfilename,"GULP_inputs/T_%04d_gulp_input_MCS_%05d.in",T, MCStep);
+        generate_gulp_input(T, gulpfilename);
+   }
+
     // Analysis and output routines
     if (DisplayDumbTerminal) outputlattice_dumb_terminal();
     if (EquilibrationChecks) { report_dE(); reset_dE(); }
@@ -138,7 +146,7 @@ void analysis_final()
     if (SaveGULP)
     {
         char filename[100];
-        sprintf(filename,"GULP_inputs/czts_lattice_final_T_%04d.in",T);
+        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_final.in",T);
         generate_gulp_input(T, filename);
     }
 
