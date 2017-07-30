@@ -121,7 +121,6 @@ void analysis_midpoint(int MCStep)
    if (ExtraData)
    {
         char gulpfilename[100];
-        mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
         sprintf(gulpfilename,"GULP_inputs/T_%04d_gulp_input_MCS_%05d.in",T, MCStep);
         generate_gulp_input(T, gulpfilename);
    }
