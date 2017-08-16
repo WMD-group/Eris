@@ -15,5 +15,4 @@ It is also possible to run Eris on a HPC machine. To run on cx1, use files conta
 There is some wordy (...and a little out of date) explanation of analysis tools on the [wiki](https://github.com/WMD-group/wmd-wiki/wiki/Eris) page. The original bash and python scripts used to analyse data are contained in 'analysis-scripts/final_setup', where there are also some slides explaining the steps for each type of analysis. However, currently under construction are ipython notebooks for the same analysis scripts and explanations to be contained in one place. These will be in 'analysis-notebooks' once they are complete, along with sample data.
 
 ## Contributors
-
-Suzanne K. Wallace and Jarvist Moore Frost. Codes started by Jarvist Moore Frost; September 19th 2014. Based on prior Amphisbaena and Starrynight codes.
+Jarvist Moore Frost and Suzanne K. Wallace. Codes started by Jarvist Moore Frost; September 19th 2014. Based on prior Amphisbaena and Starrynight codes.
