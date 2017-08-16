@@ -16,4 +16,4 @@ There is some wordy (...and a little out of date) explanation of analysis tools 
 
 ## Contributors
 
-Codes started by Jarvist Moore Frost; September 19th 2014. Based on prior Amphisbaena and Starrynight codes.
+Suzanne K. Wallace and Jarvist Moore Frost. Codes started by Jarvist Moore Frost; September 19th 2014. Based on prior Amphisbaena and Starrynight codes.
