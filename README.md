@@ -2,7 +2,7 @@
 Codes to simulate and analyse on-lattice cation disorder in kesterite-structured Cu2ZnSnS4 (CZTS).
 
 ## Getting started
-To run eris locally, just clone this directory and run `make` in the terminal to compile Eris and to run simply type `./eris`. All simulation parameters (apart from system size) are set by flags in eris.cfg. To set the system size, you need to edit the number after `#define X,Y,Z` to set the X, Y and Z lattice dimensions respectively. It is necessary to recompile Eris after changing the lattice dimensions, but it is NOT necessary to recompile after changing flags in eris.cfg.
+To run eris locally, just clone this directory and run `make` in the terminal to compile Eris and to run simply type `./eris`. All simulation parameters (apart from system size) are set by flags in eris.cfg. To set the system size, you need to edit the number after `#define X,Y,Z` in eris-config.c to set the X, Y and Z lattice dimensions respectively. It is necessary to recompile Eris after changing the lattice dimensions, but it is NOT necessary to recompile after changing flags in eris.cfg.
 
 Eris can also be run in parallel over different temperatures on your local machine, for this use `make parallel`. But note that now the temperature range and increments are NOT set by eris.cfg, it is now set in the Makefile by `seq 0 50 1000 | parallel ./eris {}`, which in this example corresponds to running from T=0K to T=1000K in step sizes of 50K.
 
