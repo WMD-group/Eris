@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 // To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
-// For a cutoff radius of 4 for the lattice summations, min lattice dimension in any direction is 8
+// For a cutoff radius of 5 for the lattice summations, min lattice dimension in any direction is 10
 #define X 28 // Malloc is for losers.
 #define Y 28  
 #define Z 28 
