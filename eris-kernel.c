@@ -175,15 +175,15 @@ static void MC_move()
     while (lattice[x_a][y_a][z_a]==0); // keep selecting new random numbers until find occupied site...
 
     // Choice direction + size of moves...
-    int RADIAL_CUTOFF=2;
+    int RADIAL_CUTOFF=2;  // nearest-neighbour limit is 2 because of gap site between each cation
     do
     {
 // Local cube; Anyhere <> limit
-// Nearest Neighbour limit is RADIAL_CUTOFF=1
         dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-        //dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
-        dz=0; // freeze motion in Z; i.e. between Cu/Zn and Cu/Sn layers
+        dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
+        if (InPlaneOnly)
+            dz=0; // freeze motion in Z; i.e. between Cu/Zn and Cu/Sn layers
     }
     while( (dx==0 && dy==0 && dz==0) || (dx+dy+dz)%2!=0 ); // Check this works as intended!
         // check to see whether site at this offset in gappy FCC lattice.
@@ -214,6 +214,13 @@ static void MC_move()
     if (freezeSn)
         if (species_a==Sn || species_b==Sn) // if either move selects Tin...
             return;
+    if (freezeCu)
+        if (species_a==Cu || species_b==Cu) // if either move selects Tin...
+            return;
+    if (freezeZn)
+        if (species_a==Zn || species_b==Zn) // if either move selects Tin...
+            return;
+
 
     if (species_a==0 || species_b==0) // if interstial / empty site...
         return; // don't do a move. Highly computational inefficient, FIXME

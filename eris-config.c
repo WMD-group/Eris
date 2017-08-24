@@ -65,6 +65,9 @@ double beta=1.0;  // beta=1/T  T=temperature of the lattice, in units of k_B
 int ElectrostaticCutOff=1;
 int POTENTIAL_CUTOFF=4; // cutoff for calculation of electrostatic potential
 int freezeSn = true; // should we freeze Sn ?
+int freezeCu = true;
+int freezeZn = true;
+int InPlaneOnly = true;
 
 int MCMegaSteps=400;
 int MCEqmSteps=0;
@@ -249,6 +252,9 @@ void load_config()
     config_lookup_bool(cf,"ExtraData",&ExtraData);
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
+    config_lookup_bool(cf,"freezeCu",&freezeCu);
+    config_lookup_bool(cf,"freezeZn",&freezeZn);
+    config_lookup_bool(cf,"InPlaneOnly",&InPlaneOnly);
 
     fprintf(stderr,"Config loaded. \n\n");
 }
