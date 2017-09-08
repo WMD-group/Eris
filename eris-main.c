@@ -191,6 +191,17 @@ int main(int argc, char *argv[])
         TMAX=T; TMIN=T; // overide any loop settings from config; just this single temperature
     }
 
+    // Allocate lattice; which is made up of 'dipole' structs
+    fprintf(stderr,"Memory allocation for lattice with X=%d Y=%d Z=%d\n",X,Y,Z);
+    lattice = (int ***)malloc(sizeof(int **)*X);
+    for (x=0;x<X;x++) 
+    {
+        lattice[x]=(int **)malloc(sizeof(int *)*Y);
+        for (y=0;y<Y;y++)
+            lattice[x][y]=(int *)malloc(sizeof(int)*Z);
+    } 
+    fprintf(stderr,"Lattice allocated");
+
     // If we're going to do some actual science, we better have a logfile...
     FILE *log;
     log=fopen(LOGFILE,"w");

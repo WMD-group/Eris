@@ -11,18 +11,13 @@
 
 // To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
 // For a cutoff radius of 5 for the lattice summations, min lattice dimension in any direction is 10
-#define X 28 // Malloc is for losers.
-#define Y 28  
-#define Z 28 
-int lattice[X][Y][Z];
+int X=28; // Malloc is for winners.
+int Y=28;  
+int Z=28;
+int ***lattice; // Pointer to where we will store the 3D lattice array of ints
+// This is now (2017-09-08), malloc'd on startup. Values are read from the .cfg file.
 
-// New user defined system dimensions to create a supercell of a 2x2x4 unit cell
-// Defining lattice dimensions based on a 2x2x4 unit cell and above user-defined supercell parameters
-// Nb: if the above X,Y,Z do not fit within the stride, code may crash
-// / produce non-stoichometric example
-int X_super=X/2;
-int Y_super=Y/2;
-int Z_super=Z/4;
+int X_super, Y_super, Z_super;
 
 
 
@@ -174,10 +169,26 @@ void load_config()
     }
     fprintf(stderr,"Read OK! Variables have been set as follows:\n\n");
 
+
+
     config_lookup_string(cf,"LOGFILE",&LOGFILE); //config library does its own dynamic allocation
     config_lookup_int(cf,"T",&T); 
     config_lookup_float(cf,"electrostatic",&electrostatic); //Multiplier for E_ints
     fprintf(stderr,"LOGFILE: %s\nT: %d\nelectrostatic: %f\n",LOGFILE,T,electrostatic);
+
+    // Size of lattice; now used to Malloc lattice object
+    config_lookup_int(cf,"X",&X);
+    config_lookup_int(cf,"Y",&Y);
+    config_lookup_int(cf,"Z",&Z);
+    fprintf(stderr,"Lattice of: X=%d, Y=%d, Z=%d\n",X,Y,Z);
+
+// Defining lattice dimensions based on a 2x2x4 unit cell and above
+// user-defined supercell parameters 
+// Nb: if the above X,Y,Z do not fit within the stride, code may crash
+// or produce non-stoichometric example
+    int X_super=X/2; int Y_super=Y/2; int Z_super=Z/4;
+    if (X%2 || Y%2 || Z%4) 
+        fprintf(stderr,"WARNING! Lattice of X=%d,Y=%d,Z=%d not commensurate!\n",X,Y,Z);
 
     setting = config_lookup(cf, "E_int");
     E_ints   = config_setting_length(setting);
