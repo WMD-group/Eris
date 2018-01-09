@@ -42,13 +42,11 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
     int species_b;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
-#pragma omp parallel for reduction(+:dE) 
-// OPENMP PARALLISATION
+// #pragma omp parallel for reduction(+:dE) 
+// OPENMP PARALLISATION - note doesn't offer any real speed up.
     for (dx=-CutOff;dx<=CutOff;dx++)
         for (dy=-CutOff;dy<=CutOff;dy++)
-#if(Z>1) //i.e. 3D in Z
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
-#endif
             {
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
@@ -99,13 +97,11 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
     int species_b;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
-#pragma omp parallel for reduction(+:dE) 
+// #pragma omp parallel for reduction(+:dE) 
 // OPENMP PARALLISATION
     for (dx=-CutOff;dx<=CutOff;dx++)
         for (dy=-CutOff;dy<=CutOff;dy++)
-#if(Z>1) //i.e. 3D in Z
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
-#endif
             {
 //                if (dx==0 && dy==0 && dz==0)
 //                    continue; //no infinities / self interactions please!

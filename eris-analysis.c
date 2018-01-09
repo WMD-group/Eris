@@ -45,9 +45,7 @@ static double potential_at_site(int x, int y, int z)
 
     for (dx=-POTENTIAL_CUTOFF;dx<POTENTIAL_CUTOFF;dx++)
         for (dy=-POTENTIAL_CUTOFF;dy<POTENTIAL_CUTOFF;dy++)
-#if(Z>1) //i.e. 3D in Z
             for (dz=-POTENTIAL_CUTOFF;dz<POTENTIAL_CUTOFF;dz++)
-#endif
             {
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
@@ -81,9 +79,7 @@ static double potential_at_site_r_test(int x, int y, int z, int r_cutoff)
 
     for (dx=-r_cutoff;dx<r_cutoff;dx++)
         for (dy=-r_cutoff;dy<r_cutoff;dy++)
-#if(Z>1) //i.e. 3D in Z
             for (dz=-r_cutoff;dz<r_cutoff;dz++)
-#endif
             {
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
