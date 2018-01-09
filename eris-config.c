@@ -19,8 +19,6 @@ int ***lattice; // Pointer to where we will store the 3D lattice array of ints
 
 int X_super, Y_super, Z_super;
 
-
-
 #define SPECIES 4
 
 int DIM=3; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
