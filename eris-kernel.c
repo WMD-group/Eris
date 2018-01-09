@@ -108,6 +108,11 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
 
 //                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
 
+                // FIXME
+                // Suspect this is where the 'edge effects' induced by the
+                // stencil come from.
+                // PBCs are not being calculated correctly across the boundary
+                // (sx,sy,sz) and (x,y,z) are not necessarily in the same cell.
                 d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
                 
                 if (d<0.5) continue;
