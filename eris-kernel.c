@@ -13,13 +13,9 @@ static void MC_move_dE_check();
 static void log_dE(float dE);
 static int min(int a, int b, int c);
 
-
-
 #define EVJEN 1 // could convert these into ints later if wanting to make them dynamic
 #define SPHERICAL 0 
 // Nb: in C, 0=FALSE, 1=TRUE
-
-
 
 static int min(int a, int b, int c)
 {
@@ -28,10 +24,6 @@ static int min(int a, int b, int c)
   if (m > c) m = c;
   return m;
 }
-
-
-
-
 
 static double site_energy(int x, int y, int z, int species_a, int CutOff)
 {
@@ -81,10 +73,6 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
                 dE+=evjen_E * evjen_weight;
             }
 
-    // Interaction of dipole with (unshielded) E-field
- /*   dE+= + dot(newdipole, & Efield)
-        - dot(olddipole, & Efield);*/
-
     return(dE); 
 }
 
@@ -97,15 +85,10 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
     int species_b;
 
     // Sum over near neighbours for formalcharge-formalcharge interaction
-// #pragma omp parallel for reduction(+:dE) 
-// OPENMP PARALLISATION
     for (dx=-CutOff;dx<=CutOff;dx++)
         for (dy=-CutOff;dy<=CutOff;dy++)
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
             {
-//                if (dx==0 && dy==0 && dz==0)
-//                    continue; //no infinities / self interactions please!
-
 //                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
 
                 // FIXME
@@ -113,14 +96,21 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                 // stencil come from.
                 // PBCs are not being calculated correctly across the boundary
                 // (sx,sy,sz) and (x,y,z) are not necessarily in the same cell.
-                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
-                
-                if (d<0.5) continue;
+//                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
+ 
+                if (sx+dx-x > CutOff+3) // error!
+                    fprintf(stderr,"sx+dx-x: %d+%d-%d = %d fixed = %d \n",sx,dx,x,sx+dx-x,
+                            (sx+dx - (X+x) )%X);
 
-//                if (SPHERICAL)
-//                    if (d>(float)CutOff) continue; // Cutoff in d
-//                -->
-//                EXPANSIONS IN SPHERES; probably not convergent
+                // attempted at a minimum PBC for the stencil variable.
+                d=sqrt( (float) ( 
+                            ((sx+dx-x-X)%X)*((sx+dx-x-X)%X) +
+                            ((sy+dy-y-Y)%Y)*((sy+dy-y-Y)%Y) +
+                            ((sz+dz-z-Z)%Z)*((sz+dz-z-Z)%Z)));
+
+                fprintf(stderr,"d: %f\n",d);
+
+                if (d<0.5) continue;
 
                 species_b= lattice[(X+sx+dx)%X][(Y+sy+dy)%Y][(Z+sz+dz)%Z];
 
@@ -144,16 +134,9 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                 }
                 dE+=evjen_E * evjen_weight;
             }
-
-    // Interaction of dipole with (unshielded) E-field
- /*   dE+= + dot(newdipole, & Efield)
-        - dot(olddipole, & Efield);*/
-
+    
     return(dE); 
 }
-
-
-
 
 static void MC_move()
 {
@@ -271,11 +254,6 @@ static void MC_move()
         REJECT++;
 }
 
-
-
-
-
-
 static void MC_move_dE_check()
 {
     int x_a, y_a, z_a;
@@ -345,7 +323,6 @@ static void MC_move_dE_check()
     if (species_a==species_b) // move achieves nothing... don't count both
        // calculating NULL moves, or counting them towards ACCEPT/REJECT criter
           return;
-
 
 
 // original site_energy_stencil to calculate dE ------------------------------------------------
