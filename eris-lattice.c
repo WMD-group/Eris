@@ -75,12 +75,10 @@ void initialise_lattice_CZTS()
     int x,y,z;
     int species;
 
-    //Striped lattice...
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
             for (z=0;z<Z;z++)
             {
-//                species=1+ (x+2*y+2*z)%4;
                 species=1+ 2*(z%2) + (x+2*y)%2;
                 // Alternating layers (in Z) of C+T and C+Z
 
@@ -88,24 +86,24 @@ void initialise_lattice_CZTS()
                 // 1: Copper (I)
                 // 2: Zinc  (II)
                 // 3: Tin   (IIII)
-                // 4: Copper (Dummy --> change to 4)
-                if (species==4) species=1; //Twice as much copper
+                // 4: Copper (Dummy --> changed to 1)
+                if (z%2==1) species=7-species; // flips the Cu-Sn order; so that it matches up
+
+                if (species==4) species=1; //Replace dummy 'second' copper with 1
 
                 if ((x+y+z)%2==0)
                     lattice[x][y][z]=species; 
                 else
                     lattice[x][y][z]=0; // gaps for the FCC sublattice
             }
- 
 }
-
-
 
 void initialise_lattice_CZTS_supercell()
 {
-
-  // This routine produces a lattice containing a unit cell of CZTS (constructed by inspecting CZTS POSCARs layer by layer)
-  // Larger systems are then created as supercells of this unit cell using user inputted parameters for X_super, Y_super and Z_super in eris-config.c
+  // This routine produces a lattice containing a unit cell of CZTS
+  // (constructed by inspecting CZTS POSCARs layer by layer) Larger systems are
+  // then created as supercells of this unit cell using user inputted
+  // parameters for X_super, Y_super and Z_super in eris-config.c
 
   // 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
   // The unit cell is 2x2x4
@@ -146,10 +144,8 @@ void initialise_lattice_CZTS_supercell()
 
 }
 
-
 void initialise_lattice_CZTS_method2()
 {
-
   // 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
   int x,y,z;
 
@@ -196,12 +192,10 @@ void initialise_lattice_CZTS_method2()
           lattice[x][y][z+3] = 0;
         }
 
+      }
     }
   }
 }
-}
-
-
 
 void initialise_lattice_CZTS_randomized()
 {
