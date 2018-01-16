@@ -97,18 +97,23 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                 // PBCs are not being calculated correctly across the boundary
                 // (sx,sy,sz) and (x,y,z) are not necessarily in the same cell.
 //                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
- 
-                if (sx+dx-x > CutOff+3) // error!
-                    fprintf(stderr,"sx+dx-x: %d+%d-%d = %d fixed = %d \n",sx,dx,x,sx+dx-x,
-                            (sx+dx - (X+x) )%X);
 
+/*
+                if (sx+dx-x > CutOff+3) // error!
+                    fprintf(stderr,"sx+dx-x: %d+%d-%d = %d fixed = %d Integer = %d\n",sx,dx,x,sx+dx-x,
+                            (sx+dx-x) - X*((int) round( (float)(sx+dx-x) / (float)X)),
+                            (sx+dx-x) - X*((sx+dx-x + X/2)/X)
+                            //(sx+dx - (X+x) )%X
+                           );
+*/
                 // attempted at a minimum PBC for the stencil variable.
                 d=sqrt( (float) ( 
-                            ((sx+dx-x-X)%X)*((sx+dx-x-X)%X) +
-                            ((sy+dy-y-Y)%Y)*((sy+dy-y-Y)%Y) +
-                            ((sz+dz-z-Z)%Z)*((sz+dz-z-Z)%Z)));
+                            ((sx+dx-x)-X*((sx+dx-x + X/2)/X))*((sx+dx-x)-X*((sx+dx-x + X/2)/X)) +
+                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-X*((sy+dy-y + Y/2)/Y)) +
+                            ((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z))*((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z)) 
+                            ));
 
-                fprintf(stderr,"d: %f\n",d);
+//                fprintf(stderr,"d: %f\n",d);
 
                 if (d<0.5) continue;
 
