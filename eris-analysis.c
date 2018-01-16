@@ -378,7 +378,6 @@ void outputlattice_dumb_terminal()
                 a=lattice[x][y][z];
 
                 fprintf (stderr,"%c[%d",27,31+((int)a)%8 ); // Sets colour of output routine
-                //            if (a<4.0)                                  // makes colour bold / normal depending on arrow orientation
                 fprintf(stderr,";7"); // inverted colours
                 char species=specieslookup[(int)a];
 
@@ -467,7 +466,6 @@ void lattice_energy ()
                 }
                 printf("\n");
             }
-   
 }
 
 void outputlattice_stoichometry()
@@ -538,8 +536,6 @@ void equil_lattice_potential(char * filename)
 fclose(fo);
 }
 
-
-
 void lattice_potential_r_test(char * filename)
 {
     int x,y,z,r_cutoff;
@@ -568,8 +564,6 @@ void lattice_potential_r_test(char * filename)
     }  
 fclose(fo);
 }
-
-
 
 void generate_gulp_input(int temp, char * filename)
 {
@@ -617,17 +611,6 @@ void generate_gulp_input(int temp, char * filename)
           {
             for (k=0; k<Z/4; k++)
             {
-/*
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.254750013*2.0*d)+(2.0*d*j), (0.758700013*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.745249987*2.0*d)+(2.0*d*j), (0.241300002*2.0*d)+(2.0*d*i), (0.877870023*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.241300002*2.0*d)+(2.0*d*j), (0.254750013*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.758700013*2.0*d)+(2.0*d*j), (0.745249987*2.0*d)+(2.0*d*i), (0.122129999*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.754750013*2.0*d)+(2.0*d*j), (0.258700013*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.245249987*2.0*d)+(2.0*d*j), (0.741299987*2.0*d)+(2.0*d*i), (0.377869993*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.741299987*2.0*d)+(2.0*d*j), (0.754750013*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
-              fprintf(fo,"S core %f %f %f -2.0 \n",  (0.258700013*2.0*d)+(2.0*d*j), (0.245249987*2.0*d)+(2.0*d*i), (0.622129977*4.0*d)+(4.0*d*k));
-*/
-               
               // x- and y- coordinates are swapped to make visual of xyz file consistent with POSCAR in VESTA
               fprintf(fo,"S core %f %f %f -2.0 \n", (0.758700013*2.0*d)+(2.0*d*i), (0.254750013*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
               fprintf(fo,"S core %f %f %f -2.0 \n", (0.241300002*2.0*d)+(2.0*d*i), (0.745249987*2.0*d)+(2.0*d*j), (0.877870023*4.0*d)+(4.0*d*k));
@@ -657,17 +640,6 @@ void generate_gulp_input(int temp, char * filename)
      fclose(fo);
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // dE log to compare to Boltzmann stats below here 
 #define dE_BINS 100
@@ -711,5 +683,4 @@ static void log_dE(float dE)
          exo_bins[ my_bin ] ++;
 
 }
-
 
