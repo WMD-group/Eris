@@ -34,9 +34,7 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 #include "eris-analysis.c" //Analysis functions, and output routines
 
 
-// -----------------------------------------------------------------------------------------------------------------
 // Functions for lattice initialisation and analysis of initial config
-// -----------------------------------------------------------------------------------------------------------------
 
 // Prototype functions
 void initialise_lattice();
@@ -60,76 +58,53 @@ void initialise_lattice()
 // Analysis of the _initial_ lattice, before performing any MC moves 
 void analysis_initial()
 {
+    char name[100];
+    
     outputlattice_stoichometry(); // print histogram of stoichs for user; check to see what we have
     if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // initial lattice
 
     // Producing GULP input file of lattice before performing MC moves for each T
-    if (EquilibrationChecks) 
-    {
-        char electrostaticpotential_equil_filename[100];
-        mkdir("equilibration_check_Sn_potentials", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
-        equil_lattice_potential(electrostaticpotential_equil_filename);
-    }
+    sprintf(name,"Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
+    if (EquilibrationChecks) equil_lattice_potential(name);
 
-    if (EquilibrationChecksTestCutOff)
-    {
-        char gulp_filename[100];
-        sprintf(gulp_filename,"equilibration_check_Sn_potentials/Gulp_check_initial_T_%04d.in",T);
-        generate_gulp_input(T, gulp_filename);
-        char eris_filename[100];
-        sprintf(eris_filename,"equilibration_check_Sn_potentials/Eris_check_initial_all_r_T_%04d.dat",T);
-        lattice_potential_r_test(eris_filename);
-    }
+    sprintf(name,"Gulp_check_initial_T_%04d.in",T);
+    if (EquilibrationChecksTestCutOff) generate_gulp_input(T, name);
+    sprintf(name,"Eris_check_initial_all_r_T_%04d.dat",T);
+    if (EquilibrationChecksTestCutOff) lattice_potential_r_test(name);
 
+    sprintf(name,"T_%04d_gulp_input_initial.in",T);
+    if (SaveGULP) generate_gulp_input(T, name);
 
-    if (SaveGULP)
-    {
-        char filename[100];
-        mkdir("GULP_inputs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // Nb: return code not tested
-        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_initial.in",T);
-        generate_gulp_input(T, filename);
-    }
-
-    if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
+    if (CalculateRadialOrderParameter) radial_distribution_function_allsites(0);
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 //    lattice_energy(); // check energy sums
 }
 
 
-
-// -----------------------------------------------------------------------------------------------------------------
 // Defining functions for analyses: during the simulation after each MC mega step (analysis_midpoint) and after each temperature step (analysis_final)
-// -----------------------------------------------------------------------------------------------------------------
 
 // OK, we've just done MCMinorSteps, now we can start analysis 
 void analysis_midpoint(int MCStep)
 {
     // Define log file names (stored as strings), with current temperature as part
     // of the filename
-    char electrostaticpotential_filename[100];
-    sprintf(electrostaticpotential_filename,"potential_T_%04d.dat",T); // for electrostatic potential file
+    char name[100];
+    
+    sprintf(name,"Sn_Pot_T_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file during equilibration check run
 
-    if (EquilibrationChecks) 
-    {
-        char electrostaticpotential_equil_filename[100];
-        sprintf(electrostaticpotential_equil_filename,"equilibration_check_Sn_potentials/Sn_potentials_Temp_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file during equilibration check run
-        equil_lattice_potential(electrostaticpotential_equil_filename); 
-    }
+    if (EquilibrationChecks) equil_lattice_potential(name); 
 
-   if (ExtraData)
-   {
-        char gulpfilename[100];
-        sprintf(gulpfilename,"GULP_inputs/T_%04d_gulp_input_MCS_%05d.in",T, MCStep);
-        generate_gulp_input(T, gulpfilename);
-   }
+    sprintf(name,"Gulp_T_%04d_MCS_%05d.in",T, MCStep);
+    if (ExtraData) generate_gulp_input(T, name);
 
     // Analysis and output routines
     if (DisplayDumbTerminal) outputlattice_dumb_terminal();
     if (EquilibrationChecks) { report_dE(); reset_dE(); }
-    if (CalculateRadialOrderParameter) radial_distribution_function_allsites();
-    if (CalculatePotential) lattice_potential_XYZ(electrostaticpotential_filename);
+    if (CalculateRadialOrderParameter) radial_distribution_function_allsites(MCStep);
+
+    sprintf(name,"potential_T_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file
+    if (CalculatePotential) lattice_potential_XYZ(name);
 }
 
 // OK, we have now finished all of our MC steps for this T value
@@ -160,16 +135,12 @@ void analysis_final()
     }
 
     // Output RDF of final configuration at each T
-    radial_distribution_function_allsites();
+//    radial_distribution_function_allsites();
 }
 
 
 
-// -----------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------
 // Begin main loops of Monte Carlo simulation (calling above functions for analysis)
-// -----------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
 {
@@ -244,8 +215,6 @@ int main(int argc, char *argv[])
 
             // Run the requested 'equilibration' steps as a burn in, before starting to
             // collect statistics 
-            if (!EquilibrationChecks)
-            {
                 fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
                 for (j=0;j<MCEqmSteps;j++)
                 {
@@ -254,25 +223,9 @@ int main(int argc, char *argv[])
                     fprintf(stderr,",");
                 }
                 fprintf(stderr,"\n");
-            }
 
             // START OF OUTER MC LOOP (MCMegaSteps)
-
-            // If checking electrostatics, check lattice summation over one step for each T instead of full production run below
-            if (ElectrostaticsCheck)
-            {
-              for (j=0;j<101;j++) // perform more than once incase MC_move function selects either same or empty sites for swaps (so we get some output!)
-              {
-                MC_move_dE_check();
-              }
-              if (DisplayDumbTerminal) outputlattice_dumb_terminal(); // don't display all configs for each T (just initial and final)
-              analysis_final(); //analysis run at end of sim
-            }
-            else
-            {     
-
-              //#pragma omp parallel for //SEGFAULTS :) - non threadsafe code everywhere
-              for (j=0;j<MCMegaSteps;j++)
+              for (j=1;j<=MCMegaSteps;j++)
               {
                   // INNER MC LOOP (MCMinorSteps)
                   tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
@@ -296,7 +249,6 @@ int main(int argc, char *argv[])
 
               analysis_final(); //analysis run at end of sim
             }
-        }
     }
 
     // OK; we're finished...
