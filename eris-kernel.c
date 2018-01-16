@@ -33,9 +33,7 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
 
     int species_b;
 
-    // Sum over near neighbours for formalcharge-formalcharge interaction
-// #pragma omp parallel for reduction(+:dE) 
-// OPENMP PARALLISATION - note doesn't offer any real speed up.
+// Sum over near neighbours for formalcharge-formalcharge interaction
     for (dx=-CutOff;dx<=CutOff;dx++)
         for (dy=-CutOff;dy<=CutOff;dy++)
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
@@ -89,23 +87,6 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
         for (dy=-CutOff;dy<=CutOff;dy++)
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
             {
-//                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
-
-                // FIXME
-                // Suspect this is where the 'edge effects' induced by the
-                // stencil come from.
-                // PBCs are not being calculated correctly across the boundary
-                // (sx,sy,sz) and (x,y,z) are not necessarily in the same cell.
-//                d=sqrt( (float) (sx+dx-x)*(sx+dx-x) + (sy+dy-y)*(sy+dy-y) + (sz+dz-z)*(sz+dz-z) );
-
-/*
-                if (sx+dx-x > CutOff+3) // error!
-                    fprintf(stderr,"sx+dx-x: %d+%d-%d = %d fixed = %d Integer = %d\n",sx,dx,x,sx+dx-x,
-                            (sx+dx-x) - X*((int) round( (float)(sx+dx-x) / (float)X)),
-                            (sx+dx-x) - X*((sx+dx-x + X/2)/X)
-                            //(sx+dx - (X+x) )%X
-                           );
-*/
                 // attempted at a minimum PBC for the stencil variable.
                 d=sqrt( (float) ( 
                             ((sx+dx-x)-X*((sx+dx-x + X/2)/X))*((sx+dx-x)-X*((sx+dx-x + X/2)/X)) +
@@ -113,9 +94,7 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                             ((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z))*((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z)) 
                             ));
 
-//                fprintf(stderr,"d: %f\n",d);
-
-                if (d<0.5) continue;
+                if (d<0.5) continue; // no self-interaction
 
                 species_b= lattice[(X+sx+dx)%X][(Y+sy+dy)%Y][(Z+sz+dz)%Z];
 
@@ -163,11 +142,10 @@ static void MC_move()
     }
     while (lattice[x_a][y_a][z_a]==0); // keep selecting new random numbers until find occupied site...
 
-    // Choice direction + size of moves...
-    int RADIAL_CUTOFF=2;  // nearest-neighbour limit is 2 because of gap site between each cation
+    // Chose  a local move to consider, out to RADIAL_CUTOFF 
+    int RADIAL_CUTOFF=2;  // nearest-neighbour is 2 because of gappy lattice
     do
     {
-// Local cube; Anyhere <> limit
         dx=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dy=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
         dz=(rand_int(1+RADIAL_CUTOFF*2))-RADIAL_CUTOFF;
@@ -175,29 +153,18 @@ static void MC_move()
             dz=0; // freeze motion in Z; i.e. between Cu/Zn and Cu/Sn layers
     }
     while( (dx==0 && dy==0 && dz==0) || (dx+dy+dz)%2!=0 ); // Check this works as intended!
-        // check to see whether site at this offset in gappy FCC lattice.
+    // check to see whether site at this offset in gappy FCC lattice.
     // and we're not trying to swap with ourselves...
-
-    //fprintf(stderr,"MC_move: dx dy dz %d %d %d\n",dx,dy,dz);
-        // for debug - check weighting of moves
 
     // 2nd site to look at...
     x_b=(x_a+dx+X)%X;
     y_b=(y_a+dy+Y)%Y;
     z_b=(z_a+dz+Z)%Z;
 
-    // Global move; anywhere <> anywhere in lattice
-    //x_b=rand_int(X);
-    //y_b=rand_int(Y);
-    //z_b=rand_int(Z);
-
-    // Nb: this is the definition of a MC move - might want to consider
-    // alternative / global / less disruptive moves as well
-
     species_a=lattice[x_a][y_a][z_a];
     species_b=lattice[x_b][y_b][z_b];
 
-    // Immobilise Tin!
+    // Immobilise Tin / copper / zinc!
     // Nb: Not very computationally efficient, better would be to never select
     // Tin in the first place...
     if (freezeSn)
@@ -210,7 +177,6 @@ static void MC_move()
         if (species_a==Zn || species_b==Zn) // if either move selects Tin...
             return;
 
-
     if (species_a==0 || species_b==0) // if interstial / empty site...
         return; // don't do a move. Highly computational inefficient, FIXME
 
@@ -218,15 +184,8 @@ static void MC_move()
        // calculating NULL moves, or counting them towards ACCEPT/REJECT criter
             return;
 
-    //calc site energy
     // TODO: Check this! Self interaction? Species A vs. B? Want two
     // configuration states and diff in energy between them.
-//    dE+=site_energy(x_a,y_a,z_a, species_a, ElectrostaticCutOff);   
-//     dE-=site_energy(x_a,y_a,z_a, species_b, ElectrostaticCutOff);
-
-//    dE+=site_energy(x_b,y_b,z_b, species_b, ElectrostaticCutOff);
-//    dE-=site_energy(x_b,y_b,z_b, species_a, ElectrostaticCutOff);
-
     dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
     dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
 
