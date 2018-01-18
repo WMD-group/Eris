@@ -72,8 +72,8 @@ void analysis_initial()
     sprintf(name,"Eris_check_initial_all_r_T_%04d.dat",T);
     if (EquilibrationChecksTestCutOff) lattice_potential_r_test(name);
 
-    sprintf(name,"T_%04d_gulp_input_initial.in",T);
-    if (SaveGULP) generate_gulp_input(T, name);
+    sprintf(name,"Gulp_T_%04d_MCS_%05d.in",T, MCStep);
+    if (ExtraData) generate_gulp_input(T, name);
 
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites(0);
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
