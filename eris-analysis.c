@@ -237,6 +237,26 @@ void radial_distribution_function_allsites(int MCStep)
             fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,name); // for debugging
         }
 }           
+// Different name for output called in analysis-initial (before equilibration burn-in performed)
+void radial_distribution_function_allsites_initial()
+{
+    int speciesA,speciesB;
+// Variable to contain filename for RDF output
+    char name[100]; 
+    
+    for (speciesA=1;speciesA<=3;speciesA++)
+        for (speciesB=speciesA;speciesB<=3;speciesB++)
+        {
+            sprintf(name,"RDF_%c_%c_Temp_%04d_initial_lattice.dat",
+                    specieslookup[speciesA],specieslookup[speciesB],
+                    T); // automatically construct filename
+
+            radial_distribution_function(name, speciesA, speciesB); // run the RDF for this pair
+
+            fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,name); // for debugging
+        }
+}           
+
 
 void radial_distribution_function(char * filename, int speciesA, int speciesB )
 // Calculates RDF for on-lattice material

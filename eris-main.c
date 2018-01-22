@@ -72,10 +72,10 @@ void analysis_initial()
     sprintf(name,"Eris_check_initial_all_r_T_%04d.dat",T);
     if (EquilibrationChecksTestCutOff) lattice_potential_r_test(name);
 
-    sprintf(name,"Gulp_T_%04d_MCS_%05d.in",T, MCStep);
-    if (ExtraData) generate_gulp_input(T, name);
+    sprintf(name,"Gulp_T_%04d_initial_lattice.in",T);
+    if (SaveGULP) generate_gulp_input(T, name);
 
-    if (CalculateRadialOrderParameter) radial_distribution_function_allsites(0);
+    if (CalculateRadialOrderParameter) radial_distribution_function_allsites_initial();
     if (SaveXYZ) outputlattice_xyz("czts_lattice_initial.xyz");
     if (CalculatePotential) lattice_potential_XYZ("potential_initial.dat");
 //    lattice_energy(); // check energy sums
@@ -96,7 +96,7 @@ void analysis_midpoint(int MCStep)
     if (EquilibrationChecks) equil_lattice_potential(name); 
 
     sprintf(name,"Gulp_T_%04d_MCS_%05d.in",T, MCStep);
-    if (ExtraData) generate_gulp_input(T, name);
+    if (SaveGULP) generate_gulp_input(T, name);
 
     // Analysis and output routines
     if (DisplayDumbTerminal) outputlattice_dumb_terminal();
@@ -120,7 +120,7 @@ void analysis_final()
     if (SaveGULP)
     {
         char filename[100];
-        sprintf(filename,"GULP_inputs/T_%04d_gulp_input_final.in",T);
+        sprintf(filename,"GULP_inputs/T_%04d_gulp_final_lattice.in",T);
         generate_gulp_input(T, filename);
     }
 
