@@ -1,6 +1,7 @@
 # stop eris binary being accidentally checked in
 eris
 Efield.log
+.ipynb_checkpoints
 
 # Could also do this for the eris-outputs?
 
