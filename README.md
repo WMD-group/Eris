@@ -11,7 +11,7 @@ On a Debian-based Linux, this can be installed by `sudo apt-get install libconfi
 To run locally, clone this repository and run `make` to compile. 
 To run the compiled binary, type `./eris`. All simulation parameters are set by flags in eris.cfg and details of flag settings for certain analyses are included in the corresponding ipython notebook in the [analysis-notebooks](/analysis-notebooks/) directory.
 
-Eris can be (trivally) parallelised over temperature with GNU `parallel`. Use `make parallel` for an example. Note that this overrides the temperature range and increments set by `eris.cfg`, via the command line interface. The `Makefile` example of `seq 0 50 1000 | parallel ./eris {}` corresponds to running from T=0 K to T=1000 K in steps of 50 K.
+Eris can be (trivially) parallelised over temperature with GNU `parallel`. Use `make parallel` for an example. Note that this overrides the temperature range and increments set by `eris.cfg`, via the command line interface. The `Makefile` example of `seq 0 50 1000 | parallel ./eris {}` corresponds to running from T=0 K to T=1000 K in steps of 50 K.
 
 See the [Wiki](https://github.com/WMD-group/Eris/wiki/) for more information.
 
@@ -19,7 +19,7 @@ See the [Wiki](https://github.com/WMD-group/Eris/wiki/) for more information.
 Eris can be run in a queue on high-performance computing systems. 
 
 To compile for CX1 at Imperial College with the intel compiler, use `make cx1-icc`. This relies on first compiling a local copy of libconfig, to statically link into the Eris binary. A similar process can be used on other machines to which you don't have administrator rights. 
-This would first require the loading of the necessary Intel development environment module (CX1: `module load intel-suite`, Hartree Centre Iden/Napier: `module load intel`). The following executable line is required in the job submission script: `seq 0 50 1000 | parallel -j NUM-CORES PATH-TO-BINARY/eris {} > eris-parallel.dat`, where 'NUM-CORES' and 'PATH-TO-BINARY' need to be modified.
+This would first require the loading of the necessary Intel development environment module (CX1: `module load intel-suite`, Hartree Centre Iden/Napier: `module load intel`). The following executable line is required in the job submission script: `seq 0 50 1000 | parallel -j NUM-CORES PATH-TO-BINARY/eris {} > eris-parallel.dat`, where 'NUM-CORES' and 'PATH-TO-BINARY' need to be modified. Note again here that the temperature range set in eris.cfg will be overwritten.
 
 ## Analysing data
 ipython notebooks used to analyse data are contained in [analysis-notebooks](/analysis-notebooks/) and data is uploaded to the Zenodo repository, doi: ????
