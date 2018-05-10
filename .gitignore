@@ -1,0 +1,17 @@
+# stop eris binary being accidentally checked in
+eris
+
+# Could also do this for the eris-outputs?
+
+### Vim ###
+# swap
+.sw[a-p]
+.*.sw[a-p]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
