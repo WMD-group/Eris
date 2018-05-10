@@ -1,5 +1,6 @@
 # stop eris binary being accidentally checked in
 eris
+Efield.log
 
 # Could also do this for the eris-outputs?
 
