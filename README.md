@@ -1,5 +1,5 @@
 # <img src="https://github.com/WMD-group/Eris/blob/master/eris.jpg" width="48"> Eris
-Codes to simulate and analyse on-lattice cation disorder in kesterite-structured Cu2ZnSnS4 (CZTS)
+Codes to simulate and analyse on-lattice cation disorder in kesterite-structured Cu<sub>2</sub>ZnSnS<sub>4</sub> (CZTS)
 
 ## Getting started
 To run Eris locally, clone this repository and run `make` in the terminal to compile. 
@@ -14,6 +14,12 @@ To run on cx1 at Imperial College, use files contained in the directory `HPC_par
 ## Analysing data
 Bash and python scripts used to analyse data are contained in 'analysis-scripts/final_setup', where there are also some slides explaining the steps for each type of analysis. 
 However, there are now ipython notebooks for the same analysis scripts with explanations and sample data (in the 'analysis-notebooks' directory.
+
+## Publication
+
+The underlying physical model and applications are discussed in:
+
+* **Thermodynamically limited Cu-Zn order in Cu<sub>2</sub>ZnSnS<sub>4</sub> (CZTS) from Monte Carlo simulations**  S. K. Wallace, J. M. Frost and A. Walsh (2018)
 
 ## Contributors
 Jarvist Moore Frost and Suzanne K. Wallace. Codes started by Jarvist Moore Frost; September 19th 2014. Based on prior [Amphisbaena](https://github.com/jarvist/Amphisbaena) and [Starrynight](https://github.com/WMD-group/StarryNight) codes
