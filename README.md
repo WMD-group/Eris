@@ -5,7 +5,7 @@ Monte Carlo code to simulate and analyse on-lattice cation disorder in kesterite
 To run Eris locally, clone this repository and run `make` in the terminal to compile. 
 To run Eris simply type `./eris`. All simulation parameters are set by flags in eris.cfg and details of flag settings for certain analyses are included in the corresponding ipython notebook in the 'analysis-notebooks' directory.
 
-Eris can also be run in parallel over different temperatures on your local machine, for this use `make parallel`. But note that for this case, the temperature range and increments are *not* set by eris.cfg, it is now set in the Makefile by `seq 0 50 1000 | parallel ./eris {}`, which in this example corresponds to running from T=0K to T=1000K in step sizes of 50K.
+Eris can also be run in parallel over different temperatures on your local machine, for this use `make parallel`. But note that for this case, the temperature range and increments are **not** set by eris.cfg, it is now set in the Makefile by `seq 0 50 1000 | parallel ./eris {}`, which in this example corresponds to running from T=0K to T=1000K in step sizes of 50K.
 
 See the wiki page for more information.
 
