@@ -1,4 +1,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build
+Status](https://travis-ci.org/WMD-Group/Eris.svg?branch=master)](https://travis-ci.org/WMD-Group/Eris)
+[![Coverage
+Status](https://coveralls.io/repos/WMD-Group/Eris/badge.svg?branch=master&service=github)](https://coveralls.io/github/WMD-Group/Eris?branch=master)
+[![codecov.io](http://codecov.io/github/WMD-Group/Eris/coverage.svg?branch=master)](http://codecov.io/github/WMD-Group/Eris?branch=master)
+
 
 # <img src="eris.jpg" width="48"> Eris
 Monte Carlo codes to simulate and analyse on-lattice cation disorder in kesterite-structured Cu<sub>2</sub>ZnSnS<sub>4</sub> (CZTS)
@@ -32,3 +38,4 @@ The underlying physical model and applications are discussed in:
 
 ## Contributors
 Jarvist Moore Frost and Suzanne K. Wallace. Codes started by Jarvist Moore Frost, September 19th 2014. Based on prior [Amphisbaena](https://github.com/jarvist/Amphisbaena) and [Starrynight](https://github.com/WMD-group/StarryNight) codes.
+
