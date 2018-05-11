@@ -30,6 +30,7 @@ clean:
 cleanupdata:
 	rm czts* potential* Efield* variance* RDF*; rm -r equil* gulp_inputs
 
-test:
-	./eris
+test: # Mainly for Travis CI testing
+	gcc -O4 -std=gnu11 -lm -lconfig -o eris-test src/eris-test.c	
+	./eris-test
 

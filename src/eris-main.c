@@ -22,16 +22,13 @@
 #include <sys/stat.h> // to enable to use of mkdir in functions in program
 #include <sys/types.h>
 
-#include "mt19937ar-cok.c" //Code _included_ to allow more global optimisation
-static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an OK speed.
-{
-        return((int)( (unsigned long) genrand_int32() % (unsigned long)SPAN));
-}
-
-#include "eris-config.c" //Global variables & config file reader function  
-#include "eris-lattice.c" //Lattice initialisation / zeroing / sphere picker fn; dot product
-#include "eris-kernel.c" // MC kernel, Lattice energies etc.
-#include "eris-analysis.c" //Analysis functions, and output routines
+// This code is _included_ (rather than compiled to objects) to allow more
+// unrolling / function fusing.
+#include "eris-random.c"   // PRNG
+#include "eris-config.c"   // Global variables & config file reader function  
+#include "eris-lattice.c"  // Lattice initialisation / zeroing / sphere picker fn; dot product
+#include "eris-kernel.c"   // MC kernel, Lattice energies etc.
+#include "eris-analysis.c" // Analysis functions, and output routines
 
 // Functions for lattice initialisation and analysis of initial config
 
@@ -155,11 +152,11 @@ int main(int argc, char *argv[])
     fprintf(stderr,"Eris - Goddess of Kesterite Chaos.\n");
 
     fprintf(stderr,"Loading config...\n");
-    load_config(); // see eris-config.c ; mainly sets global variables and Bools
+    load_config(); // see eris-config.c ; sets global variables and Bools
 
     // Now override with command line options if supplied...
-    // Currently assumes first argument is overriding TEMPERATURE; to be able
-    // to be used with GNU parallel
+    // Assumes *first* command line argument is overriding TEMPERATURE; 
+    // mainly for (non-interactive) use with GNU parallel
     if (argc>1)
     {
         sscanf(argv[1],"%d",&T);
