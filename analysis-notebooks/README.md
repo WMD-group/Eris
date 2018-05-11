@@ -1,1 +1,1 @@
-Data used in ipython notebooks can be found at **add zenodo doi here**
+Data used in ipython notebooks will be uploaded to a Zenodo repository.
