@@ -30,3 +30,6 @@ clean:
 cleanupdata:
 	rm czts* potential* Efield* variance* RDF*; rm -r equil* gulp_inputs
 
+test:
+	./eris
+
