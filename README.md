@@ -1,9 +1,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build
-Status](https://travis-ci.org/WMD-Group/Eris.svg?branch=master)](https://travis-ci.org/WMD-Group/Eris)
+Status](https://travis-ci.org/WMD-group/Eris.svg?branch=master)](https://travis-ci.org/WMD-group/Eris)
 [![Coverage
-Status](https://coveralls.io/repos/WMD-Group/Eris/badge.svg?branch=master&service=github)](https://coveralls.io/github/WMD-Group/Eris?branch=master)
-[![codecov.io](http://codecov.io/github/WMD-Group/Eris/coverage.svg?branch=master)](http://codecov.io/github/WMD-Group/Eris?branch=master)
+Status](https://coveralls.io/repos/WMD-group/Eris/badge.svg?branch=master&service=github)](https://coveralls.io/github/WMD-group/Eris?branch=master)
+[![codecov.io](http://codecov.io/github/WMD-group/Eris/coverage.svg?branch=master)](http://codecov.io/github/WMD-group/Eris?branch=master)
 
 
 # <img src="eris.jpg" width="48"> Eris
