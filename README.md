@@ -9,7 +9,7 @@ Eris uses [libconfig](https://github.com/hyperrealm/libconfig) for reading the c
 On a Debian-based Linux, this can be installed by `sudo apt-get install libconfig-dev`.
 
 To run locally, clone this repository and run `make` to compile. 
-To run the compiled binary, type `./eris`. All simulation parameters are set by flags in eris.cfg and details of flag settings for certain analyses are included in the corresponding ipython notebook in the [analysis-notebooks](/analysis-notebooks/) directory.
+To run the compiled binary, type `./eris`. All simulation parameters are set by flags in `eris.cfg` and details of flag settings for certain analyses are included in the corresponding ipython notebook in the [analysis-notebooks](/analysis-notebooks/) directory.
 
 Eris can be (trivially) parallelised over temperature with GNU `parallel`. Use `make parallel` for an example. Note that this overrides the temperature range and increments set by `eris.cfg`, via the command line interface. The `Makefile` example of `seq 0 50 1000 | parallel ./eris {}` corresponds to running from T=0 K to T=1000 K in steps of 50 K.
 
