@@ -11,15 +11,15 @@
 
 // To ensure stoichiometric CZTS: X and Y must be divisible by 2, Z must be divisible by 4
 // For a cutoff radius of 5 for the lattice summations, min lattice dimension in any direction is 10
-int X=28; // Malloc is for winners.
+// This is now (2017-09-08), Malloc'd on startup. Values are read from the .cfg file. The values below are defaults. 
+int X=28; 
 int Y=28;  
 int Z=28;
 int ***lattice; // Pointer to where we will store the 3D lattice array of ints
-// This is now (2017-09-08), malloc'd on startup. Values are read from the .cfg file.
 
 int X_super, Y_super, Z_super;
 
-#define SPECIES 4
+#define SPECIES 4 // Number of species in our system - we reuse one for Cu
 
 int DIM=3; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
 int T; //global variable so accessible to analysis routines
@@ -33,22 +33,17 @@ int T; //global variable so accessible to analysis routines
 // And similarly for the reverse lookup (single character), i.e. species[2]='Z'
 const char * specieslookup=".CZTc"; // Copper = 1, Zinc = 2, Tin = 3
 
+// This is from Starrynight.
+// No dipoles in Eris - but it is a basic C-type for a 3-vector!
 struct dipole
 {
     float x,y,z;
-    float length; //length of dipole, to allow for solid state mixture (MA, FA, Ammonia, etc.)
+    float length; 
 }; 
 
 double E_int[SPECIES][SPECIES]; // interaction energy between species
 double FormalCharge[SPECIES];
 double EffectiveCharge[SPECIES];
-
-struct mixture
-{
-    float length;
-    float prevalence;
-} dipoles[10];
-int dipolecount=0;
 
 // SIMULATION PARAMETERS
 // NB: These are defaults - most are now read from config file

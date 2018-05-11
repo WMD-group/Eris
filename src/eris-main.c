@@ -33,11 +33,14 @@ static int rand_int(int SPAN) // TODO: profile this to make sure it runs at an O
 #include "eris-kernel.c" // MC kernel, Lattice energies etc.
 #include "eris-analysis.c" //Analysis functions, and output routines
 
-
 // Functions for lattice initialisation and analysis of initial config
 
-// Prototype functions
+// Function prototypes
 void initialise_lattice();
+void analysis_initial();
+void analysis_midpoint(int MCStep);
+void analysis_final();
+int main(int argc, char *argv[]);
 
 // wrapper function to put all logic in choosing lattice together in one place
 void initialise_lattice()
@@ -139,9 +142,11 @@ void analysis_final()
 }
 
 
-
-// Begin main loops of Monte Carlo simulation (calling above functions for analysis)
-
+// Main function:-
+// * Read in config from eris.cfg
+// * Override with command line options if specified (argc,argv etc.)
+// * Run main MC loop, running the analysis functions above
+// * Exit once finished
 int main(int argc, char *argv[])
 {
     int i,j,k, x,y; //for loop iterators
@@ -162,7 +167,7 @@ int main(int argc, char *argv[])
         TMAX=T; TMIN=T; // overide any loop settings from config; just this single temperature
     }
 
-    // Allocate lattice; which is made up of 'dipole' structs
+    // Allocate lattice
     fprintf(stderr,"Memory allocation for lattice with X=%d Y=%d Z=%d\n",X,Y,Z);
     lattice = (int ***)malloc(sizeof(int **)*X);
     for (x=0;x<X;x++) 
@@ -202,7 +207,6 @@ int main(int argc, char *argv[])
         beta=1/((float)T/300.0); // Thermodynamic Beta; in units of kbT @ 300K
         printf("Temperature now T: %d K \t Beta: %f (kbT@300K)\n",T,beta);
 
-        {
             if (ReinitialiseLattice) 
             {
                 initialise_lattice();
@@ -240,16 +244,17 @@ int main(int argc, char *argv[])
 
                   fprintf(stderr,"MC Moves: %f MHz\n",
                           1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
-                  fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",100.0*(double)(toc-tic)/(double)(tac-tic));
-                  fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
-                  REJECT=0; ACCEPT=0;
+                  fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",
+                          100.0*(double)(toc-tic)/(double)(tac-tic));
+                  fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",
+                          MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+                  REJECT=0; ACCEPT=0; // reset counters
 
                   fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
               }
 
               analysis_final(); //analysis run at end of sim
-            }
-    }
+        }
 
     // OK; we're finished...
     fprintf(stderr,"\n");

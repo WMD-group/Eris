@@ -105,7 +105,7 @@ static double potential_at_site_r_test(int x, int y, int z, int r_cutoff)
 }
 
 
-//Calculates dipole potential along trace of lattice
+//Calculates potential along trace of lattice
 static void lattice_potential_log(FILE *log)
 {
     int x,y,z;
@@ -123,7 +123,7 @@ static void lattice_potential_log(FILE *log)
 
 }
 
-//Calculates dipole potential across XY lattice
+//Calculates potential across XY lattice
 void lattice_potential_XY(char * filename)
 {
     int x,y;
@@ -136,7 +136,7 @@ void lattice_potential_XY(char * filename)
             fprintf(fo,"%d %d %f\n",x,y,potential_at_site(x,y,0));
 }
 
-//Calculates dipole potential across XYZ volume
+//Calculates potential across XYZ volume
 void lattice_potential_XYZ(char * filename)
 {
     int x,y,z;
