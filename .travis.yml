@@ -1,6 +1,7 @@
 language: c
 script: make && make test
 build: make
+compiler: clang
 
 addons:
         apt:
