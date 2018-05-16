@@ -5,5 +5,5 @@ build: make
 addons:
         apt:
                 packages:
-                        - gcc
+                        - clang
                         - libconfig-dev
