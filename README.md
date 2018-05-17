@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/116799125.svg)](https://zenodo.org/badge/latestdoi/116799125)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build
 Status](https://travis-ci.org/WMD-group/Eris.svg?branch=master)](https://travis-ci.org/WMD-group/Eris)
