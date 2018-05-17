@@ -1,7 +1,7 @@
 SRCS=src/eris-kernel.c src/eris-analysis.c src/eris-config.c src/eris-lattice.c src/eris-main.c
 
 eris: ${SRCS} 
-	gcc -O4 -std=gnu11 -lm -lconfig -o eris src/eris-main.c
+	gcc -O4 -std=gnu11 -lconfig -o eris src/eris-main.c -lm
 
 debug: ${SRCS}
 	gcc -std=gnu11 -lm -lconfig -o eris -g src/eris-main.c
