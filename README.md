@@ -25,7 +25,7 @@ To compile for [CX1](https://www.imperial.ac.uk/admin-services/ict/self-service/
 This would first require the loading of the necessary Intel development environment module (CX1: `module load intel-suite`, [Hartree Centre](http://community.hartree.stfc.ac.uk) Iden/Napier: `module load intel`). The following executable line is required in the job submission script: `seq 0 50 1000 | parallel -j NUM-CORES PATH-TO-BINARY/eris {} > eris-parallel.dat`, where `NUM-CORES` and `PATH-TO-BINARY` need to be modified. Note again here that the temperature range set in `eris.cfg` will be overwritten.
 
 ## Analysing data
-ipython notebooks used to analyse data are contained in [analysis-notebooks](/analysis-notebooks/). Raw data from the publications listed below will be uploaded to a Zenodo repository.
+ipython notebooks used to analyse data are contained in [analysis-notebooks](/analysis-notebooks/). Raw data from the publications listed below has been uploaded to a [Zenodo repository](https://doi.org/10.5281/zenodo.1251122).
 
 ## Publication
 
