@@ -120,7 +120,7 @@ void analysis_final()
     if (SaveGULP)
     {
         char filename[100];
-        sprintf(filename,"GULP_inputs/T_%04d_gulp_final_lattice.in",T);
+        sprintf(filename,"T_%04d_gulp_final_lattice.in",T);
         generate_gulp_input(T, filename);
     }
 
@@ -133,6 +133,48 @@ void analysis_final()
         sprintf(eris_filename,"equilibration_check_Sn_potentials/Eris_check_all_r_T_%04d.dat",T);
         lattice_potential_r_test(eris_filename);
     }
+
+
+    if (PotentialCubeFile)
+    {
+        char CubeFileName[100];
+        sprintf(CubeFileName, "PotentialCubeFile_T_%04dK.cube", T);
+        potential_3D_cube_file(CubeFileName);
+    }
+
+    if (BandTailingPotentials)
+    {
+        // Output Cu and Sn potentials of whole system at each T
+        char CuPotFileName[100];
+        char SnPotFileName[100];
+        sprintf(CuPotFileName, "Cu_potentials_T_%04dK.dat", T);
+        sprintf(SnPotFileName, "Sn_potentials_T_%04dK.dat", T);
+        output_Cu_Sn_potentials(CuPotFileName, SnPotFileName);
+
+        // Output potentials in 2D slices: Cu from Cu-Zn planes (odd slice numbers), Cu and Sn from Cu-Sn planes (even slice numbers)
+        int z;
+        for (z=0;z<Z;z++)
+        {
+            // Write files for potentials of Cu's in each Cu-Zn slice
+            if (z%2 == 1) //for all odd z (i.e. only Cu-Zn layers from Method2 lattice initialisation)
+            {
+                char CuZnSlice[100]; 
+                sprintf(CuZnSlice, "Cu_potentials_T_%04dK_slice_z=%02d.dat", T, z);
+                CuZn_slice_potentials(CuZnSlice, z);
+            }
+            // Write files for potentials of Cu's and Sn's in each Cu-Sn slice
+            if (z%2 == 0) //for even odd z (i.e. only Cu-Sn layers from Method2 lattice initialisation)
+            {
+                char CuSnSlice_Cu[100]; 
+                sprintf(CuSnSlice_Cu, "Cu_potentials_T_%04dK_slice_z=%02d.dat", T, z);
+                char CuSnSlice_Sn[100]; 
+                sprintf(CuSnSlice_Sn, "Sn_potentials_T_%04dK_slice_z=%02d.dat", T, z);
+                CuSn_slice_potentials(CuSnSlice_Cu, CuSnSlice_Sn, z);
+            }
+        }
+    }
+
+
 
     // Output RDF of final configuration at each T
 //    radial_distribution_function_allsites();

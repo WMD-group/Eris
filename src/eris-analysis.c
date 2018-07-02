@@ -9,6 +9,7 @@
 
 // Prototypes...
 static double potential_at_site(int x, int y, int z);
+static double potential_at_site_cube(int x, int y, int z);  //Better for electrostatic convergence for on-lattice system
 static double potential_at_site_r_test(int x, int y, int z, int r_cutoff);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
@@ -17,6 +18,10 @@ void equil_lattice_potential(char * filename);
 void lattice_potential_r_test(char * filename);
 static double lattice_energy_log(FILE *log);
 double landau_order();
+void potential_3D_cube_file(char * filename);
+void output_Cu_Sn_potentials(char * Cu_file, char * Sn_file);
+void CuZn_slice_potentials(char * filename, int z);
+void CuSn_slice_potentials(char * Cu_file, char * Sn_file, int z);
 
 void outputpotential_png(char * filename);
 void radial_distribution_function(char * filename, int speciesA, int speciesB);
@@ -33,7 +38,6 @@ void outputlattice_stoichometry();
 
 void generate_gulp_input(int temp, char * filename);  
 static void log_dE(float dE);
-
 
 
 static double potential_at_site(int x, int y, int z) 
@@ -56,15 +60,18 @@ static double potential_at_site(int x, int y, int z)
 
                 if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
 
-                // pot(r) = 1/4PiEpsilon * p.r / r^3
-               
-               //for CZTS
+                //for CZTS
                 int species;
                 species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
-                double q;
-                q=FormalCharge[species];
+                if (species != 0) // Avoid counting gap sites to pot sum
+                {
+                    species=species-1; // Have to subtract 1 due to adding gap site as 0 in lattice array but not in EffectiveCharges list
+                    double q;
+                    // Use effective charges (defined in eris.cfg) to account for S anion in between each cation
+                    q=EffectiveCharge[species];
 
-                pot+= q/(double)d;
+                    pot+= q/(double)d;
+                }
             }
     return(pot);
 }
@@ -84,25 +91,229 @@ static double potential_at_site_r_test(int x, int y, int z, int r_cutoff)
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
 
-                r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
+                // For spherical cutoff if expanding in spheres, expanding in cubes just runs from -dx to dx
+                //r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
+                //d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
+                //if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
 
-                d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
+                // For cube cutoffs
+                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
+                double evjen_weight=1.0;
+                // "... the potentials of of the ions forming the surface of
+                // the cube, however, are given the weights 1/2, 1/4 or 1/8
+                // according as they are situated on a face, an edge, or
+                // a corner of the cube.
+                // Evjen - Physical Review Vol 39, 1932
+                 //UNCOMMENT NEXT 3 LINES IF USING EVJEN WEIGHTS FOR EXPANDING IN CUBES
+                //if (abs(dx)==POTENTIAL_CUTOFF) evjen_weight*=0.5; 
+                //if (abs(dy)==POTENTIAL_CUTOFF) evjen_weight*=0.5;
+                //if (abs(dz)==POTENTIAL_CUTOFF) evjen_weight*=0.5;
+                
 
-                if (d>(float)r_cutoff) continue; // Cutoff in d
-
-                // pot(r) = 1/4PiEpsilon * p.r / r^3
-               
-               //for CZTS
+                //for CZTS
                 int species;
                 species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
-                double q;
-               // Use effetive charges (defined in eris.cfg) to account for S anion in between each cation
-                q=EffectiveCharge[species];
+                if (species != 0) // Avoid counting gap sites to pot sum
+                {
+                    species=species-1; // Have to subtract 1 due to adding gap site as 0 in lattice array but not in EffectiveCharges list
+                    double q;
+                    // Use effective charges (defined in eris.cfg) to account for S anion in between each cation
+                    q=EffectiveCharge[species];
 
-                pot+= q/(double)d;
+                    pot+= q/(double)d * evjen_weight;
+                }
+
             }
     return(pot);
 }
+
+
+static double potential_at_site_cube(int x, int y, int z) 
+{
+    int dx,dy,dz=0;
+    double pot=0.0;
+    float d;
+    struct dipole r;
+
+    for (dx=-POTENTIAL_CUTOFF;dx<POTENTIAL_CUTOFF;dx++)
+        for (dy=-POTENTIAL_CUTOFF;dy<POTENTIAL_CUTOFF;dy++)
+            for (dz=-POTENTIAL_CUTOFF;dz<POTENTIAL_CUTOFF;dz++)
+            {
+                if (dx==0 && dy==0 && dz==0)
+                    continue; //no infinities / self interactions please!
+
+                // For spherical cutoff if expanding in spheres, expanding in cubes just runs from -dx to dx
+                //r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
+                //d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
+                //if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
+
+                // For cube cutoffs
+                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
+                double evjen_weight=1.0;
+                // "... the potentials of of the ions forming the surface of
+                // the cube, however, are given the weights 1/2, 1/4 or 1/8
+                // according as they are situated on a face, an edge, or
+                // a corner of the cube.
+                // Evjen - Physical Review Vol 39, 1932
+                 //UNCOMMENT NEXT 3 LINES IF USING EVJEN WEIGHTS FOR EXPANDING IN CUBES
+                //if (abs(dx)==POTENTIAL_CUTOFF) evjen_weight*=0.5; 
+                //if (abs(dy)==POTENTIAL_CUTOFF) evjen_weight*=0.5;
+                //if (abs(dz)==POTENTIAL_CUTOFF) evjen_weight*=0.5;
+                
+
+                //for CZTS
+                int species;
+                species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
+                if (species != 0) // Avoid counting gap sites to pot sum
+                {
+                    species=species-1; // Have to subtract 1 due to adding gap site as 0 in lattice array but not in EffectiveCharges list
+                    double q;
+                    // Use effective charges (defined in eris.cfg) to account for S anion in between each cation
+                    q=EffectiveCharge[species];
+
+                    pot+= q/(double)d * evjen_weight;
+                }
+            }
+    return(pot);
+}
+
+
+void potential_3D_cube_file(char * filename)
+{
+    int x,y,z, count, cations, atom_num;
+    double pot;
+    FILE *fo;
+    fo=fopen(filename,"w");
+
+    fprintf(fo, "Cube file for final CZTS lattice generated by Eris.\n");
+    fprintf(fo, "Outer loop: X, middle loop: Y, inner loop: Z\n");
+    cations = X*Y*Z/2;  //because half of lattice is empty sites
+    fprintf(fo, "%d    0.000000    0.000000    0.0000000\n", cations); //no. of ions and origin position
+    // Defining grid (note: still on-lattice, not scaled by CZTS lattice params (see gulp_input function for e.g. of doing this)
+    fprintf(fo, "%d    1.000000    0.000000    0.0000000\n", X); 
+    fprintf(fo, "%d    0.000000    1.000000    0.0000000\n", Y);
+    fprintf(fo, "%d    0.000000    0.000000    1.0000000\n", Z);
+    // Writing atomic number and coordinates for all sites containing cations (i.e. not empty sites)
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                if (lattice[x][y][z] != 0 && lattice[x][y][z] != 4) //don't write for empty sites
+                {
+                    if (lattice[x][y][z] == 1)
+                        atom_num = 29; //Cu
+                    if (lattice[x][y][z] == 2)
+                        atom_num = 30; //Zn 
+                    if (lattice[x][y][z] == 3)
+                        atom_num = 50; //Sn 
+                    fprintf(fo, "%d    0.0000000    %d    %d    %d\n", atom_num, x, y, z);
+                }
+            }
+    fprintf(fo, "\n");
+    fprintf(fo, "%d  %d  %d\n", X, Y, Z);  //grid size (just lattice for Eris)
+    // print all potentials at the end of the cube file
+    count = 0;
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                pot = potential_at_site_cube(x,y,z);
+                fprintf(fo,"%.6f ", pot);
+                count += 1;
+                if (count%5 ==0)
+                    fprintf(fo, "\n"); //new line every 5 (to match LOCPOT format)
+            }
+
+    fclose(fo);
+}
+
+
+
+void output_Cu_Sn_potentials(char * Cu_file, char * Sn_file)
+{
+    int x,y,z, SiteType;
+    double pot;
+    FILE *f1;
+    f1=fopen(Cu_file,"w");   //May later want to change to append for every MCMegastep in increments of MCEqmSteps?
+    FILE *f2;
+    f2=fopen(Sn_file,"w");
+
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            for (z=0;z<Z;z++)
+            {
+                SiteType = lattice[x][y][z];
+                // Write Cu potentials to file
+                if (SiteType == 1)
+                    {
+                    pot=potential_at_site_cube(x,y,z);
+                    fprintf(f1,"%f\n",pot);
+                    }
+                // Write Sn potentials to file
+                if (SiteType == 3)
+                    {
+                    pot=potential_at_site_cube(x,y,z);
+                    fprintf(f2,"%f\n",pot);
+                    }
+            }
+    fclose(f1);
+    fclose(f2);
+}
+
+
+void CuZn_slice_potentials(char * filename, int z)
+{
+    int x,y, SiteType;
+    double pot;
+    FILE *fo;
+    fo=fopen(filename,"w");
+
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            {
+                SiteType = lattice[x][y][z];
+                // Write Cu potentials to file
+                if (SiteType == 1)
+                    fprintf(fo,"%d %d %f\n",x,y,potential_at_site_cube(x,y,z));
+            }
+    fclose(fo);
+}
+
+
+void CuSn_slice_potentials(char * Cu_file, char * Sn_file, int z)
+{
+    int x,y, SiteType;
+    double pot;
+    FILE *f1;
+    f1=fopen(Cu_file,"w");
+    FILE *f2;
+    f2=fopen(Sn_file,"w");
+
+    for (x=0;x<X;x++)
+        for (y=0;y<Y;y++)
+            {
+                SiteType = lattice[x][y][z];
+                // Write Cu potentials to file
+                if (SiteType == 1)
+                    fprintf(f1,"%d %d %f\n",x,y,potential_at_site_cube(x,y,z));
+                // Write Sn potentials to file
+                if (SiteType == 3)
+                    fprintf(f2,"%d %d %f\n",x,y,potential_at_site_cube(x,y,z));
+            }
+
+    fclose(f1);
+    fclose(f2);
+
+}
+
+
+
+
+
+
+
+
+
 
 
 //Calculates potential along trace of lattice

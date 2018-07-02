@@ -79,9 +79,10 @@ int EquilibrationChecksTestCutOff=false;
 int ElectrostaticsCheck=false;
 int SuzySupercell=false;
 int Method2=false;
-
 int SaveXYZ=false;
 int SaveGULP=false;
+int BandTailingPotentials = true;
+int PotentialCubeFile = true;
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
@@ -257,6 +258,8 @@ void load_config()
     config_lookup_bool(cf,"freezeCu",&freezeCu);
     config_lookup_bool(cf,"freezeZn",&freezeZn);
     config_lookup_bool(cf,"InPlaneOnly",&InPlaneOnly);
+    config_lookup_bool(cf,"BandTailingPotentials",&BandTailingPotentials);
+    config_lookup_bool(cf,"PotentialCubeFile",&PotentialCubeFile);
 
     fprintf(stderr,"Config loaded. \n\n");
 }
