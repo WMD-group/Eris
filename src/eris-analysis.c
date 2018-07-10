@@ -142,13 +142,12 @@ static double potential_at_site_cube(int x, int y, int z)
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
 
+                r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
+                d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut; distance in Euler space
                 // For spherical cutoff if expanding in spheres, expanding in cubes just runs from -dx to dx
-                //r.x=(float)(dx); r.y=(float)(dy); r.z=(float)(dz);
-                //d=sqrt((float) r.x*r.x + r.y*r.y + r.z*r.z); //that old chestnut
                 //if (d>(float)POTENTIAL_CUTOFF) continue; // Cutoff in d
 
                 // For cube cutoffs
-                d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
                 double evjen_weight=1.0;
                 // "... the potentials of of the ions forming the surface of
                 // the cube, however, are given the weights 1/2, 1/4 or 1/8
