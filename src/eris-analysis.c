@@ -859,7 +859,7 @@ void generate_POSCAR(char * filename)
 
     fo=fopen(filename,"w");
     // Writing top lines of POSCAR
-    int ions_tot=(X*Y*Z)/2; //Total no. of ions in system, not including gap sites
+    int ions_tot=X*Y*Z; //Total no. of ions, note do not have to divide by two for gaps because S ions effectively occupy gaps
     int S_num=ions_tot/2, Cu_num=ions_tot/4, Zn_num=ions_tot/8, Sn_num=ions_tot/8;   //Determined by stoichiometric ratios (Cu2ZnSnS4)
     const float X_dim=d*X, Y_dim=d*Y, Z_dim=d*Z; //System dimensions converted from lattice units to Angstroms
     fprintf(fo, "CZTS configuration from Eris simulation\n");
