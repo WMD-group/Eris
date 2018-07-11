@@ -81,6 +81,7 @@ int SuzySupercell=false;
 int Method2=false;
 int SaveXYZ=false;
 int SaveGULP=false;
+int SavePOSCAR=false;
 int BandTailingPotentials = true;
 int PotentialCubeFile = true;
 //END OF SIMULATION PARAMETERS
@@ -253,6 +254,7 @@ void load_config()
 
     config_lookup_bool(cf,"SaveXYZ",&SaveXYZ);
     config_lookup_bool(cf,"SaveGULP",&SaveGULP);
+    config_lookup_bool(cf,"SavePOSCAR",&SavePOSCAR);
 
     config_lookup_bool(cf,"freezeSn",&freezeSn);
     config_lookup_bool(cf,"freezeCu",&freezeCu);

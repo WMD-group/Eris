@@ -124,6 +124,13 @@ void analysis_final()
         generate_gulp_input(T, filename);
     }
 
+    if (SavePOSCAR)
+    {
+        char POSCARname[100];
+        sprintf(POSCARname,"T_%04d_final_lattice.POSCAR",T);
+        generate_POSCAR(POSCARname);
+    }
+
     if (EquilibrationChecksTestCutOff)
     {
         char gulp_filename[100];
