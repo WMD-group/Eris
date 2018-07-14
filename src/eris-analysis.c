@@ -136,9 +136,9 @@ static double potential_at_site_cube(int x, int y, int z)
     float d;
     struct dipole r;
 
-    for (dx=-POTENTIAL_CUTOFF;dx<POTENTIAL_CUTOFF;dx++)
-        for (dy=-POTENTIAL_CUTOFF;dy<POTENTIAL_CUTOFF;dy++)
-            for (dz=-POTENTIAL_CUTOFF;dz<POTENTIAL_CUTOFF;dz++)
+    for (dx=-X/2;dx<X/2;dx++)
+        for (dy=-Y/2;dy<Y/2;dy++)
+            for (dz=-Z/2;dz<Z/2F;dz++)
             {
                 if (dx==0 && dy==0 && dz==0)
                     continue; //no infinities / self interactions please!
