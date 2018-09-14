@@ -1,4 +1,9 @@
-/* Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
+/* Eris: an on-lattice Monte Carlo code to simulate thermodynamic Cu-Zn disorder in kesterite-structured Cu2ZnSnS4 
+ * Sub-program eris-config: Definitions of parameters (and read-ins from eris.cfg)
+ *
+ * 
+ * Eris has been adapted from: 
+ * Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
  * and behaviour in hybrid perovskite solar cells.
  *
  * By Jarvist Moore Frost
@@ -24,8 +29,7 @@ int X_super, Y_super, Z_super;
 int DIM=3; //currently just whether the dipoles can point in Z-axis (still a 2D slab) 
 int T; //global variable so accessible to analysis routines
 
-// These defines set enum values for the species type; so that we don't need
-// magic numbers.
+// These defines set enum values for the species type; so that we don't need magic numbers.
 // BUT - it makes Eris specific to CZTS material.
 #define Cu 1
 #define Zn 2

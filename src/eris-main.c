@@ -1,4 +1,4 @@
-/* Eris - a Monte Carlo code to simulate cation disorder in CZTS (Cu2ZnSnS4)
+/* Eris: an on-lattice Monte Carlo code to simulate thermodynamic Cu-Zn disorder in kesterite-structured Cu2ZnSnS4 
  * 
  * Adapted from Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
  * and behaviour in hybrid perovskite solar cells.
@@ -43,14 +43,7 @@ int main(int argc, char *argv[]);
 void initialise_lattice()
 {
     if (OrderedInitialLattice) // set by eris.cfg
-    {
-        if (SuzySupercell)
-            initialise_lattice_CZTS_supercell();
-        if (Method2)
-            initialise_lattice_CZTS_method2();
-        else
-            initialise_lattice_CZTS();
-    }
+        initialise_lattice_CZTS_SKW();
     else
         initialise_lattice_CZTS_randomized();
 }

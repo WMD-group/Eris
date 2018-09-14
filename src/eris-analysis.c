@@ -1,4 +1,9 @@
-/* Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
+/* Eris: an on-lattice Monte Carlo code to simulate thermodynamic Cu-Zn disorder in kesterite-structured Cu2ZnSnS4 
+ * Sub-program eris-analysis: Various functions used in the main code to analyse disordered configurations
+ *
+ * 
+ * Eris has been adapted from: 
+ * Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
  * and behaviour in hybrid perovskite solar cells.
  *
  * By Jarvist Moore Frost
@@ -7,39 +12,47 @@
  * File begun 16th January 2014
  */
 
-// Prototypes...
-static double potential_at_site(int x, int y, int z);
-static double potential_at_site_cube(int x, int y, int z);  //Better for electrostatic convergence for on-lattice system
-static double potential_at_site_r_test(int x, int y, int z, int r_cutoff);
-static void lattice_potential_log(FILE *log);
-void lattice_potential_XY(char * filename);
-void lattice_potential_XYZ(char * filename);
-void equil_lattice_potential(char * filename);
-void lattice_potential_r_test(char * filename);
-static double lattice_energy_log(FILE *log);
-double landau_order();
-void potential_3D_cube_file(char * filename);
-void output_Cu_Sn_potentials(char * Cu_file, char * Sn_file);
-void CuZn_slice_potentials(char * filename, int z);
+
+// Functions for the analysis of on-site electrostatic potentials in the CZTS lattice model
+static double potential_at_site_cube(int x, int y, int z);  // Better for electrostatic convergence for on-lattice system with summation is over full lattice
+static double potential_at_site(int x, int y, int z); // Function with spherical cutoffs, found to give poorer electrostatics convergence
+static double potential_at_site_r_test(int x, int y, int z, int r_cutoff); // Function used to test different cutoff methods for electrostatics summations with increasing cutoff radius
+void potential_3D_cube_file(char * filename); // Generates file in standard 'cube' file format: http://paulbourke.net/dataformats/cube/
+void output_Cu_Sn_potentials(char * Cu_file, char * Sn_file); // On-site potentials to use for band tailing analysis
+void CuZn_slice_potentials(char * filename, int z); // 2D slices used to generate visualisations of 2D potential distributions
 void CuSn_slice_potentials(char * Cu_file, char * Sn_file, int z);
 
-void outputpotential_png(char * filename);
-void radial_distribution_function(char * filename, int speciesA, int speciesB);
-void radial_distribution_function_allsites();
-void radial_distribution_function_allsites_initial(); 
-
-void outputlattice_xyz(char * filename);
+// Functions for outputting lattice configurations in various formats
 void outputlattice_xyz(char * filename);
 void outputlattice_xyz_overprint(char * filename);
 void outputlattice_pymol_cgo(char * filename);
 void outputlattice_dumb_terminal();
-
-void outputlattice_stoichometry();
-
-void generate_gulp_input(int temp, char * filename);  
+void generate_gulp_input(int temp, char * filename); // Function used in post-processing scripts: calculate order parameter and identify antisite locations
 void generate_POSCAR(char * filename); 
-static void log_dE(float dE);
 
+// Functions for calculation of radial distribution function (RDF) of all pairs of species
+void radial_distribution_function(char * filename, int speciesA, int speciesB);
+void radial_distribution_function_allsites();
+void radial_distribution_function_allsites_initial(); 
+
+// Function used when performing an equilibration check based on on-site Sn potentials as a function of MC step
+void equil_lattice_potential(char * filename);
+
+// Redundant functions in Eris? - These should be checked and commented out and dependencies removed from code base if now redundant
+void outputlattice_stoichometry(); // Used for initial stoichiometry check after initialising lattice (avoid inf charge for PBCs!), but should be redudnant with corrected lattice initialisatin method
+static void log_dE(float dE);
+//double landau_order();
+void outputpotential_png(char * filename);
+void lattice_potential_r_test(char * filename);
+static double lattice_energy_log(FILE *log);
+static void lattice_potential_log(FILE *log);
+void lattice_potential_XY(char * filename);
+void lattice_potential_XYZ(char * filename);
+
+
+
+// Function should be commented out and dependencies removed from code base as this method was found to give poorer electrostatics convergence
+// potential_at_site_cube is now used instead with a cutoff radius that is always 1/2 the lattice dimensions (to include the full lattice)
 
 static double potential_at_site(int x, int y, int z) 
 {
@@ -66,7 +79,7 @@ static double potential_at_site(int x, int y, int z)
                 species=lattice[(X+x+dx)%X][(Y+y+dy)%Y][(Z+z+dz)%Z];
                 if (species != 0) // Avoid counting gap sites to pot sum
                 {
-                    species=species-1; // Have to subtract 1 due to adding gap site as 0 in lattice array but not in EffectiveCharges list
+                    species=species-1; // Have to subtract 1 due to adding gap site as 0 in lattice array but not in EffectiveCharges list in eris.cfg
                     double q;
                     // Use effective charges (defined in eris.cfg) to account for S anion in between each cation
                     q=EffectiveCharge[species];
@@ -308,14 +321,6 @@ void CuSn_slice_potentials(char * Cu_file, char * Sn_file, int z)
 
 
 
-
-
-
-
-
-
-
-
 //Calculates potential along trace of lattice
 static void lattice_potential_log(FILE *log)
 {
@@ -333,6 +338,8 @@ static void lattice_potential_log(FILE *log)
     }
 
 }
+
+
 
 //Calculates potential across XY lattice
 void lattice_potential_XY(char * filename)
@@ -401,6 +408,7 @@ void lattice_potential_XYZ(char * filename)
     fclose(fvariance);
 }
 
+
 // Outputs PNG (bitmap picture) for the potential across the X-Y plane at Z=0
 void outputpotential_png(char * filename)
 {
@@ -428,8 +436,7 @@ void outputpotential_png(char * filename)
 }
 
 // Generates RDFs for {All Species} <-> {All Species}, constructing the
-// filename then calling the radial_distribution_function which does the actual
-// work
+// filename then calling the radial_distribution_function which does the actual work
 void radial_distribution_function_allsites(int MCStep)
 {
     int speciesA,speciesB;
@@ -448,7 +455,7 @@ void radial_distribution_function_allsites(int MCStep)
             fprintf(stderr,"RDF: speciesA: %d speciesB: %d filename: %s\n",speciesA,speciesB,name); // for debugging
         }
 }           
-// Different name for output called in analysis-initial (before equilibration burn-in performed)
+// Allow for different name for output called in analysis-initial (before equilibration burn-in performed)
 void radial_distribution_function_allsites_initial()
 {
     int speciesA,speciesB;
@@ -529,6 +536,7 @@ void radial_distribution_function(char * filename, int speciesA, int speciesB )
 
     fclose(fo);
 }
+
 
 void outputlattice_xyz(char * filename)
 {
@@ -685,6 +693,7 @@ void lattice_energy ()
             }
 }
 
+
 void outputlattice_stoichometry()
 {
     int x,y,z,i,a;
@@ -753,6 +762,7 @@ void equil_lattice_potential(char * filename)
 fclose(fo);
 }
 
+
 void lattice_potential_r_test(char * filename)
 {
     int x,y,z,r_cutoff;
@@ -781,6 +791,7 @@ void lattice_potential_r_test(char * filename)
     }  
 fclose(fo);
 }
+
 
 void generate_gulp_input(int temp, char * filename)
 {

@@ -1,4 +1,9 @@
-/* Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
+/* Eris: an on-lattice Monte Carlo code to simulate thermodynamic Cu-Zn disorder in kesterite-structured Cu2ZnSnS4 
+ * Sub-program eris-lattice: Functions to provide different options for the initial lattice, called in eris-main in initialise_lattice function
+ *
+ * 
+ * Eris has been adapted from: 
+ * Starry Night - a Monte Carlo code to simulate ferroelectric domain formation
  * and behaviour in hybrid perovskite solar cells.
  *
  * By Jarvist Moore Frost
@@ -10,9 +15,9 @@
 // Prototypes...
 void initialise_lattice_random();
 void initialise_lattice_stripe();
-void initialise_lattice_CZTS();
+//void initialise_lattice_CZTS(); // This method does not give stoichiometric CZTS, periodicity of lattice is 2 but needs to be 4
 void initialise_lattice_CZTS_supercell();
-void initialise_lattice_CZTS_method2();
+void initialise_lattice_CZTS_SKW();
 void initialise_lattice_CZTS_randomized();
 
 void initialise_lattice_random()
@@ -70,6 +75,8 @@ void initialise_lattice_stripe()
             }
 }
 
+// This method does not give stoichiometric CZTS, periodicity of lattice is 2 but needs to be 4
+/*
 void initialise_lattice_CZTS()
 {
     int x,y,z;
@@ -97,8 +104,9 @@ void initialise_lattice_CZTS()
                     lattice[x][y][z]=0; // gaps for the FCC sublattice
             }
 }
+*/
 
-void initialise_lattice_CZTS_supercell()
+void initialise_lattice_CZTS_supercell_SKW()
 {
   // This routine produces a lattice containing a unit cell of CZTS
   // (constructed by inspecting CZTS POSCARs layer by layer) Larger systems are
@@ -144,7 +152,7 @@ void initialise_lattice_CZTS_supercell()
 
 }
 
-void initialise_lattice_CZTS_method2()
+void initialise_lattice_CZTS_SKW()
 {
   // 0 = gap site, 1 = Cu, 2 = Zn, 3 = Sn
   int x,y,z;
@@ -199,13 +207,7 @@ void initialise_lattice_CZTS_method2()
 
 void initialise_lattice_CZTS_randomized()
 {
-    // Making shuffling method compatible with various ordered lattice initialisation methods - needs testing!
-    if (SuzySupercell)
-      initialise_lattice_CZTS_supercell();
-    if (Method2)
-      initialise_lattice_CZTS_method2(); 
-    else
-      initialise_lattice_CZTS();
+    initialise_lattice_CZTS_SKW();
 
     // Randomizing CZTS lattice by swapping species
     int shuffles=10; // Defining number of swap attempts based on tota no. of sites
