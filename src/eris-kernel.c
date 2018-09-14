@@ -135,12 +135,6 @@ static void MC_move()
     if (freezeSn)
         if (species_a==Sn || species_b==Sn) // if either move selects Tin...
             return;
-    if (freezeCu)
-        if (species_a==Cu || species_b==Cu) // if either move selects Tin...
-            return;
-    if (freezeZn)
-        if (species_a==Zn || species_b==Zn) // if either move selects Tin...
-            return;
 
     if (species_a==0 || species_b==0) // if interstial / empty site...
         return; // don't do a move. Highly computational inefficient, FIXME
@@ -398,12 +392,6 @@ static void MC_move_stencil()
     if (freezeSn)
         if (species_a==Sn || species_b==Sn) // if either move selects Tin...
             return;
-    if (freezeCu)
-        if (species_a==Cu || species_b==Cu) // if either move selects Tin...
-            return;
-    if (freezeZn)
-        if (species_a==Zn || species_b==Zn) // if either move selects Tin...
-            return;
 
     if (species_a==0 || species_b==0) // if interstial / empty site...
         return; // don't do a move. Highly computational inefficient, FIXME
@@ -516,16 +504,6 @@ static void MC_move_dE_check_stencil()
     if (species_a==species_b) // move achieves nothing... don't count both
        // calculating NULL moves, or counting them towards ACCEPT/REJECT criter
           return;
-
-
-// original site_energy_stencil to calculate dE ------------------------------------------------
-
-//    dE+=site_energy_stencil(x_a,y_a,z_a, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
-//    dE-=site_energy_stencil(x_a,y_a,z_a, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
-
-//    dE+=site_energy_stencil(x_b,y_b,z_b, species_b, ElectrostaticCutOff, x_a, y_a, z_a);
-//    dE-=site_energy_stencil(x_b,y_b,z_b, species_a, ElectrostaticCutOff, x_a, y_a, z_a);
-// ----------------------------------------------------------------------------------------------
 
     // Suzy add in: dE convergence check wrt ElectrostaticCutoff - recalculate dE for same MC move with increasing cutoff radius and output to file
 

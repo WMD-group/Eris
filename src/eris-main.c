@@ -60,11 +60,6 @@ void analysis_initial()
     sprintf(name,"Sn_potentials_Temp_%04d_initial.dat",T); // for electrostatic potential file during equilibration check run
     if (EquilibrationChecks) equil_lattice_potential(name);
 
-    sprintf(name,"Gulp_check_initial_T_%04d.in",T);
-    if (EquilibrationChecksTestCutOff) generate_gulp_input(T, name);
-    sprintf(name,"Eris_check_initial_all_r_T_%04d.dat",T);
-    if (EquilibrationChecksTestCutOff) lattice_potential_r_test(name);
-
     sprintf(name,"Gulp_T_%04d_initial_lattice.in",T);
     if (SaveGULP) generate_gulp_input(T, name);
 
@@ -85,7 +80,6 @@ void analysis_midpoint(int MCStep)
     char name[100];
     
     sprintf(name,"Sn_Pot_T_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file during equilibration check run
-
     if (EquilibrationChecks) equil_lattice_potential(name); 
 
     sprintf(name,"Gulp_T_%04d_MCS_%05d.in",T, MCStep);
@@ -93,7 +87,7 @@ void analysis_midpoint(int MCStep)
 
     // Analysis and output routines
     if (DisplayDumbTerminal) outputlattice_dumb_terminal();
-    if (EquilibrationChecks) { report_dE(); reset_dE(); }
+//    if (EquilibrationChecks) { report_dE(); reset_dE(); }  // Redundant now?
     if (CalculateRadialOrderParameter) radial_distribution_function_allsites(MCStep);
 
     sprintf(name,"potential_T_%04d_MCS_%05d.dat",T,MCStep); // for electrostatic potential file
@@ -123,17 +117,6 @@ void analysis_final()
         sprintf(POSCARname,"T_%04d_final_lattice.POSCAR",T);
         generate_POSCAR(POSCARname);
     }
-
-    if (EquilibrationChecksTestCutOff)
-    {
-        char gulp_filename[100];
-        sprintf(gulp_filename,"equilibration_check_Sn_potentials/Gulp_check_T_%04d.in",T);
-        generate_gulp_input(T, gulp_filename);
-        char eris_filename[100];
-        sprintf(eris_filename,"equilibration_check_Sn_potentials/Eris_check_all_r_T_%04d.dat",T);
-        lattice_potential_r_test(eris_filename);
-    }
-
 
     if (PotentialCubeFile)
     {
@@ -256,8 +239,9 @@ int main(int argc, char *argv[])
 
             analysis_initial();
 
-            // Run the requested 'equilibration' steps as a burn in, before starting to
-            // collect statistics 
+            // Run the requested 'equilibration' steps as a burn in, before starting to collect statistics
+            if (!(EquilibrationChecks)) // Do not perform if doing an equilibration test
+            { 
                 fprintf(stderr,"Equilibration Monte Carlo... (no data ouput): ");
                 for (j=0;j<MCEqmSteps;j++)
                 {
@@ -266,33 +250,48 @@ int main(int argc, char *argv[])
                     fprintf(stderr,",");
                 }
                 fprintf(stderr,"\n");
-
+            }
+            // Perform electrostatics check instead of standard MC simulation if this flag is set in eris.cfg
+            if (ElectrostaticsCheck)
+            {
+                for (j=1;j<=MCMegaSteps;j++)
+                {
+                    // INNER MC LOOP (MCMinorSteps)
+                    tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
+                    for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
+                        MC_move_dE_check();
+                    toc=clock();
+                    fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+                    tac=clock(); // timings for analysis/output
+                    fprintf(stderr,"Performing electrostatics check...\n");
+                    fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
+                }
+            }
+            else
+            {
             // START OF OUTER MC LOOP (MCMegaSteps)
-              for (j=1;j<=MCMegaSteps;j++)
-              {
-                  // INNER MC LOOP (MCMinorSteps)
-                  tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
-                  for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
-                      MC_move();
-                  toc=clock();
-
-                  analysis_midpoint(j); // analysis run after every MCMinorSteps block of moves 
-                  fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
-
-                  tac=clock(); // timings for analysis/output
-
-                  fprintf(stderr,"MC Moves: %f MHz\n",
-                          1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
-                  fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",
-                          100.0*(double)(toc-tic)/(double)(tac-tic));
-                  fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",
-                          MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
-                  REJECT=0; ACCEPT=0; // reset counters
-
-                  fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
-              }
-
-              analysis_final(); //analysis run at end of sim
+                for (j=1;j<=MCMegaSteps;j++)
+                {
+                    // INNER MC LOOP (MCMinorSteps)
+                    tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
+                    for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
+                        MC_move();
+                    toc=clock();
+  
+                    analysis_midpoint(j); // analysis run after every MCMinorSteps block of moves 
+                    fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
+  
+                    tac=clock(); // timings for analysis/output
+                    fprintf(stderr,"MC Moves: %f MHz\n",
+                    1e-6*(double)(MCMinorSteps)/(double)(toc-tic)*(double)CLOCKS_PER_SEC);
+                    fprintf(stderr,"Time spent doing Monte Carlo as total fraction of time: %.2f %%\n",100.0*(double)(toc-tic)/(double)(tac-tic));
+                    fprintf(stderr,"Monte Carlo moves - ATTEMPT: %llu ACCEPT: %llu REJECT: %llu Accept Ratio: %f\n",MCMinorSteps,ACCEPT,REJECT,(float)ACCEPT/(float)(REJECT+ACCEPT));
+                    REJECT=0; ACCEPT=0; // reset counters
+  
+                    fflush(stdout); // flush the output buffer, so we can live-graph / it's saved if we interupt
+                }
+                analysis_final(); //analysis run at end of sim
+            }
         }
 
     // OK; we're finished...

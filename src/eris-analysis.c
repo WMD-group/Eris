@@ -15,7 +15,7 @@
 
 // Functions for the analysis of on-site electrostatic potentials in the CZTS lattice model
 static double potential_at_site_cube(int x, int y, int z);  // Better for electrostatic convergence for on-lattice system with summation is over full lattice
-static double potential_at_site(int x, int y, int z); // Function with spherical cutoffs, found to give poorer electrostatics convergence
+// static double potential_at_site(int x, int y, int z); // Function with spherical cutoffs, found to give poorer electrostatics convergence
 static double potential_at_site_r_test(int x, int y, int z, int r_cutoff); // Function used to test different cutoff methods for electrostatics summations with increasing cutoff radius
 void potential_3D_cube_file(char * filename); // Generates file in standard 'cube' file format: http://paulbourke.net/dataformats/cube/
 void output_Cu_Sn_potentials(char * Cu_file, char * Sn_file); // On-site potentials to use for band tailing analysis
@@ -48,12 +48,12 @@ static double lattice_energy_log(FILE *log);
 static void lattice_potential_log(FILE *log);
 void lattice_potential_XY(char * filename);
 void lattice_potential_XYZ(char * filename);
-
+// void lattice_energy(); // Not used in Eris and site energy calculation method is hard-coded in this function - caution!
 
 
 // Function should be commented out and dependencies removed from code base as this method was found to give poorer electrostatics convergence
 // potential_at_site_cube is now used instead with a cutoff radius that is always 1/2 the lattice dimensions (to include the full lattice)
-
+/*
 static double potential_at_site(int x, int y, int z) 
 {
     int dx,dy,dz=0;
@@ -89,7 +89,7 @@ static double potential_at_site(int x, int y, int z)
             }
     return(pot);
 }
-
+*/
 
 static double potential_at_site_r_test(int x, int y, int z, int r_cutoff) 
 {
@@ -333,8 +333,8 @@ static void lattice_potential_log(FILE *log)
     {
         pot=0.0;
         for (y=0;y<Y;y++)
-            pot+=potential_at_site(x,y,z);
-        fprintf(log,"%d %f %f\n",x,pot/(double)Y,potential_at_site(x,Y/2,z));
+            pot+=potential_at_site_cube(x,y,z);
+        fprintf(log,"%d %f %f\n",x,pot/(double)Y,potential_at_site_cube(x,Y/2,z));
     }
 
 }
@@ -351,7 +351,7 @@ void lattice_potential_XY(char * filename)
 
     for (x=0;x<X;x++)
         for (y=0;y<Y;y++)
-            fprintf(fo,"%d %d %f\n",x,y,potential_at_site(x,y,0));
+            fprintf(fo,"%d %d %f\n",x,y,potential_at_site_cube(x,y,0));
 }
 
 //Calculates potential across XYZ volume
@@ -372,7 +372,7 @@ void lattice_potential_XYZ(char * filename)
             for (z=0;z<Z;z++)
             {
                 // log potential at all sites (Cu,Zn,Sn)
-                pot=potential_at_site(x,y,z);
+                pot=potential_at_site_cube(x,y,z);
                 fprintf(fo,"%d %d %d %d %f\n",lattice[x][y][z],x,y,z,pot);
                 
                 if (lattice[x][y][z]==3) // only count tin towards mean / variance
@@ -390,7 +390,7 @@ void lattice_potential_XYZ(char * filename)
             {
                 if (lattice[x][y][z]==3)
                 {
-                    pot=potential_at_site(x,y,z);
+                    pot=potential_at_site_cube(x,y,z);
                     variance+=(pot-mean)*(pot-mean);
                     atoms++;
                 }
@@ -422,7 +422,7 @@ void outputpotential_png(char * filename)
     {
         for (k=0;k<Y;k++)
         {
-            pixel=SHRT_MAX/2+(int)(SHRT_MAX*0.1*potential_at_site(i,k,0));
+            pixel=SHRT_MAX/2+(int)(SHRT_MAX*0.1*potential_at_site_cube(i,k,0));
 
             // Bounds checking :^)
             if (pixel<0) pixel=0;
@@ -590,7 +590,7 @@ void outputlattice_dumb_terminal()
         for (y=0;y<Y;y++)
             for (x=0;x<X;x++)
             {
-                potential=potential_at_site(x,y,z);
+                potential=potential_at_site_cube(x,y,z);
                 if (fabs(potential-DMEAN)>new_DMAX)
                     new_DMAX=fabs(potential-DMEAN); // used to calibrate scale - technically this changes
             }
@@ -616,7 +616,7 @@ void outputlattice_dumb_terminal()
             fprintf(stderr,"    ");
             for (x=0;x<X;x++)
             {
-                potential=potential_at_site(x,y,z);
+                potential=potential_at_site_cube(x,y,z);
 
                 variance+=potential*potential;
                 mean+=potential;
@@ -652,7 +652,8 @@ void outputlattice_dumb_terminal()
     if (DMAX==0.0) DMAX=1.0; //avoid divide by zero for all-zero pot
 }
 
-void lattice_energy ()
+/*
+void lattice_energy()
 {
     int dx,dy,dz;
 
@@ -692,6 +693,7 @@ void lattice_energy ()
                 printf("\n");
             }
 }
+*/
 
 
 void outputlattice_stoichometry()
@@ -754,7 +756,7 @@ void equil_lattice_potential(char * filename)
                 // log potential at only Sn sites
                 if (lattice[x][y][z]==3)
                 {
-                  pot=potential_at_site(x,y,z);
+                  pot=potential_at_site_cube(x,y,z);
                   fprintf(fo, "%f \n",pot);
                 }                
 
