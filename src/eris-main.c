@@ -114,7 +114,7 @@ void analysis_final()
     if (SavePOSCAR)
     {
         char POSCARname[100];
-        sprintf(POSCARname,"T_%04d_final_lattice.POSCAR",T);
+        sprintf(POSCARname,"T_%04d_final_lattice.POSCAR.vasp",T);
         generate_POSCAR(POSCARname);
     }
 
