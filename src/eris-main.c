@@ -258,8 +258,8 @@ int main(int argc, char *argv[])
                 {
                     // INNER MC LOOP (MCMinorSteps)
                     tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
-                    for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
-                        MC_move_dE_check();
+                    //for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out. //Remove for dE check - too many moves outputted!
+                    MC_move_dE_check();
                     toc=clock();
                     fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                     tac=clock(); // timings for analysis/output
