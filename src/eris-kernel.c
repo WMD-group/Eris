@@ -54,7 +54,7 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
 
                 d=sqrt((float) dx*dx + dy*dy + dz*dz); //that old chestnut; distance in Euler space
 
-                if (SPHERICAL)
+                if (SPHERICAL) // Flag added back into in eris.cfg, if false, expansion is in cubes
                     if (d>(float)CutOff) continue; // Cutoff in d
 //                -->
 //                EXPANSIONS IN SPHERES; probably not convergent
@@ -72,7 +72,7 @@ static double site_energy(int x, int y, int z, int species_a, int CutOff)
                 // Evjen - Physical Review Vol 39, 1932
                 double evjen_E=E_int[species_a-1][species_b-1]/d;
                 double evjen_weight=1.0;
-                if (EVJEN)
+                if (EVJEN) // This was shown to not improve convergence for tests with on-site potentials
                 {
                     if (abs(dx)==CutOff) evjen_weight*=0.5; 
                     if (abs(dy)==CutOff) evjen_weight*=0.5;

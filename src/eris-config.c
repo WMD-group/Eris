@@ -88,6 +88,8 @@ int SaveGULP=false;
 int SavePOSCAR=false;
 int BandTailingPotentials = true;
 int PotentialCubeFile = true;
+int SPHERICAL = true;
+int EVJEN = false;
 //END OF SIMULATION PARAMETERS
 
 // {{ Except for the ones hardcoded into the algorithm :^) }}
@@ -266,6 +268,8 @@ void load_config()
     config_lookup_bool(cf,"InPlaneOnly",&InPlaneOnly);
     config_lookup_bool(cf,"BandTailingPotentials",&BandTailingPotentials);
     config_lookup_bool(cf,"PotentialCubeFile",&PotentialCubeFile);
+    config_lookup_bool(cf,"SPHERICAL",&SPHERICAL);
+    config_lookup_bool(cf,"EVJEN",&EVJEN);
 
     fprintf(stderr,"Config loaded. \n\n");
 }
