@@ -306,10 +306,10 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
         for (dy=-CutOff;dy<=CutOff;dy++)
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
             {
-                // attempted at a minimum PBC for the stencil variable.
+                // attempted at a minimum PBC for the stencil variable.   //PBCs appear to fail, visuals of antisites show clustering around the edges. Or maybe implemented incorrectly in MC_move_stencil?
                 d=sqrt( (float) ( 
                             ((sx+dx-x)-X*((sx+dx-x + X/2)/X))*((sx+dx-x)-X*((sx+dx-x + X/2)/X)) +
-                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-X*((sy+dy-y + Y/2)/Y)) +
+                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y)) +
                             ((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z))*((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z)) 
                             ));
 
