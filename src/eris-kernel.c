@@ -568,10 +568,10 @@ static void MC_move_dE_check_stencil()
 static double dE_calc_stencil(int x_a, int y_a, int z_a, int species_a, int x_b, int y_b, int z_b, int species_b, int CutOff)
 {
     int dx,dy,dz; // distance in x,y,z relative to species a
-    int dx_to_b, dy_to_b, dz_to_b;
+    int dx_to_b, dy_to_b, dz_to_b; // distance relative to species b
     float d, d_to_b; // separation between ion pairs for lattice E summation
     double E_a_on_a=0.0, E_a_on_b=0.0, E_b_on_b=0.0, E_b_on_a=0.0; // All E values to calculate dE for an MC move
-    double evjen_E_a_on_a=0.0, evjen_E_a_on_b=0.0, evjen_E_b_on_a=0.0, evjen_E_b_on_b=0.0; // Option to apply Evjen weights in dE calc
+    double evjen_E_a_on_a, evjen_E_a_on_b, evjen_E_b_on_a, evjen_E_b_on_b; // Option to apply Evjen weights in dE calc
     double dE=0.0; // dE to perform specified MC move species_a swap with species_b
 
     int species_pair_int; // Each species for pair interaction with selected site
@@ -590,7 +590,7 @@ static double dE_calc_stencil(int x_a, int y_a, int z_a, int species_a, int x_b,
                 //Implementing PBCs when selecting each ion for pairwise interaction within finite CutOff radius relative to species a
                 pair_x = (X+x_a+dx)%X;
                 pair_y = (Y+y_a+dy)%Y;
-                pair_z = (Z+z_b+dz)%Z;
+                pair_z = (Z+z_a+dz)%Z;
                 species_pair_int= lattice[pair_x][pair_y][pair_z];
                 if (species_pair_int==0) // if gaps in lattice, no interaction energy contribution
                     continue;
@@ -623,7 +623,7 @@ static double dE_calc_stencil(int x_a, int y_a, int z_a, int species_a, int x_b,
                 // Condition to ensure no self-interaction with site a in summation
                 if (dx!=0 && dy!=0 && dz!=0) //All these conditionals... may get slow for many MC moves?!
                 {
-                    evjen_E_a_on_a=E_int[species_a-1][species_pair_int-1]/d;
+                    evjen_E_a_on_a=E_int[species_a-1][species_pair_int-1]/d;  //species-1 is used because lattice=0=gap, 1=Cu site but for E_int 0=Cu
                     evjen_E_b_on_a=E_int[species_b-1][species_pair_int-1]/d;
                 }
                 else
