@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
                 for (j=0;j<MCEqmSteps;j++)
                 {
                     for (k=0;k<MCMinorSteps;k++)
-                        MC_move();
+                        MC_move_swaps();
                     fprintf(stderr,",");
                 }
                 fprintf(stderr,"\n");
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
                     // INNER MC LOOP (MCMinorSteps)
                     tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
                     //for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out. //Remove for dE check - too many moves outputted!
-                    MC_move_dE_check();
+                    MC_move_dE_check_stencil_skw();
                     toc=clock();
                     fflush(stdout); // flush buffer, so data is pushed out & you can 'ctrl-c' the program, retaining output
                     tac=clock(); // timings for analysis/output
@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
                     // INNER MC LOOP (MCMinorSteps)
                     tic=clock(); // measured in CLOCKS_PER_SECs of a second. 
                     for (k=0;k<MCMinorSteps;k++) // Compiler should optimise this for loop out.
-                        MC_move();
+                        MC_move_swaps();
                     toc=clock();
   
                     analysis_midpoint(j); // analysis run after every MCMinorSteps block of moves 
