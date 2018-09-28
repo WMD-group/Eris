@@ -90,7 +90,7 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
                 // attempted at a minimum PBC for the stencil variable.
                 d=sqrt( (float) ( 
                             ((sx+dx-x)-X*((sx+dx-x + X/2)/X))*((sx+dx-x)-X*((sx+dx-x + X/2)/X)) +
-                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-X*((sy+dy-y + Y/2)/Y)) +
+                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y)) +
                             ((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z))*((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z)) 
                             ));
 
