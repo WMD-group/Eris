@@ -87,11 +87,12 @@ static double site_energy_stencil(int x, int y, int z, int species_a, int CutOff
         for (dy=-CutOff;dy<=CutOff;dy++)
             for (dz=-CutOff;dz<=CutOff;dz++) //NB: conditional CutOff to allow for 2D version
             {
-                // attempted at a minimum PBC for the stencil variable.
+                // minimum-image-convention periodic-boundaries, including relative to the stencil variable.
+                // This gives the distance between [sx+dx,sy+dy,sz+dz] and [x,y,z] through the nearest boundary.
                 d=sqrt( (float) ( 
-                            ((sx+dx-x)-X*((sx+dx-x + X/2)/X))*((sx+dx-x)-X*((sx+dx-x + X/2)/X)) +
-                            ((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y))*((sy+dy-y)-Y*((sy+dy-y + Y/2)/Y)) +
-                            ((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z))*((sz+dz-z)-Z*((sz+dz-z + Z/2)/Z)) 
+                            ((sx+dx-x+X)%X - X*(((sx+dx-x+X)%X + X/2)/X))*((sx+dx-x+X)%X - X*(((sx+dx-x+X)%X + X/2)/X)) +
+                            ((sy+dy-y+Y)%Y - Y*(((sy+dy-y+Y)%Y + Y/2)/Y))*((sy+dy-y+Y)%Y - Y*(((sy+dy-y+Y)%Y + Y/2)/Y)) +
+                            ((sz+dz-z+Z)%Z - Z*(((sz+dz-z+Z)%Z + Z/2)/Z))*((sz+dz-z+Z)%Z - Z*(((sz+dz-z+Z)%Z + Z/2)/Z)) 
                             ));
 
                 if (d<0.5) continue; // no self-interaction
