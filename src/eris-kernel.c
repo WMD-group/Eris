@@ -255,7 +255,7 @@ static void MC_move_dE_check()
     // Defining max for cut off radius for lattice sums based on lattice dimensions (i.e. min dimension/2) 
     int CutOffMax = floor(min(X,Y,Z)/2);
 
-    for (CutOff_test=1; CutOff_test<CutOffMax+1; CutOff_test++)
+    for (CutOff_test=1; CutOff_test<CutOffMax; CutOff_test++)
     {
       dE+=site_energy(x_a,y_a,z_a, species_a, CutOff_test);
       dE-=site_energy(x_a,y_a,z_a, species_b, CutOff_test);
@@ -520,7 +520,7 @@ static void MC_move_dE_check_stencil()
     // Defining max for cut off radius for lattice sums based on lattice dimensions (i.e. min dimension/2) 
     int CutOffMax = floor(min(X,Y,Z)/2);
 
-    for (CutOff_test=1; CutOff_test<CutOffMax+1; CutOff_test++)
+    for (CutOff_test=1; CutOff_test<CutOffMax; CutOff_test++)
     {
       dE+=site_energy_stencil(x_a,y_a,z_a, species_a, CutOff_test, x_a, y_a, z_a);
       dE-=site_energy_stencil(x_a,y_a,z_a, species_b, CutOff_test, x_a, y_a, z_a);
