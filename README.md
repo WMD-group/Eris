@@ -31,7 +31,9 @@ ipython notebooks used to analyse data are contained in [analysis-notebooks](/an
 
 The underlying physical model and applications are discussed in:
 
-* **Thermodynamically limited Cu-Zn order in Cu<sub>2</sub>ZnSnS<sub>4</sub> (CZTS) from Monte Carlo simulations**  S. K. Wallace, J. M. Frost and A. Walsh (2018)
+ Cu2ZnSnS4 
+
+* **Atomistic insights into the order–disorder transition in Cu<sub>2</sub>ZnSnS<sub>4</sub> solar cells from Monte Carlo simulations**  S. K. Wallace, J. M. Frost and A. Walsh, DOI: 10.1039/C8TA04812F (Paper) J. Mater. Chem. A, 2019, 7, 312-321.
 
 ## Contributors
 Jarvist Moore Frost and Suzanne K. Wallace. Codes started by Jarvist Moore Frost, September 19th 2014. Based on prior [Amphisbaena](https://github.com/jarvist/Amphisbaena) and [Starrynight](https://github.com/WMD-group/StarryNight) codes.
